@@ -1,0 +1,66 @@
+<!DOCTYPE HTML>
+<html lang="en-US"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>List Sheets</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+    <span layout:fragment="header-right">
+        <div class="header-bar-right" sec:authorize="hasRole(T(edu.iu.uits.lms.lti.LTIConstants).INSTRUCTOR_ROLE)">
+            <a href="#" class="btn btn-primary" th:href="@{|/app/${context}/uploadSheet|}"><i class="icon-plus"></i> <span th:text="#{nav.csvButton}">CSV</span></a>
+        </div>
+    </span>
+    <div layout:fragment="content">
+        <div class="item-group-container">
+            <div class="item-group-condensed">
+                <div class="ig-header">
+                    <h2 class="ig-header-title" th:text="#{viewem.worksheetViewTitle}">Worksheets</h2>
+                </div>
+                <div sec:authorize="hasRole(T(edu.iu.uits.lms.lti.LTIConstants).INSTRUCTOR_ROLE)">
+                    <h3 class="ic-label" th:if="${sheets.size() == 0}" th:text="#{noworksheet.instructor}">No Worksheet</h3>
+                </div>
+                <div sec:authorize="hasRole(T(edu.iu.uits.lms.lti.LTIConstants).STUDENT_ROLE)">
+                    <h3 class="ic-label" th:if="${sheets.size() == 0}" th:text="#{noworksheet.student}">No Worksheet</h3>
+                </div>
+                <ul class="ig-list" id="cond_group_1">
+                    <li th:id="'row_' + ${sheet.sheetId}" th:each="sheet : ${sheets}">
+                        <div class="ig-row" th:classappend="${sheet.published} ? 'ig-published'">
+                            <div class="ig-row__layout">
+                                <a href="#" class="ig-title ellipses" th:href="@{|/app/${sheet.context}/view/${sheet.sheetId}|}" th:text="${sheet.title}">Sheet Title</a>
+                                <div class="ig-details">
+                                    <div class="ellipses"><b th:text="#{list.lastUpdated}">Last Updated</b> <span th:text="${#dates.format(sheet.modifiedOn, T(edu.iu.uits.lms.lti.LTIConstants).UI_DATE_FORMAT)}">Jul 17 at 11:59 PM</span></div>
+                                </div>
+                                <div class="ig-admin" sec:authorize="hasRole(T(edu.iu.uits.lms.lti.LTIConstants).INSTRUCTOR_ROLE)">
+                                    <span th:if="${sheet.published}" class="publish-icon publish-icon-published" title="Unpublish">
+                                        <i class="icon-publish"></i><span class="publish-text">&nbsp;Published</span>
+                                    </span>
+                                    <span th:unless="${sheet.published}" class="publish-icon publish-icon-unpublished" title="Publish">
+                                        <i class="icon-unpublished"></i><span class="publish-text">&nbsp;Unpublished</span>
+                                    </span>
+
+                                    <div class="inline-block dropdown-parent">
+                                        <a th:id="'dropdown-aria-' + ${sheet.sheetId}" class="al-trigger al-trigger-gray" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <i class="icon-settings"></i><i class="icon-mini-arrow-down"></i>
+                                            <span class="screenreader-only" th:text="'Action Menu for ' + ${sheet.title}">Action Menu</span>
+                                        </a>
+                                        <ul class="dropdown-menu" th:attr="aria-labelledby=|dropdown-aria-${sheet.sheetId}|">
+                                            <li><a href="#" th:href="@{|/app/${sheet.context}/edit/${sheet.sheetId}|}" class="edit-worksheet"><i class="icon-edit"></i> Edit</a></li>
+                                            <li><a href="#" class="delete-worksheet"><i class="icon-trash"></i> Delete</a></li>
+                                            <li><a href="#" th:href="@{|/app/${sheet.context}/view/${sheet.sheetId}|}" class="view-worksheet"><i class="icon-eye"></i> View worksheet</a></li>
+                                            <li><a href="#" th:href="@{|/app/${sheet.context}/download/${sheet.sheetId}|}" class="download-worksheet"><i class="icon-download"></i> Download worksheet</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

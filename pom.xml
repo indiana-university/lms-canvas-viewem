@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>microservices-template</artifactId>
+    <artifactId>viewem</artifactId>
     <packaging>jar</packaging>
-    <name>microservices-template</name>
+    <name>viewem</name>
     <version>4.0.0-SNAPSHOT</version>
 
     <parent>
@@ -15,9 +15,22 @@
 
     <properties>
         <app.version>${project.version}</app.version>
-        <docker_repository_name>microservices-template</docker_repository_name>
+        <docker_repository_name>viewem</docker_repository_name>
         <docker_tag>stable</docker_tag>
-        <helm_service_name>microservices-template</helm_service_name>
+        <helm_service_name>viewem</helm_service_name>
+        <bootstrap.version>3.4.1</bootstrap.version>
+        <common-configuration.version>4.0.11</common-configuration.version>
+        <commons-collections4.version>4.4</commons-collections4.version>
+        <commons-fileupload.version>1.4</commons-fileupload.version>
+        <commons-io.version>2.7</commons-io.version>
+        <jquery-ui.version>1.12.1</jquery-ui.version>
+        <jquery.version>3.4.1</jquery.version>
+        <lms-canvas-client.version>4.0.20-SNAPSHOT</lms-canvas-client.version>
+        <lms-lti-web.version>4.0.17</lms-lti-web.version>
+        <lms-rivet.version>4.1.7.2_1</lms-rivet.version>
+        <nimbus-jose-jwt.version>8.19</nimbus-jose-jwt.version>
+        <redis-config.version>4.0.3</redis-config.version>
+        <spring-security-oauth2-autoconfigure.version>2.3.1.RELEASE</spring-security-oauth2-autoconfigure.version>
     </properties>
 
     <dependencies>
@@ -54,22 +67,22 @@
         <dependency>
             <groupId>org.springframework.security.oauth.boot</groupId>
             <artifactId>spring-security-oauth2-autoconfigure</artifactId>
-            <version>2.3.1.RELEASE</version>
+            <version>${spring-security-oauth2-autoconfigure.version}</version>
         </dependency>
         <dependency>
             <groupId>edu.iu.uits.lms</groupId>
             <artifactId>lms-lti-web</artifactId>
-            <version>4.0.13</version>
+            <version>${lms-lti-web.version}</version>
         </dependency>
         <dependency>
             <groupId>edu.iu.uits.lms</groupId>
             <artifactId>lms-canvas-client</artifactId>
-            <version>4.0.17</version>
+            <version>${lms-canvas-client.version}</version>
         </dependency>
         <dependency>
             <groupId>edu.iu.uits.lms</groupId>
             <artifactId>common-configuration</artifactId>
-            <version>4.0.10</version>
+            <version>${common-configuration.version}</version>
         </dependency>
         <dependency>
             <groupId>org.webjars</groupId>
@@ -78,43 +91,69 @@
         <dependency>
             <groupId>org.webjars</groupId>
             <artifactId>jquery</artifactId>
-            <version>3.4.1</version>
+            <version>${jquery.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>jquery-ui</artifactId>
+            <version>${jquery-ui.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>bootstrap</artifactId>
+            <version>${bootstrap.version}</version>
         </dependency>
         <dependency>
             <groupId>edu.iu.uits.lms</groupId>
             <artifactId>lms-rivet</artifactId>
-            <version>4.1.7.2_1</version>
+            <version>${lms-rivet.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-rest</artifactId>
+        </dependency>
+        <dependency>
             <groupId>edu.iu.uits.lms</groupId>
             <artifactId>redis-config</artifactId>
-            <version>4.0.3</version>
+            <version>${redis-config.version}</version>
         </dependency>
         <dependency>
             <groupId>com.nimbusds</groupId>
             <artifactId>nimbus-jose-jwt</artifactId>
-            <version>8.19</version>
+            <version>${nimbus-jose-jwt.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-collections4</artifactId>
-            <version>4.4</version>
+            <version>${commons-collections4.version}</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.7</version>
-            <scope>test</scope>
+            <version>${commons-io.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-fileupload</groupId>
+            <artifactId>commons-fileupload</artifactId>
+            <version>${commons-fileupload.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
         </dependency>
     </dependencies>
 
 
     <build>
-        <finalName>microservices-template</finalName>
+        <finalName>viewem</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -154,9 +193,23 @@
                         <param>postgresql9</param>
                     </dialects>
                     <packages>
-                        <param>edu.iu.uits.lms.microservices-template</param>
+                        <param>edu.iu.uits.lms.viewem</param>
                     </packages>
 <!--                    <persistenceXml>src/main/webapp/META-INF/canvasnotifier-persistence.xml</persistenceXml>-->
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+<!--                <version>3.1.0</version>-->
+                <configuration>
+                    <nonFilteredFileExtensions>
+                        <nonFilteredFileExtension>ttf</nonFilteredFileExtension>
+                        <nonFilteredFileExtension>woff</nonFilteredFileExtension>
+                        <nonFilteredFileExtension>woff2</nonFilteredFileExtension>
+                        <nonFilteredFileExtension>eot</nonFilteredFileExtension>
+                        <nonFilteredFileExtension>svg</nonFilteredFileExtension>
+                    </nonFilteredFileExtensions>
                 </configuration>
             </plugin>
         </plugins>

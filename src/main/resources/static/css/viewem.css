@@ -1,0 +1,201 @@
+/* Formerly from context_modules2_legacy_normal_contrast.css and revised */
+.thisClassShouldNotMatterButDoes .btn:first-of-type {
+    margin-right: 10px;
+}
+
+.thisClassShouldNotMatterButDoes .icon-unpublished {
+    color: #999999;
+}
+
+tr.hidden {
+    display: none;
+}
+
+tr.visible {
+    display: table-row;
+}
+
+.thisClassShouldNotMatterButDoes a {
+    cursor: pointer;
+}
+
+.thisClassShouldNotMatterButDoes .btn {
+    padding-left: 8px;
+    padding-right: 8px;
+}
+
+.thisClassShouldNotMatterButDoes a.al-trigger {
+    color: #b4b8bb;
+}
+
+.thisClassShouldNotMatterButDoes a.al-trigger:hover {
+    color: #0088cc;
+}
+
+.thisClassShouldNotMatterButDoes table {
+    table-layout: fixed;
+    margin-bottom: 0;
+}
+
+.thisClassShouldNotMatterButDoes table thead {
+    background-color: inherit;
+}
+
+.thisClassShouldNotMatterButDoes table tbody {
+    background-color: white;
+    border: 1px solid #c2c9d1;
+}
+
+.thisClassShouldNotMatterButDoes table tbody tr:hover {
+    background-color: #F6F8F9;
+}
+
+.thisClassShouldNotMatterButDoes table td:first-of-type,
+.thisClassShouldNotMatterButDoes table th:first-of-type {
+    text-align: left;
+}
+
+.thisClassShouldNotMatterButDoes table td:last-of-type,
+.thisClassShouldNotMatterButDoes table th:last-of-type {
+    text-align: right;
+}
+
+.thisClassShouldNotMatterButDoes table td {
+    width: 11%;
+}
+
+.thisClassShouldNotMatterButDoes table td,
+.thisClassShouldNotMatterButDoes table th {
+    text-align: inherit;
+}
+
+.thisClassShouldNotMatterButDoes table td.align-right,
+.thisClassShouldNotMatterButDoes table th.align-right {
+    text-align: right;
+}
+
+.thisClassShouldNotMatterButDoes table td.long,
+.thisClassShouldNotMatterButDoes table th.long {
+    width: auto;
+}
+
+.thisClassShouldNotMatterButDoes table td.inherit-width,
+.thisClassShouldNotMatterButDoes table th.inherit-width {
+    width: auto;
+}
+
+/thisClassShouldNotMatterButDoes table td.compact,
+.thisClassShouldNotMatterButDoes table th.compact {
+    width: 1%;
+}
+
+.thisClassShouldNotMatterButDoes table td.no-right-padding,
+.thisClassShouldNotMatterButDoes table th.no-right-padding {
+    padding-right: 0;
+}
+
+.thisClassShouldNotMatterButDoes .item-group-condensed .ig-title {
+    left: 20px;
+}
+
+tbody.sortable tr {
+    display: table-row;
+    width: 100%;
+}
+
+tr.ui-sortable-helper {
+    background-color: white;
+}
+
+tbody.sortable.empty2 {
+    min-height: 30px;
+    display: block;
+    width: 100%;
+}
+
+/* End of context_modules2_legacy_normal_contrast.css */
+
+/* Formerly from css_override.css. Overrides IU Branding */
+body {
+	background-image: none;
+	background-color: #f1f1f2;
+}
+/* End of css_override.css */
+
+/* Formerly from inline-styles.css */
+.item-group-container {
+  min-height: 450px;
+}
+
+.publish-icon .publish-icon-unpublished {
+  position: relative;
+  bottom: 7px;
+}
+
+.ig-header {
+  display: none;
+  display: inline;
+  position: relative;
+}
+/* End of inline-styles.css */
+
+/* Formerly from added-styles.css */
+/* Custom CSS rules authored by M. Mallon */
+table {
+    background-color: white;
+}
+
+.grades-summary thead {
+    background-color: #444;
+    color: white;
+}
+
+.grades-summary td, .grades-summary th {
+    min-width: 50px;
+}
+
+#entire-worksheet-tab {
+    overflow-x: scroll;
+}
+
+.viewem-error {
+    color: red;
+    font-style: italic;
+}
+
+.dropdown-menu {
+    /* GT - Fix for the menu sliding off to the right */
+    left: auto;
+    right: 0;
+}
+
+.dropdown-parent {
+    /*
+    the dropdown is absolutely positioned at left: 0px by default in Bootstrap
+    because the parent to the dropdown menu was not relatively positioned, this meant
+    that the drop down menu was appearing at the very left of the screen.
+    I added a dropdown-parent class to the div that is the direct parent of the dropdown,
+    so that the dropdown menu appears relative/near to the icon being clicked
+    */
+    position: relative;
+}
+
+select.ic-Input:not(*:root) {
+    /*
+    This is overriding a style defined in common_legacy_normal_contrast.css (lifted from canvas) so I can set
+    the location to an image I actually have
+    */
+    background: url(../images/ic-icon-arrow-down.svg) no-repeat calc(100% - 8px) 50% #fff;
+    background-size: 10px 5.667px;
+}
+
+
+#stackTraceHeader {
+    cursor: pointer;
+}
+
+#stackTraceContent {
+    display: none;
+}
+
+/* End of added-styles.css */

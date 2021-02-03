@@ -12,5 +12,5 @@ env:
 ingress:
   enabled: true
   hosts:
-    - host: "microservices-template-reg.apps-test.iu.edu"
+    - host: "viewem-reg.apps-test.iu.edu"
       paths: []

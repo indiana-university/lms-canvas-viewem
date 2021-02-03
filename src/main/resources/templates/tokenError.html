@@ -1,0 +1,34 @@
+<!DOCTYPE HTML>
+<html lang="en-US"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>View'em - Error Page</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+<div layout:fragment="content">
+
+    <h1>Error Processing Request</h1>
+    <p class="viewem-error" th:text="${exception.message}">Exception here</p>
+    <p th:utext="#{tokenException.instructions}">Instructions here</p>
+    <div id="stackTraceContainer">
+        <div id="stackTraceHeader">
+            <i class="icon-mini-arrow-right"></i>
+            <span id="stackTraceHeaderStateLabel">View</span> full error details</div>
+            <div id="stackTraceContent">
+                <dl>
+                    <dt th:text="#{tokenException.dateLabel}">Date</dt>
+                    <dd th:text="${timestamp}">1/11/1111</dd>
+                    <dt th:text="#{tokenException.errorLabel}">Error</dt>
+                    <dd th:utext="${stackTrace}">StackTrace here</dd>
+                </dl>
+            </div>
+    </div>
+</div>
+
+</body>
+</html>
+
+

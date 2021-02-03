@@ -1,0 +1,28 @@
+<!DOCTYPE HTML>
+<html lang="en-US"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>View'em - View Sheet</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+    <div id="container">
+        <span layout:fragment="header-right">
+            <div class="header-bar-right">
+                <a href="#" th:href="@{|/app/${sheet.context}/list|}" class="btn btn-primary" th:text="#{nav.returnToList}">Return to List</a>
+            </div>
+        </span>
+
+        <div layout:fragment="content">
+        <div class="pad-box-mini"><h2 th:text="#{view.worksheetTitle(${sheet.title})}">Worksheet: Sheet Title</h2></div>
+        <div class="pad-box-mega border border-trbl">
+            <h3><span th:text="#{view.results}">Results for</span> <span id="student-name" th:text="${sheetUser}">First Last</span></h3>
+            <div th:insert="fragments/userDataTable :: userData"></div>
+        </div>
+        </div>
+
+    </div>
+</body>
+</html>

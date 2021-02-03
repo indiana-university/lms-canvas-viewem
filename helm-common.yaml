@@ -1,9 +1,9 @@
-nameOverride: microservices-template
+nameOverride: viewem
 
 namespace: ua-vpit--enterprise-systems--lms
 
 image:
-  repository: registry.docker.iu.edu/lms/microservices-template
+  repository: registry.docker.iu.edu/lms/viewem
   tag: unstable
   pullPolicy: Always
 

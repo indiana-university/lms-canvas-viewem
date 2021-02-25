@@ -24,7 +24,7 @@
         <commons-io.version>2.8.0</commons-io.version>
         <jquery-ui.version>1.12.1</jquery-ui.version>
         <jquery.version>3.5.1</jquery.version>
-        <lms-bom.version>4.0.0</lms-bom.version>
+        <lms-bom.version>4.0.1</lms-bom.version>
     </properties>
 
     <dependencyManagement>

@@ -2,7 +2,7 @@ namespace: default
 bootstrapSecret: "properties-2020-11-30"
 
 image:
-  repository: localhost:5000/microservices-template
+  repository: localhost:5000/viewem
   pullPolicy: Never
   tag: unstable
 

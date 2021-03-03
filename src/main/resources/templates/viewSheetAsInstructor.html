@@ -1,0 +1,60 @@
+<!DOCTYPE HTML>
+<html lang="en-US"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>View'em - View Sheet</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+<div id="container">
+        <span layout:fragment="header-right">
+            <div class="header-bar-right">
+                <a href="#" th:href="@{|/app/${sheet.context}/list|}" class="btn btn-primary" th:text="#{nav.returnToList}">Return</a>
+            </div>
+        </span>
+
+    <div layout:fragment="content">
+        <div class="pad-box-mini"><h2 th:text="#{view.worksheetTitle(${sheet.title})}">Worksheet: Sheet Title</h2></div>
+        <div class="pad-box-mega">
+            <div id="worksheet-tabs">
+                <ul>
+                    <li><a href="#student-view-tab" th:text="#{instructorView.tab.studentView}">Student Tab</a></li>
+                    <li><a href="#entire-worksheet-tab" th:text="#{instructorView.tab.entireSheet}">Entire Tab</a></li>
+                </ul>
+                <div id="student-view-tab">
+                    <h3><span th:text="#{view.results}">Results for</span> <span id="student-name" th:text="${sheetUser}">First Last</span></h3>
+                    <div class="ic-Form-control">
+                        <label for="student-list" class="ic-Label" th:text="#{instructorView.label.students}">Students</label>
+                        <select class="ic-Input" id="student-list" th:attr="data-urlbase=@{|/app/${sheet.context}/view/${sheet.sheetId}/|}">
+                            <option th:text="#{instructorView.select.option}">Select...</option>
+                            <option th:each="user : ${users}"
+                                    th:value="${user.userId}" th:text="${user.userSortableName}">Last, First</option>
+                        </select>
+                    </div>
+                    <div id="userDataDiv"></div>
+                </div>
+                <div id="entire-worksheet-tab">
+                    <table class="ic-Table ic-Table--striped table-bordered grades-summary">
+                        <thead>
+                        <tr>
+                            <th th:text="#{instructorView.header.studentId}">Student Column Header</th>
+                            <th th:each="sheetColumn : ${sheetColumns}" th:text="${sheetColumn.title}">Column Header</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="sheetUser : ${sheetUsers}">
+                            <td th:text="${sheetUser.userId}">user1</td>
+                            <td th:each="data : ${sheetUser.data}" th:text="${data.data}">Data goes here</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+</body>
+</html>

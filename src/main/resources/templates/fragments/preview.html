@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en-US" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title></title>
+</head>
+<body>
+<div th:fragment="preview">
+    <div class="ic-Form-group">
+        <div class="ic-Form-control">
+            <label for="sheetTitle" class="ic-Label" th:text="#{upload.sheetTitleFieldLabel}">Worksheet Title</label>
+            <input type="text" th:if="${editMode}" id="sheetTitle" name="sheetTitle" class="ic-Input" th:value="${sheetTitle}" />
+            <input type="text" th:unless="${editMode}" id="sheetTitle" name="sheetTitle" class="ic-Input" th:value="${sheetTitle}" readonly="true"/>
+            <p class="viewem-error" th:if="${titleError != null}" th:text="${titleError}">Error Message Text</p>
+            <p class="viewem-error" th:if="${errors != null}" th:text="${errors}">Error Message Text</p>
+        </div>
+    </div>
+    <h2 th:text="|#{preview.studentText}: ${user}|">Preview of first student: student name</h2>
+    <table class="ic-Table table-bordered grades-summary">
+        <thead>
+        <tr>
+            <th th:text="#{preview.nameHeader}">Name Header</th>
+            <th th:text="#{preview.scoreHeader}">Score Header</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="sheet : ${dataMap}">
+            <td th:text="${sheet[0]}">Column Header</td>
+            <td th:text="${sheet[1]}">Student information</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

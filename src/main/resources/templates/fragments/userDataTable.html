@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en-US" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title></title>
+</head>
+<body>
+<div th:fragment="userData">
+    <table class="ic-Table table-bordered grades-summary">
+        <thead>
+        <tr>
+            <th th:text="#{preview.nameHeader}">Item Name</th>
+            <th th:text="#{preview.scoreHeader}">Score/Feedback</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="entry : ${sheetUserData}">
+            <td th:text="${entry[0]}">June 24, 2015 Attendance</td>
+            <td th:text="${entry[1]}">2</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

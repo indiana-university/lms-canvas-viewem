@@ -1,0 +1,37 @@
+<!DOCTYPE HTML>
+<html lang="en-US"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta charset="utf-8" />
+    <title>View'em - Upload Sheet</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="pad-box-mega border border-trbl">
+            <form id="upload" action="previewSheet.html" th:action="@{|/app/${context}/preview|}" method="post" enctype="multipart/form-data">
+                <div class="ic-Form-group">
+                    <div class="ic-Form-control">
+                        <label for="sheetTitle" class="ic-Label" th:text="#{upload.sheetTitleFieldLabel}">Worksheet Title</label>
+                        <input type="text" id="sheetTitle" name="sheetTitle" class="ic-Input" th:value="${sheetTitle}" />
+                        <input type="hidden" id="sheetId" name="sheetId" th:value="${sheetId}" />
+                        <p class="viewem-error" th:if="${titleError != null}" th:text="${titleError}">Error Message Text</p>
+                    </div>
+                    <div class="ic-Form-control">
+                        <label for="file" class="ic-Label" th:text="#{upload.fileLabel}">File</label>
+                        <input type="file" id="file" name="file" class="ic-Input" />
+                        <p class="viewem-error" th:if="${fileError != null}" th:text="${fileError}">Error Message Text</p>
+                        <p th:text="#{upload.csvInstructions}">Instructional Text</p>
+                    </div>
+                </div>
+                <div class="ic-Form-actions">
+                    <button class="Button" type="submit" th:text="#{upload.cancelButton}" name="action" value="cancel">Cancel</button>
+                    <button class="Button Button--primary" type="submit" th:text="#{upload.submitButton}" name="action" value="save">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

@@ -4,7 +4,7 @@
     <artifactId>viewem</artifactId>
     <packaging>jar</packaging>
     <name>viewem</name>
-    <version>4.0.2-SNAPSHOT</version>
+    <version>4.0.1</version>
 
     <parent>
         <artifactId>lms2Wow</artifactId>

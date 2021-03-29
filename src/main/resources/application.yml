@@ -32,6 +32,7 @@ spring:
     url: ${lms.db.url}
     username: ${lms.db.user}
     password: ${lms.db.password}
+    type: org.springframework.jdbc.datasource.DriverManagerDataSource
 viewem:
   version: @app.version@
   env: ${app.env}

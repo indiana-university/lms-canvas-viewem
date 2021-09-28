@@ -6,16 +6,17 @@
 </head>
 <body>
 <div th:fragment="userData">
-    <table class="ic-Table table-bordered grades-summary">
+    <table class="rvt-table-cells">
+        <caption class="sr-only" th:text="|#{preview.studentText}: ${user}|">Preview of first student: student name</caption>
         <thead>
         <tr>
-            <th th:text="#{preview.nameHeader}">Item Name</th>
-            <th th:text="#{preview.scoreHeader}">Score/Feedback</th>
+            <th scope="col" th:text="#{preview.nameHeader}">Item Name</th>
+            <th scope="col" th:text="#{preview.scoreHeader}">Score/Feedback</th>
         </tr>
         </thead>
         <tbody>
         <tr th:each="entry : ${sheetUserData}">
-            <td th:text="${entry[0]}">June 24, 2015 Attendance</td>
+            <th scope="row" th:text="${entry[0]}">June 24, 2015 Attendance</th>
             <td th:text="${entry[1]}">2</td>
         </tr>
         </tbody>

@@ -8,25 +8,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <link th:href="@{/app/css/common_legacy_normal_contrast.css}" rel="stylesheet" type="text/css"/>
-    <link th:href="@{/app/css/viewem.css}" rel="stylesheet" type="text/css"/>
+    <link media="all" rel="stylesheet" type="text/css" th:href="@{/app/jsrivet/rivet-bundle.min.css}" />
+    <link media="all" rel="stylesheet" type="text/css" th:href="@{/app/css/viewem.css}" />
 
 </head>
 <body>
-<div class="header-bar">
-    <div class="header-bar-left" role="banner"><h1 th:text="#{viewem.toolTitle}">Tool Title</h1></div>
-    <div class="header-bar-right" layout:fragment="header-right"></div>
+
+<div class="rvt-container">
+    <div id="delete-success-alert" class="rvt-alert rvt-alert--success rvt-m-tb-md rvt-display-none" role="alertdialog" aria-labelledby="delete-success-title" tabindex="0">
+        <h1 class="rvt-alert__title" id="delete-success-title">Sheet deleted!</h1>
+        <p class="rvt-alert__message">Deletion of the worksheet was successful!</p>
+        <button type="button" class="dismiss-override" id="delete-close">
+            <span class="v-hide">Dismiss this alert</span>
+            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+                <path fill="currentColor" d="M9.41,8l5.29-5.29a1,1,0,0,0-1.41-1.41L8,6.59,2.71,1.29A1,1,0,0,0,1.29,2.71L6.59,8,1.29,13.29a1,1,0,1,0,1.41,1.41L8,9.41l5.29,5.29a1,1,0,0,0,1.41-1.41Z"/>
+            </svg>
+        </button>
+    </div>
+    <div class="rvt-grid rvt-vertical-center rvt-m-tb-sm">
+        <div class="rvt-grid__item" role="banner">
+            <h1 class="rvt-ts-26" th:text="#{viewem.toolTitle}">Tool Title</h1>
+        </div>
+        <div class="rvt-grid__item rvt-text-right" role="navigation">
+            <div layout:fragment="header-right"></div>
+        </div>
+    </div>
+    <div class="rvt-box">
+        <div class="rvt-box__body">
+            <div layout:fragment="content" role="main">Page content goes here</div>
+        </div>
+    </div>
 </div>
 
-<div layout:fragment="content" role="main">Page content goes here</div>
-
-<footer>
+<footer th:unless="${hideFooter}" class="rvt-ts-12 rvt-container rvt-m-top-lg">
     <div id="footer" th:text="${@serverInfo}"></div>
 </footer>
 
+<script type="text/javascript" th:src="@{/app/jsrivet/rivet-bundle.min.js}"></script>
 <script type="text/javascript" th:src="@{/app/webjars/jquery/jquery.min.js}"></script>
-<script type="text/javascript" th:src="@{/app/webjars/jquery-ui/jquery-ui.min.js}"></script>
-<script type="text/javascript" th:src="@{/app/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
 <script type="text/javascript" th:src="@{/app/js/viewem.js}"></script>
 </body>
 </html>

@@ -22,9 +22,9 @@
         <commons-collections4.version>4.4</commons-collections4.version>
         <commons-fileupload.version>1.4</commons-fileupload.version>
         <commons-io.version>2.8.0</commons-io.version>
-        <jquery-ui.version>1.12.1</jquery-ui.version>
         <jquery.version>3.5.1</jquery.version>
         <lms-bom.version>4.0.1</lms-bom.version>
+        <lms-rivet.version>4.1.7.3-SNAPSHOT</lms-rivet.version>
     </properties>
 
     <dependencyManagement>
@@ -104,17 +104,13 @@
         </dependency>
         <dependency>
             <groupId>org.webjars</groupId>
-            <artifactId>jquery-ui</artifactId>
-            <version>${jquery-ui.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.webjars</groupId>
             <artifactId>bootstrap</artifactId>
             <version>${bootstrap.version}</version>
         </dependency>
         <dependency>
             <groupId>edu.iu.uits.lms</groupId>
             <artifactId>lms-rivet</artifactId>
+            <version>${lms-rivet.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

@@ -1,27 +1,26 @@
 (function() {   
-    $('.publish-icon').click(function() {
-        var parentRowObject = $(this).closest("div.ig-row__layout");
-        var hrefText = parentRowObject.find(".ig-title").attr("href");
+    $('.publish-button').click(function() {
+        var parentRowObject = $(this).closest("li.ig-row__layout");
+        var parentTitle = parentRowObject.find(".sheet-title");
+        var hrefText = parentTitle.attr("href");
         var hrefEditText = hrefText.replace("\/view\/","\/edit\/");
 
-        var icon = $('i', this);
-        var unpublished = icon.hasClass('icon-unpublished');
+        var icon = $('svg', this);
+        var unpublished = icon.hasClass('rvt-display-none');
         if (unpublished) {
-            icon.attr('class', 'icon-publish'); //change icon
-            $(this).removeClass('publish-icon-unpublished'); //change color of icon
-            $(this).addClass('publish-icon-published'); 
-            $(this).parents('.ig-row').addClass('ig-published'); //change color of row
-            $('.publish-text', this).text('&nbsp;Published'); //change text for accessibility
-            $(this).attr('title', 'Unpublish'); //change tooltip title
+            $('.rvt-icon', this).removeClass('rvt-display-none'); // display the checked icon
+            $(this).removeClass('rvt-button--secondary'); // remove the blue style button
+            $(this).addClass('rvt-button--success-secondary'); // add the green style button
+            parentTitle.addClass('rvt-button--success-secondary'); // make worksheet title green
+            $('.publish-text', this).text('Published'); //change text for accessibility
             $.post(hrefEditText + "/publish"); // ajax call to set publish status
         }
         else {
-            icon.attr('class', 'icon-unpublished');
-            $(this).removeClass('publish-icon-published');
-            $(this).addClass('publish-icon-unpublished');
-            $(this).parents('.ig-row').removeClass('ig-published');
-            $('.publish-text', this).text('&nbsp;Unpublished');
-            $(this).attr('title', 'Publish');
+            $('.rvt-icon', this).addClass('rvt-display-none'); // hide the checked icon
+            $(this).removeClass('rvt-button--success-secondary'); // remove the green style button
+            $(this).addClass('rvt-button--secondary'); // add the blue style button
+            parentTitle.removeClass('rvt-button--success-secondary'); // remove the green from the worksheet title
+            $('.publish-text', this).text('Unpublished');
             $.post(hrefEditText + "/unpublish"); // ajax call to set publish status
         }
     });
@@ -31,8 +30,8 @@
             var confirmResult = confirm('Are you sure you want to delete this worksheet?');
 
             if(confirmResult == true) {
-                var parentRowObject = $(this).closest("div.ig-row__layout");
-                var hrefText = parentRowObject.find(".ig-title").attr("href"); //something like /lms-build/viewem/12345/view/123
+                var parentRowObject = $(this).closest("li.ig-row__layout");
+                var hrefText = parentRowObject.find(".sheet-title").attr("href"); //something like /lms-build/viewem/12345/view/123
                 var hrefDeleteText = hrefText.replace("\/view\/","\/delete\/");  // change to /lms-build/viewem/12345/delete/123
 
                 var values = hrefDeleteText.split("/");
@@ -45,16 +44,20 @@
                     type: 'DELETE',
                     success: function() {
                         $(updatedId).remove();
+                        var deleteAlert = document.getElementById("delete-success-alert");
+                        $(deleteAlert).removeClass('rvt-display-none'); // show the delete alert
+                        deleteAlert.focus(); // give the alert focus
                     }
                 });
 
             }
         }
     });
-    
-    if ($("#worksheet-tabs").length > 0) {
-        $("#worksheet-tabs").tabs();
-    }
+
+    $('#delete-close').click(function() {
+        var deleteAlert = document.getElementById("delete-success-alert");
+        $(deleteAlert).addClass('rvt-display-none'); // hide the alert after clicking the close button
+    });
 
     $('#student-list').on('change', function() {
         var obj = $(this);
@@ -65,25 +68,6 @@
 
         //Need a slash at the end to prevent emails from getting the suffix ignored
         $("#userDataDiv").load(urlBase + userId + "/");
-    });
-
-
-    // Show/hide the stack trace div, adjusting the icon and text accordingly
-    $("#stackTraceHeader").click(function () {
-        var headerStateLabel = $("#stackTraceHeaderStateLabel");
-        var headerIcon = $("#stackTraceHeader i");
-        var content = $("#stackTraceContent");
-        content.toggle(200, function () {
-            //execute this after toggle is done
-            //change text of header based on visibility of content div
-            headerStateLabel.text(function () {
-                //change text based on condition
-                return content.is(":visible") ? "Hide" : "View";
-            });
-            //change icon
-            headerIcon.toggleClass("icon-mini-arrow-right icon-mini-arrow-down");
-        });
-
     });
 
     // Handler for the file upload input so that IE works like other browsers

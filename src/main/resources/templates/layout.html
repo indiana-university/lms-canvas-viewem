@@ -15,6 +15,7 @@
 <body>
 
 <div class="rvt-container">
+    <!-- alerts -->
     <div id="delete-success-alert" class="rvt-alert rvt-alert--success rvt-m-tb-md rvt-display-none" role="alertdialog" aria-labelledby="delete-success-title" tabindex="0">
         <h1 class="rvt-alert__title" id="delete-success-title">Sheet deleted!</h1>
         <p class="rvt-alert__message">Deletion of the worksheet was successful!</p>
@@ -25,6 +26,19 @@
             </svg>
         </button>
     </div>
+    <div th:if="${titleError != null} OR ${fileError != null}" class="rvt-alert rvt-alert--danger rvt-m-top-sm" role="alertdialog" aria-labelledby="error-alert-title">
+        <h1 class="rvt-alert__title" id="error-alert-title">Errors</h1>
+        <ul class="rvt-plain-list">
+            <li class="rvt-alert__message">
+                <a href="#sheetTitle" th:text="${titleError}">The <strong>Course SIS ID</strong> is already in use in Canvas</a>
+            </li>
+            <li class="rvt-alert__message">
+                <a href="#file" th:text="${fileError}">The <strong>Section SIS ID</strong> is already in use in Canvas</a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- banner -->
     <div class="rvt-grid rvt-vertical-center rvt-m-tb-sm">
         <div class="rvt-grid__item" role="banner">
             <h1 class="rvt-ts-26" th:text="#{viewem.toolTitle}">Tool Title</h1>
@@ -33,6 +47,7 @@
             <div layout:fragment="header-right"></div>
         </div>
     </div>
+    <!-- main content -->
     <div class="rvt-box">
         <div class="rvt-box__body">
             <div layout:fragment="content" role="main">Page content goes here</div>

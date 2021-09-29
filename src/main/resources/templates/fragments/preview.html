@@ -7,7 +7,7 @@
 <body>
 <div th:fragment="preview">
     <label for="sheetTitle" th:text="#{upload.sheetTitleFieldLabel}">Worksheet Title</label>
-    <input type="text" id="sheetTitle" name="sheetTitle" name="sheetTitle" th:value="${sheetTitle}"
+    <input type="text" id="sheetTitle" name="sheetTitle" th:value="${sheetTitle}"
            th:classappend="${titleError != null} ? 'rvt-validation-danger'"
            th:aria-describedby="${titleError != null} ? 'title_error_text'"
            th:aria-invalid="${titleError != null} ? 'true'"

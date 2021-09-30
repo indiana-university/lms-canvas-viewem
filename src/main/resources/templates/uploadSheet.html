@@ -33,7 +33,7 @@
 
             <div class="rvt-file rvt-m-top-sm" data-upload="file">
                 <input type="file" id="file" name="file" aria-required='true'
-                       th:aria-describedby="${fileError != null} ? 'attachment-status attachment-error' : 'attachment-status'"
+                       th:aria-describedby="${fileError != null} ? 'attachment-status instructional-text attachment-error' : 'attachment-status instructional-text'"
                        th:aria-invalid="${fileError != null} ? 'true'" />
                 <label for="file" class="rvt-button rvt-button--secondary">
                     <span th:text="#{upload.fileLabel}">File</span>
@@ -58,7 +58,7 @@
                     Message Placeholder
                 </span>
             </div>
-            <p th:text="#{upload.csvInstructions}">Instructional Text</p>
+            <p id="instructional-text" th:text="#{upload.csvInstructions}">Instructional Text</p>
 
             <div class="rvt-button-group rvt-button-group--right rvt-m-top-sm rvt-flex rvt-vertical-center">
                 <button id="cancelButton" type="submit" class="rvt-button rvt-button--secondary" th:text="#{upload.cancelButton}" name="action" value="cancel">Cancel</button>

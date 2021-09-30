@@ -12,7 +12,7 @@
     <span layout:fragment="header-right">
         <div sec:authorize="hasRole(T(edu.iu.uits.lms.lti.LTIConstants).INSTRUCTOR_ROLE)">
             <form id="upload_sheet_form" method="get" th:action="@{|/app/${context}/uploadSheet|}" accept-charset="UTF-8">
-                <button class="rvt-button" id="csv-button">
+                <button id="csv-button" class="rvt-button" aria-label="Upload a new CSV">
                     <svg class="rvt-icon" aria-hidden="true">
                         <use th:href="@{/app/jsrivet/rvt-icons.svg#rvt-icon-plus}"></use>
                     </svg>
@@ -34,8 +34,14 @@
                 <li class="rvt-box__row ig-row__layout" th:id="'row_' + ${sheet.sheetId}" th:each="sheet : ${sheets}">
                     <div class="rvt-grid rvt-vertical-center">
                         <div class="rvt-grid__item">
-                            <a href="#" class="rvt-link-bold ellipses sheet-title" th:classappend="${sheet.published} ? rvt-button--success-secondary"
-                               th:href="@{|/app/${sheet.context}/view/${sheet.sheetId}|}" th:text="${sheet.title}" th:title="${sheet.title}">Sheet Title</a>
+                            <a href="#" th:id="|title-${sheet.sheetId}|"
+                               class="rvt-link-bold ellipses sheet-title"
+                               th:classappend="${sheet.published} ? rvt-button--success-secondary"
+                               th:href="@{|/app/${sheet.context}/view/${sheet.sheetId}|}"
+                               th:text="${sheet.title}"
+                               th:title="${sheet.title}">
+                                Sheet Title
+                            </a>
                         </div>
                         <div class="rvt-grid__item">
                             <div class="ellipses">
@@ -58,7 +64,8 @@
                                     <span class="publish-text">Unpublished</span>
                                 </button>
                                 <div class="rvt-dropdown">
-                                    <button type="button" class="rvt-button rvt-button--secondary" th:data-dropdown-toggle="@{|sheet-navigation-${sheet.sheetId}|}" aria-haspopup="true" aria-expanded="false">
+                                    <button type="button" class="rvt-button rvt-button--secondary" th:data-dropdown-toggle="@{|sheet-navigation-${sheet.sheetId}|}"
+                                            aria-haspopup="true" aria-expanded="false" th:aria-label="|Actions for ${sheet.title} worksheet|">
                                         <span>Actions</span>
                                         <svg aria-hidden="true" class="rvt-m-left-xs" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
                                             <path fill="currentColor" d="M8,12.46a2,2,0,0,1-1.52-.7L1.24,5.65a1,1,0,1,1,1.52-1.3L8,10.46l5.24-6.11a1,1,0,0,1,1.52,1.3L9.52,11.76A2,2,0,0,1,8,12.46Z"/>

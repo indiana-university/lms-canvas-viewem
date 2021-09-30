@@ -26,7 +26,7 @@
             </svg>
         </button>
     </div>
-    <div th:if="${titleError != null} OR ${fileError != null}" class="rvt-alert rvt-alert--danger rvt-m-top-sm" role="alertdialog" aria-labelledby="error-alert-title">
+    <div th:if="${titleError != null} OR ${fileError != null}" class="rvt-alert rvt-alert--danger rvt-m-top-sm" role="alert" aria-labelledby="error-alert-title">
         <h1 class="rvt-alert__title" id="error-alert-title">Errors</h1>
         <ul class="rvt-plain-list">
             <li class="rvt-alert__message">

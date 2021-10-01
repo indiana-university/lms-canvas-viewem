@@ -1,26 +1,28 @@
 (function() {   
-    $('.publish-button').click(function() {
-        var parentRowObject = $(this).closest("li.ig-row__layout");
+    $('.publish-worksheet').click(function() {
+        var parentRowObject = $(this).closest("tr.worksheet-row");
         var parentTitle = parentRowObject.find(".sheet-title");
+        var publishStatus = parentRowObject.find(".status");
         var hrefText = parentTitle.attr("href");
         var hrefEditText = hrefText.replace("\/view\/","\/edit\/");
 
-        var icon = $('svg', this);
-        var unpublished = icon.hasClass('rvt-display-none');
-        if (unpublished) {
-            $('.rvt-icon', this).removeClass('rvt-display-none'); // display the checked icon
-            $(this).removeClass('rvt-button--secondary'); // remove the blue style button
-            $(this).addClass('rvt-button--success-secondary'); // add the green style button
+        var icon = $('use', this);
+        var hrefIcon = icon.attr("href");
+        var menuText = $('.publish-text', this);
+
+        if (menuText.text()=='Publish') {
+            menuText.text('Unpublish'); // change menu text
+            publishStatus.text('Published'); // change status text
+            var hrefIconReplacement = hrefIcon.replace("check-circle-breakout","undo"); // replace the icon type
+            icon.attr("href", hrefIconReplacement); // implement new href on icon
             parentTitle.addClass('rvt-button--success-secondary'); // make worksheet title green
-            $('.publish-text', this).text('Published'); //change text for accessibility
             $.post(hrefEditText + "/publish"); // ajax call to set publish status
-        }
-        else {
-            $('.rvt-icon', this).addClass('rvt-display-none'); // hide the checked icon
-            $(this).removeClass('rvt-button--success-secondary'); // remove the green style button
-            $(this).addClass('rvt-button--secondary'); // add the blue style button
-            parentTitle.removeClass('rvt-button--success-secondary'); // remove the green from the worksheet title
-            $('.publish-text', this).text('Unpublished');
+        } else {
+            menuText.text('Publish'); // change menu text
+            publishStatus.text('Unpublished'); // change status text
+            var hrefIconReplacement = hrefIcon.replace("undo","check-circle-breakout"); // replace the icon type
+            icon.attr("href", hrefIconReplacement); // implement new href on icon
+            parentTitle.removeClass('rvt-button--success-secondary'); // make worksheet title green
             $.post(hrefEditText + "/unpublish"); // ajax call to set publish status
         }
     });
@@ -30,7 +32,7 @@
             var confirmResult = confirm('Are you sure you want to delete this worksheet?');
 
             if(confirmResult == true) {
-                var parentRowObject = $(this).closest("li.ig-row__layout");
+                var parentRowObject = $(this).closest("tr.worksheet-row");
                 var hrefText = parentRowObject.find(".sheet-title").attr("href"); //something like /lms-build/viewem/12345/view/123
                 var hrefDeleteText = hrefText.replace("\/view\/","\/delete\/");  // change to /lms-build/viewem/12345/delete/123
 

@@ -30,20 +30,20 @@
         <h1 class="rvt-alert__title" id="error-alert-title">Errors</h1>
         <ul class="rvt-plain-list">
             <li class="rvt-alert__message">
-                <a href="#sheetTitle" th:text="${titleError}">The <strong>Course SIS ID</strong> is already in use in Canvas</a>
+                <a href="#sheetTitle" th:text="${titleError}">There was no title provided for the name of the sheet.</a>
             </li>
             <li class="rvt-alert__message">
-                <a href="#file" th:text="${fileError}">The <strong>Section SIS ID</strong> is already in use in Canvas</a>
+                <a href="#file" th:text="${fileError}">There was no file provided.</a>
             </li>
         </ul>
     </div>
 
     <!-- banner -->
     <div class="rvt-grid rvt-vertical-center rvt-m-tb-sm">
-        <div class="rvt-grid__item" role="banner">
+        <div class="rvt-grid__item" role="heading" aria-level="1">
             <h1 class="rvt-ts-26" th:text="#{viewem.toolTitle}">Tool Title</h1>
         </div>
-        <div class="rvt-grid__item rvt-text-right" role="navigation">
+        <div class="rvt-grid__item rvt-text-right" role="region">
             <div layout:fragment="header-right"></div>
         </div>
     </div>

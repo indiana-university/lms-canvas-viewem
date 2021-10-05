@@ -8,7 +8,7 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    display: block;
+    max-width: 0; /* needed to work in table cells */
 }
 
 /* borrowing rvt-alert__dismiss to ignore its permanent dismissing js

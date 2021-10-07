@@ -10,21 +10,16 @@
 <body>
 <div layout:fragment="content">
 
-    <h1>Error Processing Request</h1>
-    <p class="viewem-error" th:text="${exception.message}">Exception here</p>
+    <h1 class="rvt-ts-26">Error Processing Request</h1>
+    <p th:text="${exception.message}">Exception here</p>
     <p th:utext="#{tokenException.instructions}">Instructions here</p>
-    <div id="stackTraceContainer">
-        <div id="stackTraceHeader">
-            <i class="icon-mini-arrow-right"></i>
-            <span id="stackTraceHeaderStateLabel">View</span> full error details</div>
-            <div id="stackTraceContent">
-                <dl>
-                    <dt th:text="#{tokenException.dateLabel}">Date</dt>
-                    <dd th:text="${timestamp}">1/11/1111</dd>
-                    <dt th:text="#{tokenException.errorLabel}">Error</dt>
-                    <dd th:utext="${stackTrace}">StackTrace here</dd>
-                </dl>
-            </div>
+    <div id="stackTraceContent">
+        <dl>
+            <dt th:text="#{tokenException.dateLabel}">Date</dt>
+            <dd th:text="${timestamp}">1/11/1111</dd>
+            <dt th:text="#{tokenException.errorLabel}">Error</dt>
+            <dd th:utext="${stackTrace}">StackTrace here</dd>
+        </dl>
     </div>
 </div>
 

@@ -10,28 +10,61 @@
 </head>
 <body>
     <div layout:fragment="content">
-        <div class="pad-box-mega border border-trbl">
-            <form id="upload" action="previewSheet.html" th:action="@{|/app/${context}/preview|}" method="post" enctype="multipart/form-data">
-                <div class="ic-Form-group">
-                    <div class="ic-Form-control">
-                        <label for="sheetTitle" class="ic-Label" th:text="#{upload.sheetTitleFieldLabel}">Worksheet Title</label>
-                        <input type="text" id="sheetTitle" name="sheetTitle" class="ic-Input" th:value="${sheetTitle}" />
-                        <input type="hidden" id="sheetId" name="sheetId" th:value="${sheetId}" />
-                        <p class="viewem-error" th:if="${titleError != null}" th:text="${titleError}">Error Message Text</p>
-                    </div>
-                    <div class="ic-Form-control">
-                        <label for="file" class="ic-Label" th:text="#{upload.fileLabel}">File</label>
-                        <input type="file" id="file" name="file" class="ic-Input" />
-                        <p class="viewem-error" th:if="${fileError != null}" th:text="${fileError}">Error Message Text</p>
-                        <p th:text="#{upload.csvInstructions}">Instructional Text</p>
-                    </div>
+        <form id="upload" action="previewSheet.html" th:action="@{|/app/${context}/preview|}" method="post" enctype="multipart/form-data">
+            <label for="sheetTitle" th:text="#{upload.sheetTitleFieldLabel}">Worksheet Title</label>
+            <input type="text" id="sheetTitle" name="sheetTitle" th:value="${sheetTitle}"
+                   th:classappend="${titleError != null} ? 'rvt-validation-danger'"
+                   th:aria-describedby="${titleError != null} ? 'title_error_text'"
+                   th:aria-invalid="${titleError != null} ? 'true'" />
+            <div class="rvt-inline-alert rvt-inline-alert--danger" th:if="${titleError != null}">
+                <span class="rvt-inline-alert__icon">
+                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+                        <g fill="currentColor">
+                            <path d="M8,0a8,8,0,1,0,8,8A8,8,0,0,0,8,0ZM8,14a6,6,0,1,1,6-6A6,6,0,0,1,8,14Z" />
+                            <path d="M10.83,5.17a1,1,0,0,0-1.41,0L8,6.59,6.59,5.17A1,1,0,0,0,5.17,6.59L6.59,8,5.17,9.41a1,1,0,1,0,1.41,1.41L8,9.41l1.41,1.41a1,1,0,0,0,1.41-1.41L9.41,8l1.41-1.41A1,1,0,0,0,10.83,5.17Z"/>
+                        </g>
+                    </svg>
+                </span>
+                <span class="rvt-inline-alert__message" id="title_error_text" th:text="${titleError}">
+                    Error Message Text
+                </span>
+            </div>
+            <input type="hidden" id="sheetId" name="sheetId" th:value="${sheetId}" />
+
+            <div class="rvt-file rvt-m-top-sm" data-upload="file">
+                <input type="file" id="file" name="file" aria-required='true'
+                       th:aria-describedby="${fileError != null} ? 'attachment-status instructional-text attachment-error' : 'attachment-status instructional-text'"
+                       th:aria-invalid="${fileError != null} ? 'true'" />
+                <label for="file" class="rvt-button rvt-button--secondary">
+                    <span th:text="#{upload.fileLabel}">File</span>
+                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+                        <path fill="currentColor" d="M10.41,1H3.5A1.3,1.3,0,0,0,2.2,2.3V13.7A1.3,1.3,0,0,0,3.5,15h9a1.3,1.3,0,0,0,1.3-1.3V4.39ZM11.8,5.21V6H9.25V3h.34ZM4.2,13V3h3V6.75A1.25,1.25,0,0,0,8.5,8h3.3v5Z"/>
+                    </svg>
+                </label>
+                <div class="rvt-file__preview" data-file-preview="file" id="attachment-status">
+                    No file selected
                 </div>
-                <div class="ic-Form-actions">
-                    <button class="Button" type="submit" th:text="#{upload.cancelButton}" name="action" value="cancel">Cancel</button>
-                    <button class="Button Button--primary" type="submit" th:text="#{upload.submitButton}" name="action" value="save">Submit</button>
-                </div>
-            </form>
-        </div>
+            </div>
+            <div th:if="${fileError != null}" class="rvt-inline-alert rvt-inline-alert--danger">
+                <span class="rvt-inline-alert__icon">
+                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+                        <g fill="currentColor">
+                            <path d="M8,0a8,8,0,1,0,8,8A8,8,0,0,0,8,0ZM8,14a6,6,0,1,1,6-6A6,6,0,0,1,8,14Z" />
+                            <path d="M10.83,5.17a1,1,0,0,0-1.41,0L8,6.59,6.59,5.17A1,1,0,0,0,5.17,6.59L6.59,8,5.17,9.41a1,1,0,1,0,1.41,1.41L8,9.41l1.41,1.41a1,1,0,0,0,1.41-1.41L9.41,8l1.41-1.41A1,1,0,0,0,10.83,5.17Z"/>
+                        </g>
+                    </svg>
+                </span>
+                <span id="attachment-error" th:text="${fileError}" class="rvt-inline-alert__message" role="alert">
+                    Message Placeholder
+                </span>
+            </div>
+            <p id="instructional-text" th:text="#{upload.csvInstructions}">Instructional Text</p>
+
+            <div class="rvt-button-group rvt-button-group--right rvt-m-top-sm rvt-flex rvt-vertical-center">
+                <button id="cancelButton" type="submit" class="rvt-button rvt-button--secondary" th:text="#{upload.cancelButton}" name="action" value="cancel">Cancel</button>
+                <button id="submitButton" type="submit" class="rvt-button" th:text="#{upload.submitButton}" name="action" value="save">Submit</button>
+            </div>
+        </form>
     </div>
 </body>
 </html>

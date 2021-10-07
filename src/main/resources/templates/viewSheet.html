@@ -10,19 +10,17 @@
 <body>
     <div id="container">
         <span layout:fragment="header-right">
-            <div class="header-bar-right">
-                <a href="#" th:href="@{|/app/${sheet.context}/list|}" class="btn btn-primary" th:text="#{nav.returnToList}">Return to List</a>
-            </div>
+            <form id="return_form" method="get" th:action="@{|/app/${sheet.context}/list|}" accept-charset="UTF-8">
+                <button class="rvt-button">
+                    <span th:text="#{nav.returnToList}">CSV</span>
+                </button>
+            </form>
         </span>
-
         <div layout:fragment="content">
-        <div class="pad-box-mini"><h2 th:text="#{view.worksheetTitle(${sheet.title})}">Worksheet: Sheet Title</h2></div>
-        <div class="pad-box-mega border border-trbl">
-            <h3><span th:text="#{view.results}">Results for</span> <span id="student-name" th:text="${sheetUser}">First Last</span></h3>
+            <h2 class="rvt-ts-20 rvt-m-bottom-sm" th:text="#{view.worksheetTitle(${sheet.title})}">Worksheet: Sheet Title</h2>
+            <h3 class="rvt-ts-18 rvt-m-bottom-xs"><span th:text="#{view.results}">Results for</span> <span id="student-name" th:text="${sheetUser}">First Last</span></h3>
             <div th:insert="fragments/userDataTable :: userData"></div>
         </div>
-        </div>
-
     </div>
 </body>
 </html>

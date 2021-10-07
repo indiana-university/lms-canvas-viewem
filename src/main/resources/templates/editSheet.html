@@ -10,18 +10,16 @@
 </head>
 <body>
 <div layout:fragment="content">
-    <div class="pad-box-mega border border-trbl">
-        <form id="upload" action="editSheet.html" th:action="@{|/app/${sheet.context}/edit/${sheet.sheetId}|}" method="post">
-            <div th:insert="fragments/preview :: preview"></div>
-            <div class="ic-Form-actions">
-                <button class="Button" type="submit" th:text="#{preview.cancelButton}" name="action" value="cancel">Cancel Button Text</button>
-                <button class="Button" type="submit" th:text="#{edit.uploadNewCsv}" name="action" th:value="${T(edu.iu.uits.lms.viewem.service.ViewemConstants).ACTION_UPLOAD}">New Upload Button Text</button>
-                <button th:unless="${sheet.published}" class="Button" type="submit" th:text="#{edit.saveAndPublish}" name="action" th:value="${T(edu.iu.uits.lms.viewem.service.ViewemConstants).ACTION_SAVE_PUBLISH}">Submit Button Text</button>
-                <button th:if="${sheet.published}" class="Button" type="submit" th:text="#{edit.saveAndUnpublish}" name="action" th:value="${T(edu.iu.uits.lms.viewem.service.ViewemConstants).ACTION_SAVE_UNPUBLISH}">Submit Button Text</button>
-                <button class="Button Button--primary" type="submit" th:text="#{edit.save}" name="action" th:value="${T(edu.iu.uits.lms.viewem.service.ViewemConstants).ACTION_SAVE}">Submit Button Text</button>
-            </div>
-        </form>
-    </div>
+    <form id="upload" action="editSheet.html" th:action="@{|/app/${sheet.context}/edit/${sheet.sheetId}|}" method="post">
+        <div th:insert="fragments/preview :: preview"></div>
+        <div class="rvt-button-group rvt-button-group--right rvt-m-top-sm rvt-flex rvt-vertical-center">
+            <button id="cancelButton" type="submit" class="rvt-button rvt-button--secondary" th:text="#{edit.cancelButton}" name="action" value="cancel">Cancel Button Text</button>
+            <button id="uploadButton" type="submit" class="rvt-button rvt-button--secondary" th:text="#{edit.uploadNewCsv}" name="action" th:value="${T(edu.iu.uits.lms.viewem.service.ViewemConstants).ACTION_UPLOAD}">New Upload Button Text</button>
+            <button th:unless="${sheet.published}" id="publishButton" type="submit" class="rvt-button rvt-button--secondary" th:text="#{edit.saveAndPublish}" name="action" th:value="${T(edu.iu.uits.lms.viewem.service.ViewemConstants).ACTION_SAVE_PUBLISH}">Submit Button Text</button>
+            <button th:if="${sheet.published}"id="unpublishButton" type="submit" class="rvt-button rvt-button--secondary" th:text="#{edit.saveAndUnpublish}" name="action" th:value="${T(edu.iu.uits.lms.viewem.service.ViewemConstants).ACTION_SAVE_UNPUBLISH}">Submit Button Text</button>
+            <button id="saveButton" type="submit" class="rvt-button" th:text="#{edit.save}" name="action" th:value="${T(edu.iu.uits.lms.viewem.service.ViewemConstants).ACTION_SAVE}">Submit Button Text</button>
+        </div>
+    </form>
 </div>
 </body>
 </html>

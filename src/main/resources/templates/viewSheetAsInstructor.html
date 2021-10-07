@@ -9,51 +9,52 @@
 </head>
 <body>
 <div id="container">
-        <span layout:fragment="header-right">
-            <div class="header-bar-right">
-                <a href="#" th:href="@{|/app/${sheet.context}/list|}" class="btn btn-primary" th:text="#{nav.returnToList}">Return</a>
-            </div>
-        </span>
-
+    <span layout:fragment="header-right">
+        <form id="return_form" method="get" th:action="@{|/app/${sheet.context}/list|}" accept-charset="UTF-8">
+            <button class="rvt-button">
+                <span th:text="#{nav.returnToList}">Return</span>
+            </button>
+        </form>
+    </span>
     <div layout:fragment="content">
-        <div class="pad-box-mini"><h2 th:text="#{view.worksheetTitle(${sheet.title})}">Worksheet: Sheet Title</h2></div>
-        <div class="pad-box-mega">
-            <div id="worksheet-tabs">
-                <ul>
-                    <li><a href="#student-view-tab" th:text="#{instructorView.tab.studentView}">Student Tab</a></li>
-                    <li><a href="#entire-worksheet-tab" th:text="#{instructorView.tab.entireSheet}">Entire Tab</a></li>
-                </ul>
-                <div id="student-view-tab">
-                    <h3><span th:text="#{view.results}">Results for</span> <span id="student-name" th:text="${sheetUser}">First Last</span></h3>
-                    <div class="ic-Form-control">
-                        <label for="student-list" class="ic-Label" th:text="#{instructorView.label.students}">Students</label>
-                        <select class="ic-Input" id="student-list" th:attr="data-urlbase=@{|/app/${sheet.context}/view/${sheet.sheetId}/|}">
-                            <option th:text="#{instructorView.select.option}">Select...</option>
-                            <option th:each="user : ${users}"
-                                    th:value="${user.userId}" th:text="${user.userSortableName}">Last, First</option>
-                        </select>
-                    </div>
-                    <div id="userDataDiv"></div>
-                </div>
-                <div id="entire-worksheet-tab">
-                    <table class="ic-Table ic-Table--striped table-bordered grades-summary">
-                        <thead>
-                        <tr>
-                            <th th:text="#{instructorView.header.studentId}">Student Column Header</th>
-                            <th th:each="sheetColumn : ${sheetColumns}" th:text="${sheetColumn.title}">Column Header</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr th:each="sheetUser : ${sheetUsers}">
-                            <td th:text="${sheetUser.userId}">user1</td>
-                            <td th:each="data : ${sheetUser.data}" th:text="${data.data}">Data goes here</td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
+        <h2 th:text="#{view.worksheetTitle(${sheet.title})}" class="rvt-ts-20 rvt-m-bottom-sm">Worksheet: Sheet Title</h2>
+        <div class="rvt-tabs">
+            <div class="rvt-tabs__tablist" role="tablist" aria-label="Worksheet tabs">
+                <button class="rvt-tabs__tab" role="tab" aria-selected="true" data-tab="student-view-tab" id="student-view-tab-label" th:text="#{instructorView.tab.studentView}">
+                    Student Tab
+                </button>
+                <button class="rvt-tabs__tab" role="tab" aria-selected="false" data-tab="entire-view-tab" id="entire-view-tab-label" tabindex="-1" th:text="#{instructorView.tab.entireSheet}">
+                    Entire Tab
+                </button>
+            </div>
+            <div class="rvt-tabs__panel" tabindex="0" role="tabpanel" id="student-view-tab" aria-labelledby="student-view-tab-label">
+                <h3 class="rvt-ts-18 rvt-m-bottom-sm"><span th:text="#{view.results}">Results for</span> <span id="student-name" th:text="${sheetUser}">First Last</span></h3>
+                <label for="student-list" th:text="#{instructorView.label.students}">Students</label>
+                <select class="rvt-m-bottom-sm" id="student-list" th:attr="data-urlbase=@{|/app/${sheet.context}/view/${sheet.sheetId}/|}">
+                    <option th:text="#{instructorView.select.option}">Select...</option>
+                    <option th:each="user : ${users}"
+                            th:value="${user.userId}" th:text="${user.userSortableName}">Last, First</option>
+                </select>
+                <div id="userDataDiv"></div>
+            </div>
+            <div class="rvt-tabs__panel" tabindex="0" role="tabpanel" id="entire-view-tab" aria-labelledby="entire-view-tab-label" hidden="">
+                <table class="rvt-table-cells">
+                    <caption class="sr-only" th:text="|#{preview.studentText}: ${user}|">Preview of first student: student name</caption>
+                    <thead>
+                    <tr>
+                        <th scope="col" th:text="#{instructorView.header.studentId}">Student Column Header</th>
+                        <th scope="col" th:each="sheetColumn : ${sheetColumns}" th:text="${sheetColumn.title}">Column Header</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="sheetUser : ${sheetUsers}">
+                        <th scope="row" th:text="${sheetUser.userId}">user1</th>
+                        <td th:each="data : ${sheetUser.data}" th:text="${data.data}">Data goes here</td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
-
     </div>
 </div>
 </body>

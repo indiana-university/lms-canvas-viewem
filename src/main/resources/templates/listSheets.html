@@ -10,57 +10,104 @@
 </head>
 <body>
     <span layout:fragment="header-right">
-        <div class="header-bar-right" sec:authorize="hasRole(T(edu.iu.uits.lms.lti.LTIConstants).INSTRUCTOR_ROLE)">
-            <a href="#" class="btn btn-primary" th:href="@{|/app/${context}/uploadSheet|}"><i class="icon-plus"></i> <span th:text="#{nav.csvButton}">CSV</span></a>
+        <div sec:authorize="hasRole(T(edu.iu.uits.lms.lti.LTIConstants).INSTRUCTOR_ROLE)">
+            <form id="upload_sheet_form" method="get" th:action="@{|/app/${context}/uploadSheet|}" accept-charset="UTF-8">
+                <button id="csv-button" class="rvt-button" aria-label="Upload a new CSV">
+                    <svg class="rvt-icon" aria-hidden="true">
+                        <use th:href="@{/app/jsrivet/rvt-icons.svg#rvt-icon-plus}"></use>
+                    </svg>
+                    <span class="rvt-m-left-xs" th:text="#{nav.csvButton}">CSV</span>
+                </button>
+            </form>
         </div>
     </span>
     <div layout:fragment="content">
-        <div class="item-group-container">
-            <div class="item-group-condensed">
-                <div class="ig-header">
-                    <h2 class="ig-header-title" th:text="#{viewem.worksheetViewTitle}">Worksheets</h2>
-                </div>
-                <div sec:authorize="hasRole(T(edu.iu.uits.lms.lti.LTIConstants).INSTRUCTOR_ROLE)">
-                    <h3 class="ic-label" th:if="${sheets.size() == 0}" th:text="#{noworksheet.instructor}">No Worksheet</h3>
-                </div>
-                <div sec:authorize="hasRole(T(edu.iu.uits.lms.lti.LTIConstants).STUDENT_ROLE)">
-                    <h3 class="ic-label" th:if="${sheets.size() == 0}" th:text="#{noworksheet.student}">No Worksheet</h3>
-                </div>
-                <ul class="ig-list" id="cond_group_1">
-                    <li th:id="'row_' + ${sheet.sheetId}" th:each="sheet : ${sheets}">
-                        <div class="ig-row" th:classappend="${sheet.published} ? 'ig-published'">
-                            <div class="ig-row__layout">
-                                <a href="#" class="ig-title ellipses" th:href="@{|/app/${sheet.context}/view/${sheet.sheetId}|}" th:text="${sheet.title}">Sheet Title</a>
-                                <div class="ig-details">
-                                    <div class="ellipses"><b th:text="#{list.lastUpdated}">Last Updated</b> <span th:text="${#dates.format(sheet.modifiedOn, T(edu.iu.uits.lms.lti.LTIConstants).UI_DATE_FORMAT)}">Jul 17 at 11:59 PM</span></div>
-                                </div>
-                                <div class="ig-admin" sec:authorize="hasRole(T(edu.iu.uits.lms.lti.LTIConstants).INSTRUCTOR_ROLE)">
-                                    <span th:if="${sheet.published}" class="publish-icon publish-icon-published" title="Unpublish">
-                                        <i class="icon-publish"></i><span class="publish-text">&nbsp;Published</span>
-                                    </span>
-                                    <span th:unless="${sheet.published}" class="publish-icon publish-icon-unpublished" title="Publish">
-                                        <i class="icon-unpublished"></i><span class="publish-text">&nbsp;Unpublished</span>
-                                    </span>
-
-                                    <div class="inline-block dropdown-parent">
-                                        <a th:id="'dropdown-aria-' + ${sheet.sheetId}" class="al-trigger al-trigger-gray" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            <i class="icon-settings"></i><i class="icon-mini-arrow-down"></i>
-                                            <span class="screenreader-only" th:text="'Action Menu for ' + ${sheet.title}">Action Menu</span>
-                                        </a>
-                                        <ul class="dropdown-menu" th:attr="aria-labelledby=|dropdown-aria-${sheet.sheetId}|">
-                                            <li><a href="#" th:href="@{|/app/${sheet.context}/edit/${sheet.sheetId}|}" class="edit-worksheet"><i class="icon-edit"></i> Edit</a></li>
-                                            <li><a href="#" class="delete-worksheet"><i class="icon-trash"></i> Delete</a></li>
-                                            <li><a href="#" th:href="@{|/app/${sheet.context}/view/${sheet.sheetId}|}" class="view-worksheet"><i class="icon-eye"></i> View worksheet</a></li>
-                                            <li><a href="#" th:href="@{|/app/${sheet.context}/download/${sheet.sheetId}|}" class="download-worksheet"><i class="icon-download"></i> Download worksheet</a></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-                </ul>
-            </div>
+        <h2 class="rvt-ts-20 rvt-m-bottom-sm" th:text="#{viewem.worksheetViewTitle}" id="worksheets-title">Worksheets</h2>
+        <div sec:authorize="hasRole(T(edu.iu.uits.lms.lti.LTIConstants).INSTRUCTOR_ROLE)">
+            <h3 th:if="${sheets.size() == 0}" class="rvt-ts-18" th:text="#{noworksheet.instructor}">No Worksheet</h3>
         </div>
+        <div sec:authorize="hasRole(T(edu.iu.uits.lms.lti.LTIConstants).STUDENT_ROLE)">
+            <h3 th:if="${sheets.size() == 0}" class="rvt-ts-18" th:text="#{noworksheet.student}">No Worksheet</h3>
+        </div>
+        <table th:unless="${sheets.size() == 0}">
+            <caption class="sr-only">Table of Worksheets</caption>
+            <thead>
+            <tr>
+                <th scope="col" th:text="#{list.column.name}">Worksheet Name</th>
+                <th scope="col" th:text="#{list.column.updated}">Last Updated</th>
+                <th scope="col" th:text="#{list.column.status}" sec:authorize="hasRole(T(edu.iu.uits.lms.lti.LTIConstants).INSTRUCTOR_ROLE)">Status</th>
+                <th scope="col" th:text="#{list.column.actions}" sec:authorize="hasRole(T(edu.iu.uits.lms.lti.LTIConstants).INSTRUCTOR_ROLE)">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr class="worksheet-row" th:id="'row_' + ${sheet.sheetId}" th:each="sheet : ${sheets}">
+                <th scope="row" class="ellipses">
+                    <a href="#" th:id="|title-${sheet.sheetId}|"
+                       class="rvt-link-bold sheet-title"
+                       th:classappend="${sheet.published} ? rvt-button--success-secondary"
+                       th:href="@{|/app/${sheet.context}/view/${sheet.sheetId}|}"
+                       th:text="${sheet.title}"
+                       th:title="${sheet.title}">
+                        Sheet Title
+                    </a>
+                </th>
+                <td class="ellipses">
+                    <span th:text="${#dates.format(sheet.modifiedOn, T(edu.iu.uits.lms.lti.LTIConstants).UI_DATE_FORMAT)}">Jul 17 at 11:59 PM</span>
+                </td>
+                <td class="ellipses" sec:authorize="hasRole(T(edu.iu.uits.lms.lti.LTIConstants).INSTRUCTOR_ROLE)">
+                    <span th:if="${sheet.published}" th:id="|state-${sheet.sheetId}|" class="status">Published</span>
+                    <span th:unless="${sheet.published}" th:id="|state-${sheet.sheetId}|" class="status">Unpublished</span>
+                </td>
+                <td sec:authorize="hasRole(T(edu.iu.uits.lms.lti.LTIConstants).INSTRUCTOR_ROLE)">
+                    <div class="rvt-dropdown">
+                        <button type="button" class="rvt-button rvt-button--secondary" th:data-dropdown-toggle="@{|sheet-navigation-${sheet.sheetId}|}"
+                                aria-haspopup="true" aria-expanded="false" th:aria-label="|Actions for ${sheet.title} worksheet|">
+                            <span>Actions</span>
+                            <svg aria-hidden="true" class="rvt-m-left-xs" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+                                <path fill="currentColor" d="M8,12.46a2,2,0,0,1-1.52-.7L1.24,5.65a1,1,0,1,1,1.52-1.3L8,10.46l5.24-6.11a1,1,0,0,1,1.52,1.3L9.52,11.76A2,2,0,0,1,8,12.46Z"/>
+                            </svg>
+                        </button>
+                        <div class="rvt-dropdown__menu rvt-dropdown__menu--right" th:id="@{|sheet-navigation-${sheet.sheetId}|}" aria-hidden="true" role="menu">
+                            <a href="#" class="publish-worksheet" role="menuitem">
+                                <svg th:if="${sheet.published}" class="rvt-icon rvt-m-right-xs" aria-hidden="true">
+                                    <use th:href="@{/app/jsrivet/rvt-icons.svg#rvt-icon-undo}"></use>
+                                </svg>
+                                <span th:if="${sheet.published}" class="publish-text">Unpublish</span>
+                                <svg th:unless="${sheet.published}" class="rvt-icon rvt-m-right-xs" aria-hidden="true">
+                                    <use th:href="@{/app/jsrivet/rvt-icons.svg#rvt-icon-check-circle-breakout}"></use>
+                                </svg>
+                                <span th:unless="${sheet.published}" class="publish-text">Publish</span>
+                            </a>
+                            <a href="#" th:href="@{|/app/${sheet.context}/edit/${sheet.sheetId}|}" role="menuitem">
+                                <svg class="rvt-icon rvt-m-right-xs" aria-hidden="true">
+                                    <use th:href="@{/app/jsrivet/rvt-icons.svg#rvt-icon-pencil}"></use>
+                                </svg>
+                                <span>Edit</span>
+                            </a>
+                            <a href="#" class="delete-worksheet" role="menuitem">
+                                <svg class="rvt-icon rvt-m-right-xs" aria-hidden="true">
+                                    <use th:href="@{/app/jsrivet/rvt-icons.svg#rvt-icon-trash}"></use>
+                                </svg>
+                                <span>Delete</span>
+                            </a>
+                            <a href="#" th:href="@{|/app/${sheet.context}/view/${sheet.sheetId}|}" role="menuitem">
+                                <svg class="rvt-icon rvt-m-right-xs" aria-hidden="true">
+                                    <use th:href="@{/app/jsrivet/rvt-icons.svg#rvt-icon-eye}"></use>
+                                </svg>
+                                <span>View worksheet</span>
+                            </a>
+                            <a href="#" th:href="@{|/app/${sheet.context}/download/${sheet.sheetId}|}" role="menuitem">
+                                <svg class="rvt-icon rvt-m-right-xs" aria-hidden="true">
+                                    <use th:href="@{/app/jsrivet/rvt-icons.svg#rvt-icon-download}"></use>
+                                </svg>
+                                <span>Download worksheet</span>
+                            </a>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
     </div>
 </body>
 </html>

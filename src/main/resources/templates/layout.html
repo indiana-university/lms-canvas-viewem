@@ -46,13 +46,13 @@
             </svg>
         </button>
     </div>
-    <div th:if="${titleError != null} OR ${fileError != null}" class="rvt-alert rvt-alert--danger rvt-m-top-sm" role="alert" aria-labelledby="error-alert-title">
+    <div th:if="${titleError != null} OR ${fileError != null}" tabindex="-1" class="rvt-alert rvt-alert--danger rvt-m-top-sm" role="alert" aria-labelledby="error-alert-title">
         <h1 class="rvt-alert__title" id="error-alert-title">Errors</h1>
-        <ul class="rvt-plain-list">
-            <li class="rvt-alert__message">
+        <ul>
+            <li th:if="${titleError != null}" class="rvt-alert__message">
                 <a href="#sheetTitle" th:text="${titleError}">There was no title provided for the name of the sheet.</a>
             </li>
-            <li class="rvt-alert__message">
+            <li th:if="${fileError != null}" class="rvt-alert__message">
                 <a href="#file" th:text="${fileError}">There was no file provided.</a>
             </li>
         </ul>

@@ -319,7 +319,16 @@ public class MainController extends LtiAuthenticationTokenAwareController {
             model.addAttribute("titleError", errorMessage);
             model.addAttribute("sheetTitle", sheetTitle);
             errors = true;
-        } else if (!file.isEmpty()) {
+        }
+
+        // check this to get both errors to potentially display
+        if (file.isEmpty()) {
+            String errorMessage = messageSource.getMessage("upload.sheetFile.empty.error", null, Locale.getDefault());
+            model.addAttribute("sheetTitle", sheetTitle);
+            model.addAttribute("fileError", errorMessage);
+            errors = true;
+        } else if (!errors) {
+            // if there's errors already, no need to do any of this
             byte[] fileByteArray = new byte[0];
             try {
                 fileByteArray = file.getBytes();
@@ -398,11 +407,6 @@ public class MainController extends LtiAuthenticationTokenAwareController {
                 model.addAttribute("fileError", errorMessage);
                 errors = true;
             }
-        } else {
-            String errorMessage = messageSource.getMessage("upload.sheetFile.empty.error", null, Locale.getDefault());
-            model.addAttribute("sheetTitle", sheetTitle);
-            model.addAttribute("fileError", errorMessage);
-            errors = true;
         }
 
         if (errors) {

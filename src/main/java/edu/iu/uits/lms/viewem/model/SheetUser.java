@@ -33,13 +33,13 @@ package edu.iu.uits.lms.viewem.model;
  * #L%
  */
 
+import edu.iu.uits.lms.viewem.service.RestResource;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.springframework.data.rest.core.annotation.RestResource;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;

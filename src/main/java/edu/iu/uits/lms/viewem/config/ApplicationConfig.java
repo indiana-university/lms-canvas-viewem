@@ -33,13 +33,10 @@ package edu.iu.uits.lms.viewem.config;
  * #L%
  */
 
-import edu.iu.uits.lms.viewem.repository.SheetRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -49,10 +46,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @EnableWebMvc
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 @Slf4j
-//@ComponentScan(basePackages = "edu.iu.uits.lms.viewem")
-//@EnableJpaRepositories(entityManagerFactoryRef = "viewemEntityMgrFactory",
-//        transactionManagerRef = "viewemTransactionMgr",
-//        basePackageClasses = SheetRepository.class)
 public class ApplicationConfig implements WebMvcConfigurer {
 
    public ApplicationConfig() {
@@ -78,33 +71,4 @@ public class ApplicationConfig implements WebMvcConfigurer {
       return messageSource;
    }
 
-////   @ConditionalOnMissingBean
-//   @Bean(name = "viewemDataSource")
-//   @ConfigurationProperties(prefix = "spring.datasource")
-//   @Primary
-//   public DataSource dataSource() {
-//      log.info("dataSource()");
-//      return DataSourceBuilder.create().build();
-//   }
-//
-//   @Bean(name = "viewemEntityMgrFactory")
-//   @Primary
-//   public LocalContainerEntityManagerFactoryBean viewemEntityMgrFactory(
-//           final EntityManagerFactoryBuilder builder,
-//           final DataSource dataSource) {
-//      // dynamically setting up the hibernate properties for each of the datasource.
-//      final Map<String, String> properties = new HashMap<>();
-//      return builder
-//              .dataSource(dataSource)
-//              .properties(properties)
-//              .packages("edu.iu.uits.lms.viewem.model")
-//              .build();
-//   }
-//
-//   @Bean(name = "viewemTransactionMgr")
-//   @Primary
-//   public PlatformTransactionManager viewemTransactionMgr(
-//           @Qualifier("viewemEntityMgrFactory") final EntityManagerFactory entityManagerFactory) {
-//      return new JpaTransactionManager(entityManagerFactory);
-//   }
 }

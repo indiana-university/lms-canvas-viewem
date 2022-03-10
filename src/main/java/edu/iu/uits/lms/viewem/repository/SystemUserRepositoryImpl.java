@@ -36,10 +36,10 @@ package edu.iu.uits.lms.viewem.repository;
 import edu.iu.uits.lms.viewem.model.SystemUser;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.ListUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -56,7 +56,7 @@ import java.util.Map;
  */
 @Slf4j
 public class SystemUserRepositoryImpl implements SystemUserRepositoryCustom {
-    @Autowired
+    @PersistenceContext
 //    @Qualifier(value = "viewemEntityManagerFactory")
     private EntityManager entityManager = null;
 

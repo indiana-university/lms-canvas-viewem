@@ -35,7 +35,6 @@ package edu.iu.uits.lms.viewem.service;
 
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
-import org.springframework.data.rest.core.annotation.RestResource;
 
 /**
  * Created by chmaurer on 8/4/15.

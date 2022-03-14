@@ -47,7 +47,7 @@
             <form id="upload_sheet_form" method="get" th:action="@{|/app/${context}/uploadSheet|}" accept-charset="UTF-8">
                 <button id="csv-button" class="rvt-button" aria-label="Upload a new CSV">
                     <svg class="rvt-icon" aria-hidden="true">
-                        <use th:href="@{/app/jsrivet/rvt-icons.svg#rvt-icon-plus}"></use>
+                        <use th:href="@{/app/jsrivet/rivet-icons.svg#rvt-icon-plus}"></use>
                     </svg>
                     <span class="rvt-m-left-xs" th:text="#{nav.csvButton}">CSV</span>
                 </button>
@@ -103,35 +103,35 @@
                         <div class="rvt-dropdown__menu rvt-dropdown__menu--right" th:id="@{|sheet-navigation-${sheet.sheetId}|}" aria-hidden="true" role="menu">
                             <a href="#" class="publish-worksheet" role="menuitem">
                                 <svg th:if="${sheet.published}" class="rvt-icon rvt-m-right-xs" aria-hidden="true">
-                                    <use th:href="@{/app/jsrivet/rvt-icons.svg#rvt-icon-undo}"></use>
+                                    <use th:href="@{/app/jsrivet/rivet-icons.svg#rvt-icon-undo}"></use>
                                 </svg>
                                 <span th:if="${sheet.published}" class="publish-text">Unpublish</span>
                                 <svg th:unless="${sheet.published}" class="rvt-icon rvt-m-right-xs" aria-hidden="true">
-                                    <use th:href="@{/app/jsrivet/rvt-icons.svg#rvt-icon-check-circle-breakout}"></use>
+                                    <use th:href="@{/app/jsrivet/rivet-icons.svg#rvt-icon-check-circle-breakout}"></use>
                                 </svg>
                                 <span th:unless="${sheet.published}" class="publish-text">Publish</span>
                             </a>
                             <a href="#" th:href="@{|/app/${sheet.context}/edit/${sheet.sheetId}|}" role="menuitem">
                                 <svg class="rvt-icon rvt-m-right-xs" aria-hidden="true">
-                                    <use th:href="@{/app/jsrivet/rvt-icons.svg#rvt-icon-pencil}"></use>
+                                    <use th:href="@{/app/jsrivet/rivet-icons.svg#rvt-icon-pencil}"></use>
                                 </svg>
                                 <span>Edit</span>
                             </a>
                             <a href="#" class="delete-worksheet" role="menuitem">
                                 <svg class="rvt-icon rvt-m-right-xs" aria-hidden="true">
-                                    <use th:href="@{/app/jsrivet/rvt-icons.svg#rvt-icon-trash}"></use>
+                                    <use th:href="@{/app/jsrivet/rivet-icons.svg#rvt-icon-trash}"></use>
                                 </svg>
                                 <span>Delete</span>
                             </a>
                             <a href="#" th:href="@{|/app/${sheet.context}/view/${sheet.sheetId}|}" role="menuitem">
                                 <svg class="rvt-icon rvt-m-right-xs" aria-hidden="true">
-                                    <use th:href="@{/app/jsrivet/rvt-icons.svg#rvt-icon-eye}"></use>
+                                    <use th:href="@{/app/jsrivet/rivet-icons.svg#rvt-icon-eye}"></use>
                                 </svg>
                                 <span>View worksheet</span>
                             </a>
                             <a href="#" th:href="@{|/app/${sheet.context}/download/${sheet.sheetId}|}" role="menuitem">
                                 <svg class="rvt-icon rvt-m-right-xs" aria-hidden="true">
-                                    <use th:href="@{/app/jsrivet/rvt-icons.svg#rvt-icon-download}"></use>
+                                    <use th:href="@{/app/jsrivet/rivet-icons.svg#rvt-icon-download}"></use>
                                 </svg>
                                 <span>Download worksheet</span>
                             </a>

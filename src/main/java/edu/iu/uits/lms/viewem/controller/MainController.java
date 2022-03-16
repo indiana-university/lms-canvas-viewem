@@ -36,11 +36,13 @@ package edu.iu.uits.lms.viewem.controller;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.opencsv.CSVWriter;
+import edu.iu.uits.lms.canvas.model.User;
+import edu.iu.uits.lms.canvas.services.CourseService;
 import edu.iu.uits.lms.common.session.CourseSessionService;
 import edu.iu.uits.lms.lti.LTIConstants;
 import edu.iu.uits.lms.lti.controller.InvalidTokenContextException;
-import edu.iu.uits.lms.lti.controller.LtiAuthenticationTokenAwareController;
-import edu.iu.uits.lms.lti.security.LtiAuthenticationToken;
+import edu.iu.uits.lms.lti.controller.OidcTokenAwareController;
+import edu.iu.uits.lms.lti.service.OidcTokenUtils;
 import edu.iu.uits.lms.viewem.model.Sheet;
 import edu.iu.uits.lms.viewem.model.SheetColumn;
 import edu.iu.uits.lms.viewem.model.SheetUser;
@@ -50,6 +52,7 @@ import edu.iu.uits.lms.viewem.repository.SheetRepository;
 import edu.iu.uits.lms.viewem.repository.SheetUserRepository;
 import edu.iu.uits.lms.viewem.repository.SystemUserRepository;
 import edu.iu.uits.lms.viewem.service.SheetExclusionStrategy;
+import edu.iu.uits.lms.viewem.service.SystemUserService;
 import edu.iu.uits.lms.viewem.service.ViewemConstants;
 import edu.iu.uits.lms.viewem.service.ViewemService;
 import lombok.extern.slf4j.Slf4j;
@@ -63,12 +66,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
+import uk.ac.ox.ctl.lti13.security.oauth2.client.lti.authentication.OidcAuthenticationToken;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -95,7 +100,7 @@ import static edu.iu.uits.lms.viewem.service.ViewemConstants.DATA_KEY_ROSTER_USE
 @Controller
 @RequestMapping("/app")
 @Slf4j
-public class MainController extends LtiAuthenticationTokenAwareController {
+public class MainController extends OidcTokenAwareController {
 
     @Autowired
     private ViewemService viewemService = null;
@@ -109,14 +114,40 @@ public class MainController extends LtiAuthenticationTokenAwareController {
     private SystemUserRepository systemUserRepository = null;
     @Autowired
     private CourseSessionService courseSessionService = null;
+    @Autowired
+    private CourseService courseService = null;
+    @Autowired
+    private SystemUserService systemUserService = null;
+
+    @GetMapping("/launch")
+    public String launch(Model model, SecurityContextHolderAwareRequestWrapper request) {
+        OidcAuthenticationToken token = getTokenWithoutContext();
+        String courseId = OidcTokenUtils.getCourseId(token);
+        String systemId = OidcTokenUtils.getPlatformGuid(token);
+
+        //Get the canvas roster for this course and make sure that all the users have up-to-date names
+        if (request.isUserInRole(LTIConstants.INSTRUCTOR_AUTHORITY)) {
+            List<User> users = courseService.getRosterForCourseAsUser(courseId, null, null);
+            if (users != null) {
+                systemUserService.createOrUpdateUsers(users, systemId);
+                List<String> userIds = new ArrayList<>();
+                for (User user : users) {
+                    userIds.add(user.getLoginId());
+                }
+                courseSessionService.addAttributeToSession(request.getSession(), courseId, DATA_KEY_ROSTER_USER_IDS, userIds);
+            }
+        }
+
+        return listSheets(courseId, model, request);
+    }
 
     @RequestMapping("/{context}/list")
     public String listSheets(@PathVariable("context") String context, Model model,
                              SecurityContextHolderAwareRequestWrapper request) {
-        LtiAuthenticationToken token = getValidatedToken(context);
-        String currentUser = (String)token.getPrincipal();
+        OidcAuthenticationToken token = getValidatedToken(context);
+        String currentUser = OidcTokenUtils.getUserLoginId(token);
         List<Sheet> sheets = null;
-        String systemId = token.getSystemId();
+        String systemId = OidcTokenUtils.getPlatformGuid(token);
 
         if (request.isUserInRole(LTIConstants.INSTRUCTOR_ROLE)) {
             sheets = sheetRepository.findByContextAndSystem(context, systemId);
@@ -133,10 +164,10 @@ public class MainController extends LtiAuthenticationTokenAwareController {
     @Secured(LTIConstants.INSTRUCTOR_AUTHORITY)
     public String editSheet(@PathVariable("context") String context, @PathVariable("id") Long id, Model model,
                             String sheetTitle) {
-        LtiAuthenticationToken token = getValidatedToken(context);
+        OidcAuthenticationToken token = getValidatedToken(context);
         Sheet sheet = sheetRepository.findById(id).orElse(null);
         List<SheetUser> sheetUsers = sheetUserRepository.findBySheet(id);
-        addPreviewDataToModel(sheet, sheetUsers.get(0), model, token.getSystemId());
+        addPreviewDataToModel(sheet, sheetUsers.get(0), model, OidcTokenUtils.getPlatformGuid(token));
 
         String title = sheetTitle==null ? sheet.getTitle() : sheetTitle;
         model.addAttribute("sheetTitle", title);
@@ -193,7 +224,7 @@ public class MainController extends LtiAuthenticationTokenAwareController {
      public String viewSheet(@PathVariable("context") String context, @PathVariable("id") Long id, Model model,
                                  SecurityContextHolderAwareRequestWrapper request) {
         String view = "viewSheet";
-        LtiAuthenticationToken token = getValidatedToken(context);
+        OidcAuthenticationToken token = getValidatedToken(context);
         Sheet sheet = sheetRepository.findById(id).orElse(null);
         if (request.isUserInRole(LTIConstants.INSTRUCTOR_ROLE)) {
             view = viewSheetAsInstructor(sheet, model, token);
@@ -233,9 +264,9 @@ public class MainController extends LtiAuthenticationTokenAwareController {
      * @param token Auth token
      * @return The name of the view to render
      */
-    private String viewSheetAsStudent(Sheet sheet, Model model, LtiAuthenticationToken token) {
-        String userId = (String)token.getPrincipal();
-        populateModelForStudentView(sheet, userId, token.getSystemId(), model);
+    private String viewSheetAsStudent(Sheet sheet, Model model, OidcAuthenticationToken token) {
+        String userId = OidcTokenUtils.getUserLoginId(token);
+        populateModelForStudentView(sheet, userId, OidcTokenUtils.getPlatformGuid(token), model);
 
         return "viewSheet";
     }
@@ -248,7 +279,7 @@ public class MainController extends LtiAuthenticationTokenAwareController {
      * @return The name of the view to render
      */
     @Secured(LTIConstants.INSTRUCTOR_AUTHORITY)
-    private String viewSheetAsInstructor(Sheet sheet, Model model, LtiAuthenticationToken token) {
+    private String viewSheetAsInstructor(Sheet sheet, Model model, OidcAuthenticationToken token) {
         List<String> userIds = sheetUserRepository.getUserIdsBySheet(sheet.getSheetId());
         List<SystemUser> systemUsers = systemUserRepository.findByUsersAndSystem(userIds, sheet.getSystemId());
         List<SheetUser> sheetUsers = sheetUserRepository.findBySheet(sheet.getSheetId());
@@ -269,9 +300,9 @@ public class MainController extends LtiAuthenticationTokenAwareController {
     @RequestMapping(value = "/{context}/view/{sheetId}/{userId}")
     @Secured(LTIConstants.INSTRUCTOR_AUTHORITY)
     public String loadUserDataForSheet(@PathVariable("context") String context, @PathVariable("sheetId") Long sheetId, @PathVariable("userId") String userId, Model model) {
-        LtiAuthenticationToken token = getValidatedToken(context);
+        OidcAuthenticationToken token = getValidatedToken(context);
         Sheet sheet = sheetRepository.findById(sheetId).orElse(null);
-        populateModelForStudentView(sheet, userId, token.getSystemId(), model);
+        populateModelForStudentView(sheet, userId, OidcTokenUtils.getPlatformGuid(token), model);
 
         return "fragments/userDataTable :: userData";
     }
@@ -319,8 +350,6 @@ public class MainController extends LtiAuthenticationTokenAwareController {
 
         List<String[]> dataSheet = new ArrayList<>();
 
-//        SheetUser su = sheet.getSheetUsers().get(0);
-
         // see if this user is in the system. If they are, use the full name, otherwise display userId
         SystemUser systemUser = systemUserRepository.findByUserAndSystem(sheetUser.getUserId(), systemId);
         String userFullName = systemUser!=null ? systemUser.getUserFullName() : sheetUser.getUserId();
@@ -340,9 +369,10 @@ public class MainController extends LtiAuthenticationTokenAwareController {
     @Secured(LTIConstants.INSTRUCTOR_AUTHORITY)
     public String previewSheet(@PathVariable("context") String context, Model model, @RequestParam("file") MultipartFile file, @RequestParam("sheetTitle") String sheetTitle,
                                @RequestParam("sheetId") Long sheetId, SecurityContextHolderAwareRequestWrapper request) {
-        LtiAuthenticationToken token = getValidatedToken(context);
+        OidcAuthenticationToken token = getValidatedToken(context);
         boolean errors = false;
-        String owner = (String) token.getPrincipal();
+        String owner = OidcTokenUtils.getUserLoginId(token);
+        String systemId = OidcTokenUtils.getPlatformGuid(token);
         if ("".equals(sheetTitle) || sheetTitle == null) {
             String errorMessage = messageSource.getMessage("upload.sheetTitle.empty.error", null, Locale.getDefault());
             model.addAttribute("titleError", errorMessage);
@@ -384,7 +414,7 @@ public class MainController extends LtiAuthenticationTokenAwareController {
                         Sheet sheet = sheetRepository.findById(sheetId).orElse(null);
                         published = sheet.isPublished();
                     }
-                    Sheet sheet = viewemService.processCsvFile(csvFileStream, sheetTitle, context, token.getSystemId(), published, owner, true, validUserIds, skippedUserIds);
+                    Sheet sheet = viewemService.processCsvFile(csvFileStream, sheetTitle, context, systemId, published, owner, true, validUserIds, skippedUserIds);
                     if (sheetId != null) {
                         //We got here by means of an edit instead of a new upload
                         sheet.setSheetId(sheetId);
@@ -402,7 +432,7 @@ public class MainController extends LtiAuthenticationTokenAwareController {
 
                     List<SheetUser> sheetUsers = sheet.getSheetUsers();
                     if (sheetUsers != null && sheetUsers.size() > 0) {
-                        addPreviewDataToModel(sheet, sheet.getSheetUsers().get(0), model, token.getSystemId());
+                        addPreviewDataToModel(sheet, sheet.getSheetUsers().get(0), model, systemId);
                         GsonBuilder builder = new GsonBuilder().setExclusionStrategies(new SheetExclusionStrategy());
                         Gson gson = builder.create();
 

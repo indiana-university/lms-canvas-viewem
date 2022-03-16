@@ -34,16 +34,22 @@ package edu.iu.uits.lms.viewem.config;
  */
 
 import edu.iu.uits.lms.common.oauth.CustomJwtAuthenticationConverter;
-import edu.iu.uits.lms.lti.security.LtiAuthenticationProvider;
+import edu.iu.uits.lms.lti.service.LmsDefaultGrantedAuthoritiesMapper;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import uk.ac.ox.ctl.lti13.Lti13Configurer;
+
+import static edu.iu.uits.lms.lti.LTIConstants.BASE_USER_ROLE;
+import static edu.iu.uits.lms.lti.LTIConstants.JWKS_CONFIG_URI;
 
 @Configuration
+@EnableWebSecurity
 public class SecurityConfig {
 
     @Configuration
@@ -52,21 +58,27 @@ public class SecurityConfig {
 
         @Override
         protected void configure(HttpSecurity http) throws Exception {
-            http.authenticationProvider(new LtiAuthenticationProvider());
             http
-                  .requestMatchers().antMatchers("/lti", "/app/**")
+                  .requestMatchers()
+                  .antMatchers(JWKS_CONFIG_URI, "/**/config.json", "/app/**")
                   .and()
                   .authorizeRequests()
-                  .antMatchers("/lti").permitAll()
-                  .antMatchers("/app/**").hasRole(LtiAuthenticationProvider.LTI_USER);
-
-            //Need to disable csrf so that we can use POST via REST
-            http.csrf().disable();
-
-            //Need to disable the frame options so we can embed this in another tool
-            http.headers().frameOptions().disable();
+                  .antMatchers(JWKS_CONFIG_URI, "/**/config.json").permitAll()
+                  .antMatchers("/**").hasRole(BASE_USER_ROLE);
 
             http.exceptionHandling().accessDeniedPage("/accessDenied");
+
+            //Setup the LTI handshake
+            Lti13Configurer lti13Configurer = new Lti13Configurer()
+                    .grantedAuthoritiesMapper(new LmsDefaultGrantedAuthoritiesMapper());
+
+            http.apply(lti13Configurer);
+
+            //Fallback for everything else
+            http.requestMatchers().antMatchers("/**")
+                    .and()
+                    .authorizeRequests()
+                    .anyRequest().authenticated();
         }
 
         @Override

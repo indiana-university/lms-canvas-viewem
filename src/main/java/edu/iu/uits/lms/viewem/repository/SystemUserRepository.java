@@ -41,7 +41,6 @@ import org.springframework.stereotype.Component;
 /**
  * Created by chmaurer on 7/28/15.
  */
-//@RepositoryRestResource(collectionResourceRel = "systemUsers", path = "systemUsers")
 @Component
 public interface SystemUserRepository extends PagingAndSortingRepository<SystemUser, Long>, SystemUserRepositoryCustom {
 

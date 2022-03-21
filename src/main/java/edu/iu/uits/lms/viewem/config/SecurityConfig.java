@@ -66,7 +66,7 @@ public class SecurityConfig {
                   .antMatchers(JWKS_CONFIG_URI, "/**/config.json").permitAll()
                   .antMatchers("/**").hasRole(BASE_USER_ROLE);
 
-            http.exceptionHandling().accessDeniedPage("/accessDenied");
+
 
             //Setup the LTI handshake
             Lti13Configurer lti13Configurer = new Lti13Configurer()

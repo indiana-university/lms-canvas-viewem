@@ -368,7 +368,7 @@ public class MainController extends OidcTokenAwareController {
     @RequestMapping(value = "/{context}/preview", method = RequestMethod.POST, params="action=save")
     @Secured(LTIConstants.INSTRUCTOR_AUTHORITY)
     public String previewSheet(@PathVariable("context") String context, Model model, @RequestParam("file") MultipartFile file, @RequestParam("sheetTitle") String sheetTitle,
-                               @RequestParam("sheetId") Long sheetId, SecurityContextHolderAwareRequestWrapper request) {
+                               @RequestParam(value = "sheetId", required = false) Long sheetId, SecurityContextHolderAwareRequestWrapper request) {
         OidcAuthenticationToken token = getValidatedToken(context);
         boolean errors = false;
         String owner = OidcTokenUtils.getUserLoginId(token);

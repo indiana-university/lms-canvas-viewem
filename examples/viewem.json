@@ -2,7 +2,7 @@
   "title": "View'em",
   "description": "View'em",
   "oidc_initiation_url": "http://localhost:8080/lti/login_initiation/lms_lti_viewem",
-  "target_link_uri": "http://localhost:8080/launch",
+  "target_link_uri": "http://localhost:8080/app/launch",
   "extensions": [
     {
       "domain": "localhost",
@@ -13,7 +13,8 @@
           {
             "enabled": true,
             "placement": "course_navigation",
-            "message_type": "LtiResourceLinkRequest"
+            "message_type": "LtiResourceLinkRequest",
+            "windowTarget": "_blank"
           }
         ]
       }

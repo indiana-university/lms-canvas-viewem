@@ -43,7 +43,6 @@ import java.util.List;
 /**
  * Created by chmaurer on 6/4/15.
  */
-//@RepositoryRestResource(collectionResourceRel = "sheetUsers", path = "sheetUsers")
 @Component
 public interface SheetUserRepository extends PagingAndSortingRepository<SheetUser, Long> {
 

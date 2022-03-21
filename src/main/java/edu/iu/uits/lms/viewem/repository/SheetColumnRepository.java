@@ -42,7 +42,6 @@ import java.util.List;
 /**
  * Created by chmaurer on 6/4/15.
  */
-//@RepositoryRestResource(collectionResourceRel = "sheetColumns", path = "sheetColumns")
 @Component
 public interface SheetColumnRepository extends PagingAndSortingRepository<SheetColumn, Long> {
 

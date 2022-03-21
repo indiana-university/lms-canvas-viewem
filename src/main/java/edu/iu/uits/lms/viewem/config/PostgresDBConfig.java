@@ -61,13 +61,13 @@ public class PostgresDBConfig {
 
     @Bean(name = "viewemDataSource")
     @ConfigurationProperties(prefix = "spring.datasource")
-//    @Primary
+    @Primary
     public DataSource dataSource() {
         return DataSourceBuilder.create().build();
     }
 
     @Bean(name = "viewemEntityMgrFactory")
-//    @Primary
+    @Primary
     public LocalContainerEntityManagerFactoryBean viewemEntityMgrFactory(
             final EntityManagerFactoryBuilder builder,
             @Qualifier("viewemDataSource") final DataSource dataSource) {

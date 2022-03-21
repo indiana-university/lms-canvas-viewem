@@ -57,7 +57,6 @@ import java.util.Map;
 @Slf4j
 public class SystemUserRepositoryImpl implements SystemUserRepositoryCustom {
     @PersistenceContext
-//    @Qualifier(value = "viewemEntityManagerFactory")
     private EntityManager entityManager = null;
 
     private static final int ITEM_LIMIT = 999;
@@ -67,12 +66,7 @@ public class SystemUserRepositoryImpl implements SystemUserRepositoryCustom {
     public List<SystemUser> findByUsersAndSystem(@Param("userIds") List<String> userIds, @Param("systemId") String systemId) {
         log.debug("findByUsersAndSystem");
 
-//        EntityManager entityManager = null;
         try {
-//            entityManager = viewemEntityManagerFactory.createEntityManager();
-
-            //@NamedQuery(name = "SystemUser.findByUsersAndSystem", query = "from SystemUser where userId in :userIds and systemId = :systemId order by userSortableName")})
-
             CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
             CriteriaQuery<SystemUser> q = criteriaBuilder.createQuery(SystemUser.class);
 

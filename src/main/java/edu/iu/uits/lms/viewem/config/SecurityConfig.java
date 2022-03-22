@@ -60,17 +60,18 @@ public class SecurityConfig {
         protected void configure(HttpSecurity http) throws Exception {
             http
                   .requestMatchers()
-                  .antMatchers(JWKS_CONFIG_URI, "/**/config.json", "/app/**")
+                  .antMatchers(JWKS_CONFIG_URI, "/error", "/app/**")
                   .and()
                   .authorizeRequests()
-                  .antMatchers(JWKS_CONFIG_URI, "/**/config.json").permitAll()
+                  .antMatchers(JWKS_CONFIG_URI, "/error").permitAll()
                   .antMatchers("/**").hasRole(BASE_USER_ROLE);
 
 
 
             //Setup the LTI handshake
             Lti13Configurer lti13Configurer = new Lti13Configurer()
-                    .grantedAuthoritiesMapper(new LmsDefaultGrantedAuthoritiesMapper());
+                  .grantedAuthoritiesMapper(new LmsDefaultGrantedAuthoritiesMapper())
+                  .useState(true);
 
             http.apply(lti13Configurer);
 
@@ -85,7 +86,7 @@ public class SecurityConfig {
         public void configure(WebSecurity web) throws Exception {
             // ignore everything except paths specified
             web.ignoring().antMatchers("/app/jsrivet/**", "/app/webjars/**", "/actuator/**", "/app/css/**",
-                  "/app/js/**", "/app/font/**", "/app/images/**");
+                  "/app/js/**", "/app/font/**", "/app/images/**", "/favicon.ico");
         }
 
     }

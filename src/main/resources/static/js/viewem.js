@@ -30,7 +30,12 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-(function() {   
+(function() {
+    var token = $('#_csrf').attr('content');
+    var header = $('#_csrf_header').attr('content');
+    $(document).ajaxSend(function(e,xhr,options) {
+       xhr.setRequestHeader(header, token);
+    });
     $('.publish-worksheet').click(function() {
         if ($(this).is(':visible')) {
             var parentRowObject = $(this).closest("tr.worksheet-row");

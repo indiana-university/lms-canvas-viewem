@@ -46,7 +46,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import uk.ac.ox.ctl.lti13.Lti13Configurer;
 
 import static edu.iu.uits.lms.lti.LTIConstants.BASE_USER_ROLE;
-import static edu.iu.uits.lms.lti.LTIConstants.JWKS_CONFIG_URI;
+import static edu.iu.uits.lms.lti.LTIConstants.WELL_KNOWN_ALL;
 
 @Configuration
 @EnableWebSecurity
@@ -60,18 +60,15 @@ public class SecurityConfig {
         protected void configure(HttpSecurity http) throws Exception {
             http
                   .requestMatchers()
-                  .antMatchers(JWKS_CONFIG_URI, "/error", "/app/**")
+                  .antMatchers(WELL_KNOWN_ALL, "/error", "/app/**")
                   .and()
                   .authorizeRequests()
-                  .antMatchers(JWKS_CONFIG_URI, "/error").permitAll()
+                  .antMatchers(WELL_KNOWN_ALL, "/error").permitAll()
                   .antMatchers("/**").hasRole(BASE_USER_ROLE);
-
-
 
             //Setup the LTI handshake
             Lti13Configurer lti13Configurer = new Lti13Configurer()
-                  .grantedAuthoritiesMapper(new LmsDefaultGrantedAuthoritiesMapper())
-                  .useState(true);
+                  .grantedAuthoritiesMapper(new LmsDefaultGrantedAuthoritiesMapper());
 
             http.apply(lti13Configurer);
 

@@ -122,8 +122,9 @@ public class MainController extends OidcTokenAwareController {
     @GetMapping("/launch")
     public String launch(Model model, SecurityContextHolderAwareRequestWrapper request) {
         OidcAuthenticationToken token = getTokenWithoutContext();
-        String courseId = OidcTokenUtils.getCourseId(token);
-        String systemId = OidcTokenUtils.getPlatformGuid(token);
+        OidcTokenUtils oidcTokenUtils = new OidcTokenUtils(token);
+        String courseId = oidcTokenUtils.getCourseId();
+        String systemId = oidcTokenUtils.getPlatformGuid();
 
         //Get the canvas roster for this course and make sure that all the users have up-to-date names
         if (request.isUserInRole(LTIConstants.INSTRUCTOR_AUTHORITY)) {
@@ -145,9 +146,10 @@ public class MainController extends OidcTokenAwareController {
     public String listSheets(@PathVariable("context") String context, Model model,
                              SecurityContextHolderAwareRequestWrapper request) {
         OidcAuthenticationToken token = getValidatedToken(context);
-        String currentUser = OidcTokenUtils.getUserLoginId(token);
+        OidcTokenUtils oidcTokenUtils = new OidcTokenUtils(token);
+        String currentUser = oidcTokenUtils.getUserLoginId();
         List<Sheet> sheets = null;
-        String systemId = OidcTokenUtils.getPlatformGuid(token);
+        String systemId = oidcTokenUtils.getPlatformGuid();
 
         if (request.isUserInRole(LTIConstants.INSTRUCTOR_ROLE)) {
             sheets = sheetRepository.findByContextAndSystem(context, systemId);
@@ -165,9 +167,10 @@ public class MainController extends OidcTokenAwareController {
     public String editSheet(@PathVariable("context") String context, @PathVariable("id") Long id, Model model,
                             String sheetTitle) {
         OidcAuthenticationToken token = getValidatedToken(context);
+        OidcTokenUtils oidcTokenUtils = new OidcTokenUtils(token);
         Sheet sheet = sheetRepository.findById(id).orElse(null);
         List<SheetUser> sheetUsers = sheetUserRepository.findBySheet(id);
-        addPreviewDataToModel(sheet, sheetUsers.get(0), model, OidcTokenUtils.getPlatformGuid(token));
+        addPreviewDataToModel(sheet, sheetUsers.get(0), model, oidcTokenUtils.getPlatformGuid());
 
         String title = sheetTitle==null ? sheet.getTitle() : sheetTitle;
         model.addAttribute("sheetTitle", title);
@@ -265,8 +268,9 @@ public class MainController extends OidcTokenAwareController {
      * @return The name of the view to render
      */
     private String viewSheetAsStudent(Sheet sheet, Model model, OidcAuthenticationToken token) {
-        String userId = OidcTokenUtils.getUserLoginId(token);
-        populateModelForStudentView(sheet, userId, OidcTokenUtils.getPlatformGuid(token), model);
+        OidcTokenUtils oidcTokenUtils = new OidcTokenUtils(token);
+        String userId = oidcTokenUtils.getUserLoginId();
+        populateModelForStudentView(sheet, userId, oidcTokenUtils.getPlatformGuid(), model);
 
         return "viewSheet";
     }
@@ -301,8 +305,9 @@ public class MainController extends OidcTokenAwareController {
     @Secured(LTIConstants.INSTRUCTOR_AUTHORITY)
     public String loadUserDataForSheet(@PathVariable("context") String context, @PathVariable("sheetId") Long sheetId, @PathVariable("userId") String userId, Model model) {
         OidcAuthenticationToken token = getValidatedToken(context);
+        OidcTokenUtils oidcTokenUtils = new OidcTokenUtils(token);
         Sheet sheet = sheetRepository.findById(sheetId).orElse(null);
-        populateModelForStudentView(sheet, userId, OidcTokenUtils.getPlatformGuid(token), model);
+        populateModelForStudentView(sheet, userId, oidcTokenUtils.getPlatformGuid(), model);
 
         return "fragments/userDataTable :: userData";
     }
@@ -370,9 +375,10 @@ public class MainController extends OidcTokenAwareController {
     public String previewSheet(@PathVariable("context") String context, Model model, @RequestParam("file") MultipartFile file, @RequestParam("sheetTitle") String sheetTitle,
                                @RequestParam(value = "sheetId", required = false) Long sheetId, SecurityContextHolderAwareRequestWrapper request) {
         OidcAuthenticationToken token = getValidatedToken(context);
+        OidcTokenUtils oidcTokenUtils = new OidcTokenUtils(token);
         boolean errors = false;
-        String owner = OidcTokenUtils.getUserLoginId(token);
-        String systemId = OidcTokenUtils.getPlatformGuid(token);
+        String owner = oidcTokenUtils.getUserLoginId();
+        String systemId = oidcTokenUtils.getPlatformGuid();
         if ("".equals(sheetTitle) || sheetTitle == null) {
             String errorMessage = messageSource.getMessage("upload.sheetTitle.empty.error", null, Locale.getDefault());
             model.addAttribute("titleError", errorMessage);

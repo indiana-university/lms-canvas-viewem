@@ -1,6 +1,6 @@
 {
   "title": "View'em",
-  "description": "View'em",
+  "description": "View'em is a tool for posting scores, feedback, or other types of data for students to view.",
   "oidc_initiation_url": "http://localhost:8080/lti/login_initiation/lms_lti_viewem",
   "target_link_uri": "http://localhost:8080/app/launch",
   "extensions": [
@@ -13,8 +13,7 @@
           {
             "enabled": true,
             "placement": "course_navigation",
-            "message_type": "LtiResourceLinkRequest",
-            "windowTarget": "_blank"
+            "message_type": "LtiResourceLinkRequest"
           }
         ]
       }
@@ -22,6 +21,7 @@
   ],
   "public_jwk_url": "http://localhost:8080/.well-known/jwks.json",
   "custom_fields": {
+    "canvas_membership_roles": "$Canvas.membership.roles",
     "canvas_course_id": "$Canvas.course.id",
     "canvas_user_login_id": "$Canvas.user.loginId"
   }

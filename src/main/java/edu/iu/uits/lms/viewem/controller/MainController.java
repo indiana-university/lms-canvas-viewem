@@ -433,7 +433,7 @@ public class MainController extends OidcTokenAwareController {
                         String errorMessage = messageSource.getMessage("upload.sheetFile.invalid.users.error",
                                 new String[]{delimitedUsers},
                                 Locale.getDefault());
-                        model.addAttribute("errors", errorMessage);
+                        model.addAttribute("previewWarnings", errorMessage);
                     }
 
                     List<SheetUser> sheetUsers = sheet.getSheetUsers();

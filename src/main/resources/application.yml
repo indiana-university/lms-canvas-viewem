@@ -56,6 +56,19 @@ management:
   endpoint.info.enabled: true
   endpoints.web.exposure.include: health,info
   health.redis.enabled: false
+
+springdoc:
+  packagesToScan: edu.iu.uits.lms.viewem
+  swagger-ui:
+    enable: false
+    oauth:
+      clientId: ${oauth.tokenprovider.clientId}
+  oAuthFlow:
+    authorizationUrl: ${oauth.tokenprovider.url}/oauth/authorize
+    tokenUrl: ${oauth.tokenprovider.accessTokenUri}
+  api-docs:
+    path: /api/v3/api-docs
+
 ---
 
 spring:
@@ -81,17 +94,3 @@ spring:
       enabled: true
       backend: ua-vpit/enterprise-systems/lms/kv
       application-name: viewem
-
----
-
-spring:
-  config:
-    activate.on-profile: swagger
-    import: classpath:lti-api-config.properties
-springdoc:
-  swagger-ui:
-    oauth:
-      clientId: ${oauth.tokenprovider.clientId}
-  oAuthFlow:
-    authorizationUrl: ${oauth.tokenprovider.url}/oauth/authorize
-    tokenUrl: ${oauth.tokenprovider.accessTokenUri}

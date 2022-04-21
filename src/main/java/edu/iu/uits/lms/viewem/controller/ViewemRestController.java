@@ -38,7 +38,7 @@ import edu.iu.uits.lms.common.date.DateFormatUtil;
 import edu.iu.uits.lms.viewem.config.ToolConfig;
 import edu.iu.uits.lms.viewem.model.Sheet;
 import edu.iu.uits.lms.viewem.repository.SheetRepository;
-//import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -55,9 +55,6 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/rest")
-//@LmsSwaggerDocumentation
-//@Slf4j
-//@Api(tags = "viewem_rest")
 public class ViewemRestController {
 
     @Autowired
@@ -67,6 +64,7 @@ public class ViewemRestController {
     private ToolConfig toolConfig;
 
     @GetMapping("/info")
+    @Operation(summary = "Get information about the tool")
     public Config getInfo() {
         return new Config(toolConfig);
     }
@@ -88,6 +86,7 @@ public class ViewemRestController {
     }
 
     @PostMapping("/undelete/{id}")
+    @Operation(summary = "Undelete a sheet")
     public AlternativeSheet undeleteSheet(@PathVariable Long id) {
         Sheet sheet = sheetRepository.findById(id).orElse(null);
         sheet.setDeleted(false);

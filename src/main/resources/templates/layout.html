@@ -82,7 +82,7 @@
         </button>
     </div>
     <div th:if="${titleError != null} OR ${fileError != null}" tabindex="-1" class="rvt-alert rvt-alert--danger rvt-m-top-sm" role="alert" aria-labelledby="error-alert-title">
-        <h1 class="rvt-alert__title" id="error-alert-title">Errors</h1>
+        <h1 class="rvt-alert__title" id="error-alert-title" th:text="#{upload.errors}">Errors!</h1>
         <ul>
             <li th:if="${titleError != null}" class="rvt-alert__message">
                 <a href="#sheetTitle" th:text="${titleError}">There was no title provided for the name of the sheet.</a>
@@ -119,7 +119,7 @@
     <!-- main content -->
     <div class="rvt-box">
         <div class="rvt-box__body">
-            <div layout:fragment="content" role="main">Page content goes here</div>
+            <div layout:fragment="content">Page content goes here</div>
         </div>
     </div>
 </div>

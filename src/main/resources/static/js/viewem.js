@@ -128,11 +128,16 @@
         var obj = $(this);
         var urlBase = obj.data('urlbase');
         var userId = obj.val();
-        var userName = $(":selected").text();
-        $("#student-name").text(userName);
 
-        //Need a slash at the end to prevent emails from getting the suffix ignored
-        $("#userDataDiv").load(urlBase + userId + "/");
+        // hide the user info if no user is selected
+        if (userId && userId.length > 0) {
+            $("#userDataDiv").show();
+
+            //Need a slash at the end to prevent emails from getting the suffix ignored
+            $("#userDataDiv").load(urlBase + userId + "/");
+        } else {
+            $("#userDataDiv").hide();
+        }
     });
 
     // Handler for the file upload input so that IE works like other browsers

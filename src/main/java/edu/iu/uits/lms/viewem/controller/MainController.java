@@ -427,14 +427,6 @@ public class MainController extends OidcTokenAwareController {
                     }
                     model.addAttribute("sheetTitle", sheetTitle);
                     model.addAttribute("sheet", sheet);
-                    if (skippedUserIds.size() > 0) {
-                        String delimitedUsers = StringUtils.arrayToCommaDelimitedString(skippedUserIds.toArray(new String[skippedUserIds.size()]));
-
-                        String errorMessage = messageSource.getMessage("upload.sheetFile.invalid.users.error",
-                                new String[]{delimitedUsers},
-                                Locale.getDefault());
-                        model.addAttribute("errors", errorMessage);
-                    }
 
                     List<SheetUser> sheetUsers = sheet.getSheetUsers();
                     if (sheetUsers != null && sheetUsers.size() > 0) {
@@ -443,6 +435,15 @@ public class MainController extends OidcTokenAwareController {
                         Gson gson = builder.create();
 
                         model.addAttribute("sheetJson", gson.toJson(sheet));
+
+                        if (skippedUserIds.size() > 0) {
+                            String delimitedUsers = StringUtils.arrayToDelimitedString(skippedUserIds.toArray(new String[skippedUserIds.size()]), ", ");
+
+                            String errorMessage = messageSource.getMessage("upload.sheetFile.invalid.users.error",
+                                    new String[]{delimitedUsers},
+                                    Locale.getDefault());
+                            model.addAttribute("previewWarnings", errorMessage);
+                        }
                     } else {
                         String errorMessage = messageSource.getMessage("upload.sheetFile.missing.users.error", null, Locale.getDefault());
                         model.addAttribute("fileError", errorMessage);

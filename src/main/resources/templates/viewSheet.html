@@ -51,7 +51,6 @@
         </span>
         <div layout:fragment="content">
             <h2 class="rvt-ts-20 rvt-m-bottom-sm" th:text="#{view.worksheetTitle(${sheet.title})}">Worksheet: Sheet Title</h2>
-            <h3 class="rvt-ts-18 rvt-m-bottom-xs"><span th:text="#{view.results}">Results for</span> <span id="student-name" th:text="${sheetUser}">First Last</span></h3>
             <div th:insert="fragments/userDataTable :: userData"></div>
         </div>
     </div>

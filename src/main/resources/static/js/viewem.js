@@ -141,11 +141,25 @@
     });
 
     // Handler for the file upload input so that IE works like other browsers
-    $("form#upload input#file").keypress(function (e) {
+    $("form#upload input#file").keydown(function (e) {
         if (e.keyCode == 13) {
             //alert('you pressed enter!');
             e.preventDefault();
             $(this).click();
+        }
+    });
+
+    // If someone tabs out of the action menu, close the dropdown
+    $(".dropdown-item").keydown(function (e) {
+        if (e.keyCode == 9) {
+            Dropdown.close($(this).parent().attr("id"));
+        }
+    });
+
+    // If the user is focused on the action menu button and the dropdown is expanded when they tab, we need to close the dropdown
+    $(".action-button").keydown(function (e) {
+        if (e.keyCode == 9) {
+            Dropdown.close($(this).next(".rvt-dropdown__menu").attr("id"));
         }
     });
 

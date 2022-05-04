@@ -92,7 +92,7 @@
                 </td>
                 <td sec:authorize="hasRole(T(edu.iu.uits.lms.lti.LTIConstants).INSTRUCTOR_ROLE)">
                     <div class="rvt-dropdown">
-                        <button type="button" class="rvt-button rvt-button--secondary" th:data-dropdown-toggle="@{|sheet-navigation-${sheet.sheetId}|}"
+                        <button type="button" class="rvt-button rvt-button--secondary action-button" th:data-dropdown-toggle="@{|sheet-navigation-${sheet.sheetId}|}"
                                 aria-haspopup="true" aria-expanded="false" th:aria-label="|Actions for ${sheet.title} worksheet|">
                             <span>Actions</span>
                             <svg aria-hidden="true" class="rvt-m-left-xs" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
@@ -100,7 +100,7 @@
                             </svg>
                         </button>
                         <div class="rvt-dropdown__menu rvt-dropdown__menu--right" th:id="@{|sheet-navigation-${sheet.sheetId}|}" aria-hidden="true" role="menu">
-                            <a href="#" class="publish-worksheet" role="menuitem">
+                            <a href="#" class="publish-worksheet dropdown-item" role="menuitem" tabindex="-1">
                                 <svg th:if="${sheet.published}" class="rvt-icon rvt-m-right-xs" aria-hidden="true">
                                     <use th:href="@{/app/jsrivet/rivet-icons.svg#rvt-icon-undo}"></use>
                                 </svg>
@@ -110,25 +110,28 @@
                                 </svg>
                                 <span th:unless="${sheet.published}" class="publish-text">Publish</span>
                             </a>
-                            <a href="#" th:href="@{|/app/${sheet.context}/edit/${sheet.sheetId}|}" role="menuitem">
+                            <a href="#" th:href="@{|/app/${sheet.context}/edit/${sheet.sheetId}|}" role="menuitem"
+                               tabindex="-1" class="dropdown-item">
                                 <svg class="rvt-icon rvt-m-right-xs" aria-hidden="true">
                                     <use th:href="@{/app/jsrivet/rivet-icons.svg#rvt-icon-pencil}"></use>
                                 </svg>
                                 <span>Edit</span>
                             </a>
-                            <a href="#" class="delete-worksheet" role="menuitem">
+                            <a href="#" class="delete-worksheet dropdown-item" role="menuitem" tabindex="-1">
                                 <svg class="rvt-icon rvt-m-right-xs" aria-hidden="true">
                                     <use th:href="@{/app/jsrivet/rivet-icons.svg#rvt-icon-trash}"></use>
                                 </svg>
                                 <span>Delete</span>
                             </a>
-                            <a href="#" th:href="@{|/app/${sheet.context}/view/${sheet.sheetId}|}" role="menuitem">
+                            <a href="#" th:href="@{|/app/${sheet.context}/view/${sheet.sheetId}|}" role="menuitem"
+                               tabindex="-1" class="dropdown-item">
                                 <svg class="rvt-icon rvt-m-right-xs" aria-hidden="true">
                                     <use th:href="@{/app/jsrivet/rivet-icons.svg#rvt-icon-eye}"></use>
                                 </svg>
                                 <span>View worksheet</span>
                             </a>
-                            <a href="#" th:href="@{|/app/${sheet.context}/download/${sheet.sheetId}|}" role="menuitem">
+                            <a href="#" th:href="@{|/app/${sheet.context}/download/${sheet.sheetId}|}" role="menuitem"
+                               tabindex="-1" class="dropdown-item">
                                 <svg class="rvt-icon rvt-m-right-xs" aria-hidden="true">
                                     <use th:href="@{/app/jsrivet/rivet-icons.svg#rvt-icon-download}"></use>
                                 </svg>

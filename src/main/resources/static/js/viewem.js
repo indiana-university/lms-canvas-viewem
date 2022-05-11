@@ -163,5 +163,9 @@
         }
     });
 
+    $(document).on("fileAttached", function(event) {
+        $("#file-upload-error").hide();
+        $("#file").attr({"aria-invalid": "false", "aria-describedby": "attachment-status"});
+    });
 
 }());

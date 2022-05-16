@@ -93,6 +93,7 @@
                 var length = values.length;
                 var id = values[length-1];  //parse to get the sheet id 123
                 var updatedId = "#" + "row_" + id; //see listSheets.html, <li th:id="'row_' + ${sheet.sheetId}" th:each="sheet : ${sheets}">
+                Dropdown.close($(this).parent().attr("id")); // close the open dropdown
 
                 $.ajax({
                     url: hrefDeleteText,
@@ -163,5 +164,9 @@
         }
     });
 
+    $(document).on("fileAttached", function(event) {
+        $("#file-upload-error").hide();
+        $("#file").attr({"aria-invalid": "false", "aria-describedby": "attachment-status"});
+    });
 
 }());

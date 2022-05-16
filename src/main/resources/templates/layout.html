@@ -51,7 +51,7 @@
 
 <div class="rvt-container">
     <!-- alerts -->
-    <div id="delete-success-alert" class="rvt-alert rvt-alert--success rvt-m-tb-md rvt-display-none" role="alertdialog" aria-labelledby="delete-success-title" tabindex="0">
+    <div id="delete-success-alert" class="rvt-alert rvt-alert--success rvt-m-tb-md rvt-display-none" role="alertdialog" aria-labelledby="delete-success-title" tabindex="-1">
         <h1 class="rvt-alert__title" id="delete-success-title">Worksheet deleted!</h1>
         <p class="rvt-alert__message">Deletion of the worksheet was successful!</p>
         <button type="button" class="dismiss-override" id="delete-close">
@@ -61,7 +61,7 @@
             </svg>
         </button>
     </div>
-    <div id="publish-success-alert" class="rvt-alert rvt-alert--success rvt-m-tb-md rvt-display-none" role="alertdialog" aria-labelledby="publish-success-title" tabindex="0">
+    <div id="publish-success-alert" class="rvt-alert rvt-alert--success rvt-m-tb-md rvt-display-none" role="alertdialog" aria-labelledby="publish-success-title" tabindex="-1">
         <h1 class="rvt-alert__title" id="publish-success-title">Worksheet published!</h1>
         <p class="rvt-alert__message">The worksheet is now published.</p>
         <button type="button" class="dismiss-override" id="publish-close">
@@ -71,7 +71,7 @@
             </svg>
         </button>
     </div>
-    <div id="unpublish-success-alert" class="rvt-alert rvt-alert--success rvt-m-tb-md rvt-display-none" role="alertdialog" aria-labelledby="unpublish-success-title" tabindex="0">
+    <div id="unpublish-success-alert" class="rvt-alert rvt-alert--success rvt-m-tb-md rvt-display-none" role="alertdialog" aria-labelledby="unpublish-success-title" tabindex="-1">
         <h1 class="rvt-alert__title" id="unpublish-success-title">Worksheet unpublished!</h1>
         <p class="rvt-alert__message">The worksheet is now unpublished.</p>
         <button type="button" class="dismiss-override" id="unpublish-close">
@@ -81,7 +81,7 @@
             </svg>
         </button>
     </div>
-    <div th:if="${titleError != null} OR ${fileError != null}" tabindex="-1" class="rvt-alert rvt-alert--danger rvt-m-top-sm" role="alert" aria-labelledby="error-alert-title">
+    <div th:if="${titleError != null} OR ${fileError != null}" id="error-section" tabindex="-1" class="rvt-alert rvt-alert--danger rvt-m-top-sm" role="alert" aria-labelledby="error-alert-title">
         <h1 class="rvt-alert__title" id="error-alert-title" th:text="#{upload.errors}">Errors!</h1>
         <ul>
             <li th:if="${titleError != null}" class="rvt-alert__message">
@@ -108,7 +108,7 @@
     </div>
 
     <!-- banner -->
-    <div class="rvt-grid rvt-vertical-center rvt-m-tb-sm" role="banner">
+    <div class="rvt-grid rvt-vertical-center rvt-m-tb-sm">
         <div class="rvt-grid__item">
             <h1 class="rvt-ts-26" th:text="#{viewem.toolTitle}">Tool Title</h1>
         </div>

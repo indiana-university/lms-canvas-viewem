@@ -1,4 +1,4 @@
-package edu.iu.uits.lms.viewem.repository;
+package edu.iu.uits.lms.viewem.config;
 
 /*-
  * #%L
@@ -33,17 +33,22 @@ package edu.iu.uits.lms.viewem.repository;
  * #L%
  */
 
-import edu.iu.uits.lms.viewem.model.SystemUser;
-import org.springframework.data.repository.PagingAndSortingRepository;
-import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Component;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.security.OAuthFlow;
+import io.swagger.v3.oas.annotations.security.OAuthFlows;
+import io.swagger.v3.oas.annotations.security.OAuthScope;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import org.springframework.context.annotation.Configuration;
 
-/**
- * Created by chmaurer on 7/28/15.
- */
-@Component
-public interface SystemUserRepository extends PagingAndSortingRepository<SystemUser, Long>, SystemUserRepositoryCustom {
-
-    SystemUser findByUserAndSystem(@Param("userId") String userId, @Param("systemId") String systemId);
+@Configuration
+@OpenAPIDefinition(info = @Info(title = "View'em REST Endpoints", version = "${viewem.version}"))
+@SecurityScheme(name = "security_auth_viewem", type = SecuritySchemeType.OAUTH2,
+      flows = @OAuthFlows(authorizationCode = @OAuthFlow(
+            authorizationUrl = "${springdoc.oAuthFlow.authorizationUrl}",
+            scopes = {@OAuthScope(name = "lms:rest")},
+            tokenUrl = "${springdoc.oAuthFlow.tokenUrl}")))
+public class SwaggerConfig {
 
 }

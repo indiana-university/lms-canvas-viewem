@@ -1,12 +1,45 @@
 package edu.iu.uits.lms.viewem.repository;
 
+/*-
+ * #%L
+ * lms-canvas-viewem
+ * %%
+ * Copyright (C) 2015 - 2022 Indiana University
+ * %%
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ * 
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ * 
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 
+ * 3. Neither the name of the Indiana University nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software without
+ *    specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+ * OF THE POSSIBILITY OF SUCH DAMAGE.
+ * #L%
+ */
+
 import edu.iu.uits.lms.viewem.model.SystemUser;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.ListUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -23,8 +56,7 @@ import java.util.Map;
  */
 @Slf4j
 public class SystemUserRepositoryImpl implements SystemUserRepositoryCustom {
-    @Autowired
-//    @Qualifier(value = "viewemEntityManagerFactory")
+    @PersistenceContext
     private EntityManager entityManager = null;
 
     private static final int ITEM_LIMIT = 999;
@@ -34,12 +66,7 @@ public class SystemUserRepositoryImpl implements SystemUserRepositoryCustom {
     public List<SystemUser> findByUsersAndSystem(@Param("userIds") List<String> userIds, @Param("systemId") String systemId) {
         log.debug("findByUsersAndSystem");
 
-//        EntityManager entityManager = null;
         try {
-//            entityManager = viewemEntityManagerFactory.createEntityManager();
-
-            //@NamedQuery(name = "SystemUser.findByUsersAndSystem", query = "from SystemUser where userId in :userIds and systemId = :systemId order by userSortableName")})
-
             CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
             CriteriaQuery<SystemUser> q = criteriaBuilder.createQuery(SystemUser.class);
 

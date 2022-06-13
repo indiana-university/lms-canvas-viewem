@@ -1,4 +1,4 @@
-package edu.iu.uits.lms.viewem.repository;
+package edu.iu.uits.lms.viewem.service;
 
 /*-
  * #%L
@@ -33,17 +33,15 @@ package edu.iu.uits.lms.viewem.repository;
  * #L%
  */
 
-import edu.iu.uits.lms.viewem.model.SystemUser;
-import org.springframework.data.repository.PagingAndSortingRepository;
-import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Component;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-/**
- * Created by chmaurer on 7/28/15.
- */
-@Component
-public interface SystemUserRepository extends PagingAndSortingRepository<SystemUser, Long>, SystemUserRepositoryCustom {
-
-    SystemUser findByUserAndSystem(@Param("userId") String userId, @Param("systemId") String systemId);
-
+@Target({ElementType.FIELD, ElementType.METHOD, ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Inherited
+public @interface RestResource {
+   boolean exported() default true;
 }

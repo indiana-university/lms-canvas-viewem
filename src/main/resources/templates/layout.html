@@ -1,4 +1,37 @@
 <!DOCTYPE html>
+<!--
+  #%L
+  lms-canvas-viewem
+  %%
+  Copyright (C) 2015 - 2022 Indiana University
+  %%
+  Redistribution and use in source and binary forms, with or without modification,
+  are permitted provided that the following conditions are met:
+  
+  1. Redistributions of source code must retain the above copyright notice, this
+     list of conditions and the following disclaimer.
+  
+  2. Redistributions in binary form must reproduce the above copyright notice,
+     this list of conditions and the following disclaimer in the documentation
+     and/or other materials provided with the distribution.
+  
+  3. Neither the name of the Indiana University nor the names of its contributors
+     may be used to endorse or promote products derived from this software without
+     specific prior written permission.
+  
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+  IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+  INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+  LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+  OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+  OF THE POSSIBILITY OF SUCH DAMAGE.
+  #L%
+  -->
+
 <html lang="en-US"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
@@ -8,6 +41,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta id="_csrf" name="_csrf" th:content="${_csrf.token}"/>
+    <meta id="_csrf_header" name="_csrf_header" th:content="${_csrf.headerName}"/>
     <link media="all" rel="stylesheet" type="text/css" th:href="@{/app/jsrivet/rivet-bundle.min.css}" />
     <link media="all" rel="stylesheet" type="text/css" th:href="@{/app/css/viewem.css}" />
 
@@ -16,7 +51,7 @@
 
 <div class="rvt-container">
     <!-- alerts -->
-    <div id="delete-success-alert" class="rvt-alert rvt-alert--success rvt-m-tb-md rvt-display-none" role="alertdialog" aria-labelledby="delete-success-title" tabindex="0">
+    <div id="delete-success-alert" class="rvt-alert rvt-alert--success rvt-m-tb-md rvt-display-none" role="alertdialog" aria-labelledby="delete-success-title" tabindex="-1">
         <h1 class="rvt-alert__title" id="delete-success-title">Worksheet deleted!</h1>
         <p class="rvt-alert__message">Deletion of the worksheet was successful!</p>
         <button type="button" class="dismiss-override" id="delete-close">
@@ -26,7 +61,7 @@
             </svg>
         </button>
     </div>
-    <div id="publish-success-alert" class="rvt-alert rvt-alert--success rvt-m-tb-md rvt-display-none" role="alertdialog" aria-labelledby="publish-success-title" tabindex="0">
+    <div id="publish-success-alert" class="rvt-alert rvt-alert--success rvt-m-tb-md rvt-display-none" role="alertdialog" aria-labelledby="publish-success-title" tabindex="-1">
         <h1 class="rvt-alert__title" id="publish-success-title">Worksheet published!</h1>
         <p class="rvt-alert__message">The worksheet is now published.</p>
         <button type="button" class="dismiss-override" id="publish-close">
@@ -36,7 +71,7 @@
             </svg>
         </button>
     </div>
-    <div id="unpublish-success-alert" class="rvt-alert rvt-alert--success rvt-m-tb-md rvt-display-none" role="alertdialog" aria-labelledby="unpublish-success-title" tabindex="0">
+    <div id="unpublish-success-alert" class="rvt-alert rvt-alert--success rvt-m-tb-md rvt-display-none" role="alertdialog" aria-labelledby="unpublish-success-title" tabindex="-1">
         <h1 class="rvt-alert__title" id="unpublish-success-title">Worksheet unpublished!</h1>
         <p class="rvt-alert__message">The worksheet is now unpublished.</p>
         <button type="button" class="dismiss-override" id="unpublish-close">
@@ -46,8 +81,8 @@
             </svg>
         </button>
     </div>
-    <div th:if="${titleError != null} OR ${fileError != null}" tabindex="-1" class="rvt-alert rvt-alert--danger rvt-m-top-sm" role="alert" aria-labelledby="error-alert-title">
-        <h1 class="rvt-alert__title" id="error-alert-title">Errors</h1>
+    <div th:if="${titleError != null} OR ${fileError != null}" id="error-section" tabindex="-1" class="rvt-alert rvt-alert--danger rvt-m-top-sm" role="alert" aria-labelledby="error-alert-title">
+        <h1 class="rvt-alert__title" id="error-alert-title" th:text="#{upload.errors}">Errors!</h1>
         <ul>
             <li th:if="${titleError != null}" class="rvt-alert__message">
                 <a href="#sheetTitle" th:text="${titleError}">There was no title provided for the name of the sheet.</a>
@@ -58,8 +93,22 @@
         </ul>
     </div>
 
+    <div id="previewWarnings" th:if="${previewWarnings != null}" role="alert" class="rvt-inline-alert rvt-inline-alert--standalone rvt-inline-alert--warning rvt-m-top-md">
+        <span class="rvt-inline-alert__icon">
+            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+                <g fill="currentColor">
+                    <path d="M11,9H5A1,1,0,0,1,5,7h6a1,1,0,0,1,0,2Z"/>
+                    <path d="M8,16a8,8,0,1,1,8-8A8,8,0,0,1,8,16ZM8,2a6,6,0,1,0,6,6A6,6,0,0,0,8,2Z"/>
+                </g>
+            </svg>
+        </span>
+        <span class="rvt-inline-alert__message" id="preview-error-message" th:text="${previewWarnings}">
+            This field is required to continue.
+        </span>
+    </div>
+
     <!-- banner -->
-    <div class="rvt-grid rvt-vertical-center rvt-m-tb-sm" role="banner">
+    <div class="rvt-grid rvt-vertical-center rvt-m-tb-sm">
         <div class="rvt-grid__item">
             <h1 class="rvt-ts-26" th:text="#{viewem.toolTitle}">Tool Title</h1>
         </div>
@@ -70,7 +119,7 @@
     <!-- main content -->
     <div class="rvt-box">
         <div class="rvt-box__body">
-            <div layout:fragment="content" role="main">Page content goes here</div>
+            <div layout:fragment="content">Page content goes here</div>
         </div>
     </div>
 </div>

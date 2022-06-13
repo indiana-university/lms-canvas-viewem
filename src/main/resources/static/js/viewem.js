@@ -1,4 +1,41 @@
-(function() {   
+/*-
+ * #%L
+ * lms-canvas-viewem
+ * %%
+ * Copyright (C) 2015 - 2022 Indiana University
+ * %%
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ * 
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ * 
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 
+ * 3. Neither the name of the Indiana University nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software without
+ *    specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+ * OF THE POSSIBILITY OF SUCH DAMAGE.
+ * #L%
+ */
+(function() {
+    var token = $('#_csrf').attr('content');
+    var header = $('#_csrf_header').attr('content');
+    $(document).ajaxSend(function(e,xhr,options) {
+       xhr.setRequestHeader(header, token);
+    });
     $('.publish-worksheet').click(function() {
         if ($(this).is(':visible')) {
             var parentRowObject = $(this).closest("tr.worksheet-row");
@@ -56,6 +93,7 @@
                 var length = values.length;
                 var id = values[length-1];  //parse to get the sheet id 123
                 var updatedId = "#" + "row_" + id; //see listSheets.html, <li th:id="'row_' + ${sheet.sheetId}" th:each="sheet : ${sheets}">
+                Dropdown.close($(this).parent().attr("id")); // close the open dropdown
 
                 $.ajax({
                     url: hrefDeleteText,
@@ -91,15 +129,20 @@
         var obj = $(this);
         var urlBase = obj.data('urlbase');
         var userId = obj.val();
-        var userName = $(":selected").text();
-        $("#student-name").text(userName);
 
-        //Need a slash at the end to prevent emails from getting the suffix ignored
-        $("#userDataDiv").load(urlBase + userId + "/");
+        // hide the user info if no user is selected
+        if (userId && userId.length > 0) {
+            $("#userDataDiv").show();
+
+            //Need a slash at the end to prevent emails from getting the suffix ignored
+            $("#userDataDiv").load(urlBase + userId + "/");
+        } else {
+            $("#userDataDiv").hide();
+        }
     });
 
     // Handler for the file upload input so that IE works like other browsers
-    $("form#upload input#file").keypress(function (e) {
+    $("form#upload input#file").keydown(function (e) {
         if (e.keyCode == 13) {
             //alert('you pressed enter!');
             e.preventDefault();
@@ -107,5 +150,23 @@
         }
     });
 
+    // If someone tabs out of the action menu, close the dropdown
+    $(".dropdown-item").keydown(function (e) {
+        if (e.keyCode == 9) {
+            Dropdown.close($(this).parent().attr("id"));
+        }
+    });
+
+    // If the user is focused on the action menu button and the dropdown is expanded when they tab, we need to close the dropdown
+    $(".action-button").keydown(function (e) {
+        if (e.keyCode == 9) {
+            Dropdown.close($(this).next(".rvt-dropdown__menu").attr("id"));
+        }
+    });
+
+    $(document).on("fileAttached", function(event) {
+        $("#file-upload-error").hide();
+        $("#file").attr({"aria-invalid": "false", "aria-describedby": "attachment-status"});
+    });
 
 }());

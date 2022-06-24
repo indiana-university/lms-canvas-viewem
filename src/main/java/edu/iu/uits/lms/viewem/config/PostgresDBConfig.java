@@ -34,8 +34,8 @@ package edu.iu.uits.lms.viewem.config;
  */
 
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -62,8 +62,8 @@ public class PostgresDBConfig {
     @Bean(name = "viewemDataSource")
     @ConfigurationProperties(prefix = "spring.datasource")
     @Primary
-    public DataSource dataSource() {
-        return DataSourceBuilder.create().build();
+    public DataSource dataSource(DataSourceProperties properties) {
+        return properties.initializeDataSourceBuilder().build();
     }
 
     @Bean(name = "viewemEntityMgrFactory")
@@ -81,7 +81,7 @@ public class PostgresDBConfig {
     }
 
     @Bean(name = "viewemTransactionMgr")
-//    @Primary
+    @Primary
     public PlatformTransactionManager viewemTransactionMgr(
             @Qualifier("viewemEntityMgrFactory") final EntityManagerFactory entityManagerFactory) {
         return new JpaTransactionManager(entityManagerFactory);

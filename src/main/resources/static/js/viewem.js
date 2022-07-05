@@ -150,20 +150,6 @@
         }
     });
 
-    // If someone tabs out of the action menu, close the dropdown
-    $(".dropdown-item").keydown(function (e) {
-        if (e.keyCode == 9) {
-            Dropdown.close($(this).parent().attr("id"));
-        }
-    });
-
-    // If the user is focused on the action menu button and the dropdown is expanded when they tab, we need to close the dropdown
-    $(".action-button").keydown(function (e) {
-        if (e.keyCode == 9) {
-            Dropdown.close($(this).next(".rvt-dropdown__menu").attr("id"));
-        }
-    });
-
     $(document).on("fileAttached", function(event) {
         $("#file-upload-error").hide();
         $("#file").attr({"aria-invalid": "false", "aria-describedby": "attachment-status"});

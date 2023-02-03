@@ -51,27 +51,28 @@
     </span>
     <div layout:fragment="content">
         <h2 th:text="#{view.worksheetTitle(${sheet.title})}" class="rvt-ts-20 rvt-m-bottom-sm">Worksheet: Sheet Title</h2>
-        <div class="rvt-tabs">
+
+        <div class="rvt-tabs" data-rvt-tabs="tabset-1">
             <div class="rvt-tabs__tablist" role="tablist" aria-label="Worksheet tabs">
-                <button class="rvt-tabs__tab" role="tab" aria-selected="true" data-tab="student-view-tab" id="student-view-tab-label" th:text="#{instructorView.tab.studentView}">
+                <button class="rvt-tabs__tab" role="tab" data-rvt-tab="tab-1" id="t-one" th:text="#{instructorView.tab.studentView}">
                     Student Tab
                 </button>
-                <button class="rvt-tabs__tab" role="tab" aria-selected="false" data-tab="entire-view-tab" id="entire-view-tab-label" tabindex="-1" th:text="#{instructorView.tab.entireSheet}">
+                <button class="rvt-tabs__tab" role="tab" data-rvt-tab="tab-2" id="t-two" th:text="#{instructorView.tab.entireSheet}">
                     Entire Tab
                 </button>
             </div>
-            <div class="rvt-tabs__panel" tabindex="0" role="tabpanel" id="student-view-tab" aria-labelledby="student-view-tab-label">
-                <label for="student-list" th:text="#{instructorView.label.students}">Students</label>
-                <select class="rvt-m-bottom-lg" id="student-list" th:attr="data-urlbase=@{|/app/${sheet.context}/view/${sheet.sheetId}/|}">
+            <div class="rvt-tabs__panel" tabindex="0" role="tabpanel" id="tab-1" aria-labelledby="t-one" data-rvt-tab-panel="tab-1">
+                <label for="student-list" class="rvt-label rvt-ts-16" th:text="#{instructorView.label.students}">Students</label>
+                <select class="rvt-m-bottom-lg rvt-select" id="student-list" th:attr="data-urlbase=@{|/app/${sheet.context}/view/${sheet.sheetId}/|}">
                     <option value="" th:text="#{instructorView.select.option}">Select...</option>
                     <option th:each="user : ${users}"
                             th:value="${user.userId}" th:text="${user.userSortableName}">Last, First</option>
                 </select>
                 <div id="userDataDiv"></div>
             </div>
-            <div class="rvt-tabs__panel" tabindex="0" role="tabpanel" id="entire-view-tab" aria-labelledby="entire-view-tab-label" hidden="">
-                <table class="rvt-table-cells">
-                    <caption class="sr-only" th:text="#{instructorView.table.caption}">Entire worksheet view</caption>
+            <div class="rvt-tabs__panel" tabindex="0" role="tabpanel" id="tab-2" aria-labelledby="t-two" data-rvt-tab-panel="tab-2">
+                <table class="rvt-table-cells rvt-m-tb-xs">
+                    <caption class="rvt-sr-only" th:text="#{instructorView.table.caption}">Entire worksheet view</caption>
                     <thead>
                     <tr>
                         <th scope="col" th:text="#{instructorView.header.studentId}">Student Column Header</th>

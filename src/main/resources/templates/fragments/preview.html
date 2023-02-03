@@ -39,12 +39,13 @@
 </head>
 <body>
 <div th:fragment="preview">
-    <label for="sheetTitle" th:text="#{upload.sheetTitleFieldLabel}">Worksheet Title</label>
+    <label for="sheetTitle" th:text="#{upload.sheetTitleFieldLabel}" class="rvt-label rvt-ts-20">Worksheet Title</label>
     <input type="text" id="sheetTitle" name="sheetTitle" th:value="${sheetTitle}"
            th:classappend="${titleError != null} ? 'rvt-validation-danger'"
            th:aria-describedby="${titleError != null} ? 'title_error_text'"
            th:aria-invalid="${titleError != null} ? 'true'"
-           th:readonly="${editMode == null} ? 'true'" />
+           th:readonly="${editMode == null} ? 'true'"
+           class="rvt-text-input"/>
     <div class="rvt-inline-alert rvt-inline-alert--danger" th:if="${titleError != null}">
         <span class="rvt-inline-alert__icon">
             <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
@@ -59,9 +60,8 @@
         </span>
     </div>
 
-    <h2 th:text="|#{preview.studentText}: ${user}|" class="rvt-ts-20 rvt-m-top-sm rvt-m-bottom-xs">Preview of first student: student name</h2>
     <table class="rvt-table-cells">
-        <caption class="sr-only" th:text="|#{preview.studentText}: ${user}|">Preview of first student: student name</caption>
+        <caption th:text="|#{preview.studentText}: ${user}|" class="rvt-text-left rvt-ts-20 rvt-m-top-lg rvt-m-bottom-xs">Preview of first student: student name</caption>
         <thead>
         <tr>
             <th scope="col" th:text="#{preview.nameHeader}">Name Header</th>

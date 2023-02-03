@@ -48,6 +48,9 @@
             var hrefIcon = icon.attr("href");
             var menuText = $('.publish-text', this);
 
+            const dropdownId = $(this).parent().attr("id");
+            const dropdown = document.querySelector('[data-rvt-dropdown="' + dropdownId + '"]')
+
             if (menuText.text()=='Publish') {
                 var confirmPublish = confirm('Are you sure you want to publish this worksheet?');
                 if(confirmPublish == true) {
@@ -60,7 +63,9 @@
                     var publishAlert = document.getElementById("publish-success-alert");
                     $(publishAlert).removeClass('rvt-display-none'); // show the publish alert
                     publishAlert.focus(); // give the alert focus
-                    Dropdown.close($(this).parent().attr("id")); // close the open dropdown
+
+                    // close the open dropdown
+                    dropdown.close();
                 }
             } else {
                 var confirmUnpublish = confirm('Are you sure you want to unpublish this worksheet?');
@@ -74,7 +79,9 @@
                     var unpublishAlert = document.getElementById("unpublish-success-alert");
                     $(unpublishAlert).removeClass('rvt-display-none'); // show the unpublish alert
                     unpublishAlert.focus(); // give the alert focus
-                    Dropdown.close($(this).parent().attr("id")); // close the open dropdown
+
+                    // close the open dropdown
+                    dropdown.close();
                 }
             }
         }
@@ -93,7 +100,10 @@
                 var length = values.length;
                 var id = values[length-1];  //parse to get the sheet id 123
                 var updatedId = "#" + "row_" + id; //see listSheets.html, <li th:id="'row_' + ${sheet.sheetId}" th:each="sheet : ${sheets}">
-                Dropdown.close($(this).parent().attr("id")); // close the open dropdown
+
+                const dropdownId = $(this).parent().attr("id");
+                const dropdown = document.querySelector('[data-rvt-dropdown="' + dropdownId + '"]')
+                dropdown.close();
 
                 $.ajax({
                     url: hrefDeleteText,
@@ -108,21 +118,6 @@
 
             }
         }
-    });
-
-    $('#delete-close').click(function() {
-        var deleteAlert = document.getElementById("delete-success-alert");
-        $(deleteAlert).addClass('rvt-display-none'); // hide the alert after clicking the close button
-    });
-
-    $('#publish-close').click(function() {
-        var publishAlert = document.getElementById("publish-success-alert");
-        $(publishAlert).addClass('rvt-display-none'); // hide the alert after clicking the close button
-    });
-
-    $('#unpublish-close').click(function() {
-        var unpublishAlert = document.getElementById("unpublish-success-alert");
-        $(unpublishAlert).addClass('rvt-display-none'); // hide the alert after clicking the close button
     });
 
     $('#student-list').on('change', function() {
@@ -153,6 +148,19 @@
     $(document).on("fileAttached", function(event) {
         $("#file-upload-error").hide();
         $("#file").attr({"aria-invalid": "false", "aria-describedby": "attachment-status"});
+    });
+
+    $(".loading-btn").click(function() {
+        var actionValue = $(this).data("action");
+        $("#viewem-action").val(actionValue);
+
+        $(this).addClass("rvt-button--loading");
+        $(this).attr("aria-busy", "true");
+        $(".rvt-button").attr("disabled", "true");
+        $(this).find(".rvt-loader").removeClass("rvt-display-none");
+
+        const btnId = $(this).attr("id");
+        document.getElementById(btnId).form.submit();
     });
 
 }());

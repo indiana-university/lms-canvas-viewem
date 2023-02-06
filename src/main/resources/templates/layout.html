@@ -43,47 +43,53 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta id="_csrf" name="_csrf" th:content="${_csrf.token}"/>
     <meta id="_csrf_header" name="_csrf_header" th:content="${_csrf.headerName}"/>
-    <link media="all" rel="stylesheet" type="text/css" th:href="@{/app/jsrivet/rivet-bundle.min.css}" />
+    <link media="all" rel="stylesheet" type="text/css" th:href="@{/app/jsrivet/rivet.min.css}" />
     <link media="all" rel="stylesheet" type="text/css" th:href="@{/app/css/viewem.css}" />
 
 </head>
 <body>
 
-<div class="rvt-container">
+<div class="rvt-container-xl">
     <!-- alerts -->
-    <div id="delete-success-alert" class="rvt-alert rvt-alert--success rvt-m-tb-md rvt-display-none" role="alertdialog" aria-labelledby="delete-success-title" tabindex="-1">
-        <h1 class="rvt-alert__title" id="delete-success-title">Worksheet deleted!</h1>
+    <div id="delete-success-alert" class="rvt-alert rvt-alert--success rvt-m-tb-md rvt-display-none" role="alert"
+         aria-labelledby="delete-success-title" tabindex="-1" data-rvt-alert="success">
+        <div class="rvt-alert__title" id="delete-success-title">Worksheet deleted!</div>
         <p class="rvt-alert__message">Deletion of the worksheet was successful!</p>
-        <button type="button" class="dismiss-override" id="delete-close">
-            <span class="v-hide">Dismiss this alert</span>
+        <button class="rvt-alert__dismiss" data-rvt-alert-close>
+            <span class="rvt-sr-only">Close</span>
             <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
-                <path fill="currentColor" d="M9.41,8l5.29-5.29a1,1,0,0,0-1.41-1.41L8,6.59,2.71,1.29A1,1,0,0,0,1.29,2.71L6.59,8,1.29,13.29a1,1,0,1,0,1.41,1.41L8,9.41l5.29,5.29a1,1,0,0,0,1.41-1.41Z"/>
+                <path fill="currentColor" d="M9.41,8l5.29-5.29a1,1,0,0,0-1.41-1.41L8,6.59,2.71,1.29A1,1,0,0,0,1.29,2.71L6.59,8,1.29,13.29a1,1,0,1,0,1.41,1.41L8,9.41l5.29,5.29a1,1,0,0,0,1.41-1.41Z" />
             </svg>
         </button>
     </div>
-    <div id="publish-success-alert" class="rvt-alert rvt-alert--success rvt-m-tb-md rvt-display-none" role="alertdialog" aria-labelledby="publish-success-title" tabindex="-1">
-        <h1 class="rvt-alert__title" id="publish-success-title">Worksheet published!</h1>
+    <div id="publish-success-alert" class="rvt-alert rvt-alert--success rvt-m-tb-md rvt-display-none" role="alert"
+         aria-labelledby="publish-success-title" tabindex="-1" data-rvt-alert="success">
+        <div class="rvt-alert__title" id="publish-success-title">Worksheet published!</div>
         <p class="rvt-alert__message">The worksheet is now published.</p>
-        <button type="button" class="dismiss-override" id="publish-close">
-            <span class="v-hide">Dismiss this alert</span>
+        <button class="rvt-alert__dismiss" data-rvt-alert-close>
+            <span class="rvt-sr-only">Close</span>
             <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
-                <path fill="currentColor" d="M9.41,8l5.29-5.29a1,1,0,0,0-1.41-1.41L8,6.59,2.71,1.29A1,1,0,0,0,1.29,2.71L6.59,8,1.29,13.29a1,1,0,1,0,1.41,1.41L8,9.41l5.29,5.29a1,1,0,0,0,1.41-1.41Z"/>
+                <path fill="currentColor" d="M9.41,8l5.29-5.29a1,1,0,0,0-1.41-1.41L8,6.59,2.71,1.29A1,1,0,0,0,1.29,2.71L6.59,8,1.29,13.29a1,1,0,1,0,1.41,1.41L8,9.41l5.29,5.29a1,1,0,0,0,1.41-1.41Z" />
             </svg>
         </button>
     </div>
-    <div id="unpublish-success-alert" class="rvt-alert rvt-alert--success rvt-m-tb-md rvt-display-none" role="alertdialog" aria-labelledby="unpublish-success-title" tabindex="-1">
-        <h1 class="rvt-alert__title" id="unpublish-success-title">Worksheet unpublished!</h1>
+    <div id="unpublish-success-alert" class="rvt-alert rvt-alert--success rvt-m-tb-md rvt-display-none" role="alert"
+         aria-labelledby="unpublish-success-title" tabindex="-1" data-rvt-alert="success">
+        <div class="rvt-alert__title" id="unpublish-success-title">Worksheet unpublished!</div>
         <p class="rvt-alert__message">The worksheet is now unpublished.</p>
-        <button type="button" class="dismiss-override" id="unpublish-close">
-            <span class="v-hide">Dismiss this alert</span>
+        <button class="rvt-alert__dismiss" data-rvt-alert-close>
+            <span class="rvt-sr-only">Close</span>
             <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
-                <path fill="currentColor" d="M9.41,8l5.29-5.29a1,1,0,0,0-1.41-1.41L8,6.59,2.71,1.29A1,1,0,0,0,1.29,2.71L6.59,8,1.29,13.29a1,1,0,1,0,1.41,1.41L8,9.41l5.29,5.29a1,1,0,0,0,1.41-1.41Z"/>
+                <path fill="currentColor" d="M9.41,8l5.29-5.29a1,1,0,0,0-1.41-1.41L8,6.59,2.71,1.29A1,1,0,0,0,1.29,2.71L6.59,8,1.29,13.29a1,1,0,1,0,1.41,1.41L8,9.41l5.29,5.29a1,1,0,0,0,1.41-1.41Z" />
             </svg>
         </button>
     </div>
-    <div th:if="${titleError != null} OR ${fileError != null}" id="error-section" tabindex="-1" class="rvt-alert rvt-alert--danger rvt-m-top-sm" role="alert" aria-labelledby="error-alert-title">
-        <h1 class="rvt-alert__title" id="error-alert-title" th:text="#{upload.errors}">Errors!</h1>
-        <ul>
+
+    <div th:if="${titleError != null} OR ${fileError != null}" id="error-section" tabindex="-1"
+         class="rvt-alert rvt-alert--danger [ rvt-m-top-sm ]" role="alert"
+         aria-labelledby="error-alert-title" data-rvt-alert="error">
+        <div class="rvt-alert__title" id="error-alert-title" th:text="#{upload.errors}">Errors!</div>
+        <ul class="rvt-list-plain">
             <li th:if="${titleError != null}" class="rvt-alert__message">
                 <a href="#sheetTitle" th:text="${titleError}">There was no title provided for the name of the sheet.</a>
             </li>
@@ -93,43 +99,42 @@
         </ul>
     </div>
 
-    <div id="previewWarnings" th:if="${previewWarnings != null}" role="alert" class="rvt-inline-alert rvt-inline-alert--standalone rvt-inline-alert--warning rvt-m-top-md">
-        <span class="rvt-inline-alert__icon">
+    <div id="previewWarnings" th:if="${previewWarnings != null}" class="rvt-alert rvt-alert--warning [ rvt-m-top-md ]"
+         role="alert" aria-labelledby="preview-warning-alert-title" data-rvt-alert="warning">
+        <div class="rvt-alert__title" id="preview-warning-alert-title" th:text="#{upload.sheetFile.warning}">Warning</div>
+        <p class="rvt-alert__message" id="preview-warning-message" th:text="${previewWarnings}">Your changes have not been saved. To save your changes, click ‘Save my changes’ or click ‘Cancel’ to exit without saving.</p>
+        <button class="rvt-alert__dismiss" data-rvt-alert-close>
+            <span class="rvt-sr-only">Close</span>
             <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
-                <g fill="currentColor">
-                    <path d="M11,9H5A1,1,0,0,1,5,7h6a1,1,0,0,1,0,2Z"/>
-                    <path d="M8,16a8,8,0,1,1,8-8A8,8,0,0,1,8,16ZM8,2a6,6,0,1,0,6,6A6,6,0,0,0,8,2Z"/>
-                </g>
+                <path fill="currentColor" d="M9.41,8l5.29-5.29a1,1,0,0,0-1.41-1.41L8,6.59,2.71,1.29A1,1,0,0,0,1.29,2.71L6.59,8,1.29,13.29a1,1,0,1,0,1.41,1.41L8,9.41l5.29,5.29a1,1,0,0,0,1.41-1.41Z" />
             </svg>
-        </span>
-        <span class="rvt-inline-alert__message" id="preview-error-message" th:text="${previewWarnings}">
-            This field is required to continue.
-        </span>
+        </button>
     </div>
 
     <!-- banner -->
-    <div class="rvt-grid rvt-vertical-center rvt-m-tb-sm">
-        <div class="rvt-grid__item">
+    <div class="rvt-row rvt-m-tb-sm">
+        <div class="rvt-cols-10-md">
             <h1 class="rvt-ts-26" th:text="#{viewem.toolTitle}">Tool Title</h1>
         </div>
-        <div class="rvt-grid__item rvt-text-right">
+        <div class="rvt-cols-2-md rvt-text-right">
             <div layout:fragment="header-right"></div>
         </div>
     </div>
     <!-- main content -->
-    <div class="rvt-box">
-        <div class="rvt-box__body">
-            <div layout:fragment="content">Page content goes here</div>
-        </div>
+    <div class="rvt-border-all rvt-p-all-sm">
+        <div layout:fragment="content">Page content goes here</div>
     </div>
 </div>
 
-<footer th:unless="${hideFooter}" class="rvt-ts-12 rvt-container rvt-m-top-lg">
+<footer th:unless="${hideFooter}" class="rvt-ts-12 rvt-container-xl rvt-m-top-lg">
     <div id="footer" th:text="${@serverInfo}"></div>
 </footer>
 
-<script type="text/javascript" th:src="@{/app/jsrivet/rivet-bundle.min.js}"></script>
+<script type="text/javascript" th:src="@{/app/jsrivet/rivet.min.js}"></script>
 <script type="text/javascript" th:src="@{/app/webjars/jquery/jquery.min.js}"></script>
 <script type="text/javascript" th:src="@{/app/js/viewem.js}"></script>
+<script>
+  Rivet.init();
+</script>
 </body>
 </html>

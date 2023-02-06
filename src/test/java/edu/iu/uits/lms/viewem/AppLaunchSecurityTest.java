@@ -93,7 +93,7 @@ public class AppLaunchSecurityTest {
 
     @Test
     public void appNoAuthnLaunch() throws Exception {
-        //This is a secured endpoint and should not not allow access without authn
+        //This is a secured endpoint and should not allow access without authn
         mvc.perform(get("/app/index/1234")
                         .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
                         .contentType(MediaType.APPLICATION_JSON))
@@ -133,7 +133,7 @@ public class AppLaunchSecurityTest {
 
         SecurityContextHolder.getContext().setAuthentication(token);
 
-        //This is a secured endpoint and should not not allow access without authn
+        //This is a secured endpoint and should not allow access without authn
         mvc.perform(get("/app/1234/list")
                         .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
                         .contentType(MediaType.APPLICATION_JSON))
@@ -143,7 +143,7 @@ public class AppLaunchSecurityTest {
     @Test
     public void randomUrlNoAuth() throws Exception {
         SecurityContextHolder.getContext().setAuthentication(null);
-        //This is a secured endpoint and should not not allow access without authn
+        //This is a secured endpoint and should not allow access without authn
         mvc.perform(get("/asdf/foobar")
                         .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
                         .contentType(MediaType.APPLICATION_JSON))
@@ -155,7 +155,7 @@ public class AppLaunchSecurityTest {
         OidcAuthenticationToken token = TestUtils.buildToken("userId", "foo", TestUtils.defaultRole());
         SecurityContextHolder.getContext().setAuthentication(token);
 
-        //This is a secured endpoint and should not not allow access without authn
+        //This is a secured endpoint and should not allow access without authn
         mvc.perform(get("/asdf/foobar")
                         .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
                         .contentType(MediaType.APPLICATION_JSON))

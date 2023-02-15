@@ -37,13 +37,17 @@ import edu.iu.uits.lms.common.oauth.CustomJwtAuthenticationConverter;
 import edu.iu.uits.lms.lti.service.LmsDefaultGrantedAuthoritiesMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.authorization.AuthorizationEventPublisher;
+import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import uk.ac.ox.ctl.lti13.Lti13Configurer;
 
 import static edu.iu.uits.lms.lti.LTIConstants.BASE_USER_ROLE;
@@ -52,7 +56,6 @@ import static edu.iu.uits.lms.lti.LTIConstants.WELL_KNOWN_ALL;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-
     @Configuration
     @Order(SecurityProperties.BASIC_AUTH_ORDER - 5)
     public static class RestSecurityConfigurationAdapter extends WebSecurityConfigurerAdapter {
@@ -65,6 +68,15 @@ public class SecurityConfig {
                   .antMatchers("/rest/**")
                   .access("hasAuthority('SCOPE_lms:rest') and hasAuthority('ROLE_LMS_REST_ADMINS')")
                   .antMatchers("/api/**").permitAll()
+// https://docs.spring.io/spring-security/site/docs/5.0.x/reference/html/jc.html
+//                  .anyRequest().authenticated()
+//                    .withObjectPostProcessor(new ObjectPostProcessor<FilterSecurityInterceptor>() {
+//                        public <O extends FilterSecurityInterceptor> O postProcess(
+//                                O filterSecurityInterceptor) {
+//                            filterSecurityInterceptor.setPublishAuthorizationSuccess(true);
+//                            return filterSecurityInterceptor;
+//                        }
+//                  })
                   .and()
                   .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                   .and()
@@ -93,6 +105,7 @@ public class SecurityConfig {
             //Setup the LTI handshake
             Lti13Configurer lti13Configurer = new Lti13Configurer()
                   .grantedAuthoritiesMapper(lmsDefaultGrantedAuthoritiesMapper);
+//                    .ApplicationEventPublisher(authorizationEventPublisher);
 
             http.apply(lti13Configurer);
 

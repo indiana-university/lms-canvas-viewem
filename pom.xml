@@ -9,7 +9,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.5.4</version>
+        <version>2.7.8</version>
         <relativePath /> <!-- lookup parent from repository -->
     </parent>
 
@@ -78,13 +78,17 @@
         <jquery.version>3.5.1</jquery.version>
         <lms-canvas-services.version>5.0.12</lms-canvas-services.version>
         <lms-canvas-common-configuration.version>5.0.10</lms-canvas-common-configuration.version>
-        <lms-canvas-lti-framework.version>5.1.20</lms-canvas-lti-framework.version>
+        <lms-canvas-lti-framework.version>5.1.21-SNAPSHOT</lms-canvas-lti-framework.version>
         <lms-canvas-rivet.version>5.2.3.1</lms-canvas-rivet.version>
         <lms-canvas-redis-config.version>5.0.9</lms-canvas-redis-config.version>
+
+        <lms-team-spring-boot-it12>4.7-SNAPSHOT</lms-team-spring-boot-it12>
+        <spring-boot-it12>4.6</spring-boot-it12>
+
         <nimbus-jose-jwt.version>9.10.1</nimbus-jose-jwt.version>
         <opencsv.version>5.3</opencsv.version>
         <springdoc-openapi-ui.version>1.6.7</springdoc-openapi-ui.version>
-        <spring-cloud-starter-vault-config.version>3.0.5</spring-cloud-starter-vault-config.version>
+        <spring-cloud-starter-vault-config.version>3.1.1</spring-cloud-starter-vault-config.version>
         <spring-security-bom.version>5.5.2</spring-security-bom.version>
         <webjars-locator.version>0.42</webjars-locator.version>
 
@@ -97,22 +101,22 @@
         <plugins.source.version>3.0.1</plugins.source.version>
     </properties>
 
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.springframework.security</groupId>
-                <artifactId>spring-security-bom</artifactId>
-                <version>${spring-security-bom.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>com.nimbusds</groupId>
-                <artifactId>nimbus-jose-jwt</artifactId>
-                <version>${nimbus-jose-jwt.version}</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
+<!--    <dependencyManagement>-->
+<!--        <dependencies>-->
+<!--            <dependency>-->
+<!--                <groupId>org.springframework.security</groupId>-->
+<!--                <artifactId>spring-security-bom</artifactId>-->
+<!--                <version>${spring-security-bom.version}</version>-->
+<!--                <type>pom</type>-->
+<!--                <scope>import</scope>-->
+<!--            </dependency>-->
+<!--            <dependency>-->
+<!--                <groupId>com.nimbusds</groupId>-->
+<!--                <artifactId>nimbus-jose-jwt</artifactId>-->
+<!--                <version>${nimbus-jose-jwt.version}</version>-->
+<!--            </dependency>-->
+<!--        </dependencies>-->
+<!--    </dependencyManagement>-->
 
     <dependencies>
         <dependency>
@@ -415,6 +419,28 @@
                     </plugin>
                 </plugins>
             </build>
+        </profile>
+        <profile>
+            <id>it12</id>
+            <dependencies>
+                <dependency>
+                    <groupId>edu.iu.uits.lms.audit</groupId>
+                    <artifactId>lms-team-spring-boot-it12</artifactId>
+                    <version>${lms-team-spring-boot-it12}</version>
+                </dependency>
+<!--                <dependency>-->
+<!--                    <groupId>edu.iu.es.esi.audit</groupId>-->
+<!--                    <artifactId>spring-boot-it12</artifactId>-->
+<!--                    <version>${spring-boot-it12}</version>-->
+<!--                </dependency>-->
+            </dependencies>
+            <repositories>
+                <repository>
+                    <id>IUMaven</id>
+                    <name>IUMaven</name>
+                    <url>https://uisapp2.iu.edu/nxs-prd/content/groups/public</url>
+                </repository>
+            </repositories>
         </profile>
     </profiles>
 

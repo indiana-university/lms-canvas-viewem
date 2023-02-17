@@ -69,14 +69,14 @@ public class SecurityConfig {
                   .access("hasAuthority('SCOPE_lms:rest') and hasAuthority('ROLE_LMS_REST_ADMINS')")
                   .antMatchers("/api/**").permitAll()
 // https://docs.spring.io/spring-security/site/docs/5.0.x/reference/html/jc.html
-//                  .anyRequest().authenticated()
-//                    .withObjectPostProcessor(new ObjectPostProcessor<FilterSecurityInterceptor>() {
-//                        public <O extends FilterSecurityInterceptor> O postProcess(
-//                                O filterSecurityInterceptor) {
-//                            filterSecurityInterceptor.setPublishAuthorizationSuccess(true);
-//                            return filterSecurityInterceptor;
-//                        }
-//                  })
+                  .anyRequest().authenticated()
+                    .withObjectPostProcessor(new ObjectPostProcessor<FilterSecurityInterceptor>() {
+                        public <O extends FilterSecurityInterceptor> O postProcess(
+                                O filterSecurityInterceptor) {
+                            filterSecurityInterceptor.setPublishAuthorizationSuccess(true);
+                            return filterSecurityInterceptor;
+                        }
+                  })
                   .and()
                   .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                   .and()

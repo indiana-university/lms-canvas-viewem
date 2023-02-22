@@ -39,7 +39,7 @@ import edu.iu.uits.lms.canvas.services.CourseService;
 import edu.iu.uits.lms.common.session.CourseSessionService;
 import edu.iu.uits.lms.lti.LTIConstants;
 import edu.iu.uits.lms.lti.config.LtiClientTestConfig;
-import edu.iu.uits.lms.lti.service.TestUtils;
+import edu.iu.uits.lms.lti.config.TestUtils;
 import edu.iu.uits.lms.viewem.config.ToolConfig;
 import edu.iu.uits.lms.viewem.controller.MainController;
 import edu.iu.uits.lms.viewem.repository.SheetRepository;
@@ -95,20 +95,20 @@ public class AppLaunchSecurityTest {
     public void appNoAuthnLaunch() throws Exception {
         //This is a secured endpoint and should not not allow access without authn
         mvc.perform(get("/app/index/1234")
-                        .header(HttpHeaders.USER_AGENT, edu.iu.uits.lms.lti.service.TestUtils.defaultUseragent())
+                        .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isForbidden());
     }
 
     @Test
     public void appAuthnWrongContextLaunch() throws Exception {
-        OidcAuthenticationToken token = edu.iu.uits.lms.lti.service.TestUtils.buildToken("userId", "asdf", LTIConstants.INSTRUCTOR_AUTHORITY);
+        OidcAuthenticationToken token = TestUtils.buildToken("userId", "asdf", LTIConstants.INSTRUCTOR_AUTHORITY);
 
         SecurityContextHolder.getContext().setAuthentication(token);
 
         //This is a secured endpoint and should not allow access without authn
         mvc.perform(get("/app/1234/list")
-                        .header(HttpHeaders.USER_AGENT, edu.iu.uits.lms.lti.service.TestUtils.defaultUseragent())
+                        .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.view().name ("tokenError"))
@@ -128,14 +128,14 @@ public class AppLaunchSecurityTest {
         JSONObject customMap = new JSONObject();
         customMap.put(LTIConstants.CUSTOM_CANVAS_COURSE_ID_KEY, "1234");
 
-        OidcAuthenticationToken token = edu.iu.uits.lms.lti.service.TestUtils.buildToken("userId", LTIConstants.INSTRUCTOR_AUTHORITY,
+        OidcAuthenticationToken token = TestUtils.buildToken("userId", LTIConstants.INSTRUCTOR_AUTHORITY,
                 extraAttributes, customMap);
 
         SecurityContextHolder.getContext().setAuthentication(token);
 
         //This is a secured endpoint and should not not allow access without authn
         mvc.perform(get("/app/1234/list")
-                        .header(HttpHeaders.USER_AGENT, edu.iu.uits.lms.lti.service.TestUtils.defaultUseragent())
+                        .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
@@ -145,14 +145,14 @@ public class AppLaunchSecurityTest {
         SecurityContextHolder.getContext().setAuthentication(null);
         //This is a secured endpoint and should not not allow access without authn
         mvc.perform(get("/asdf/foobar")
-                        .header(HttpHeaders.USER_AGENT, edu.iu.uits.lms.lti.service.TestUtils.defaultUseragent())
+                        .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isForbidden());
     }
 
     @Test
     public void randomUrlWithAuth() throws Exception {
-        OidcAuthenticationToken token = edu.iu.uits.lms.lti.service.TestUtils.buildToken("userId", "foo", edu.iu.uits.lms.lti.service.TestUtils.defaultRole());
+        OidcAuthenticationToken token = TestUtils.buildToken("userId", "foo", TestUtils.defaultRole());
         SecurityContextHolder.getContext().setAuthentication(token);
 
         //This is a secured endpoint and should not not allow access without authn

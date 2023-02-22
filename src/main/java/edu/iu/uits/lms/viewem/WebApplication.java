@@ -47,6 +47,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.metrics.buffering.BufferingApplicationStartup;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
@@ -67,7 +68,12 @@ public class WebApplication {
     private ToolConfig toolConfig;
 
     public static void main(String[] args) {
-        SpringApplication.run(WebApplication.class, args);
+//        SpringApplication.run(WebApplication.class, args);
+        SpringApplication app = new SpringApplication(WebApplication.class);
+        BufferingApplicationStartup startup = new BufferingApplicationStartup(2048);
+        startup.addFilter(startupStep -> startupStep.getName().matches("spring.boot.application.ready"));
+        app.setApplicationStartup(startup);
+        app.run(args);
     }
 
     @Autowired

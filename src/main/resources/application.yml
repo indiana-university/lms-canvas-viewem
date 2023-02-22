@@ -36,7 +36,7 @@ spring:
 viewem:
   version: @app.version@
   env: ${app.env}
-  instructorRoles: ["Instructor","urn:lti:instrole:ims/lis/Administrator"]
+  instructorRoles: ["http://purl.imsglobal.org/vocab/lis/v2/membership#Instructor","http://purl.imsglobal.org/vocab/lis/v2/institution/person#Administrator"]
 
 server:
   error:

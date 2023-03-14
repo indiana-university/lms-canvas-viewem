@@ -33,6 +33,7 @@ package edu.iu.uits.lms.viewem.config;
  * #L%
  */
 
+import edu.iu.uits.lms.common.it12logging.RestSecurityLoggingConfig;
 import edu.iu.uits.lms.common.oauth.CustomJwtAuthenticationConverter;
 import edu.iu.uits.lms.lti.service.LmsDefaultGrantedAuthoritiesMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,6 +71,8 @@ public class SecurityConfig {
                   .and()
                   .oauth2ResourceServer()
                   .jwt().jwtAuthenticationConverter(new CustomJwtAuthenticationConverter());
+
+            http.apply(new RestSecurityLoggingConfig());
         }
     }
 
@@ -106,7 +109,7 @@ public class SecurityConfig {
         @Override
         public void configure(WebSecurity web) throws Exception {
             // ignore everything except paths specified
-            web.ignoring().antMatchers("/app/jsrivet/**", "/app/webjars/**", "/actuator/**", "/app/css/**",
+            web.ignoring().antMatchers("/app/jsrivet/**", "/app/webjars/**", "/app/css/**",
                   "/app/js/**", "/app/font/**", "/app/images/**", "/favicon.ico");
         }
 

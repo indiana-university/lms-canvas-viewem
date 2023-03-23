@@ -37,22 +37,8 @@ import org.springframework.boot.context.metrics.buffering.BufferingApplicationSt
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-import javax.sql.DataSource;
-
 @TestConfiguration
 public class SwaggerViewemTestConfig {
     @MockBean
     private BufferingApplicationStartup bufferingApplicationStartup;
-//
-//    @MockBean
-//    private CanvasDataServiceImpl canvasDataService;
-//
-//    @MockBean
-//    private CanvasNotifierMessageListener canvasNotifierMessageListener;
-//
-//    @MockBean
-//    private DataSource dataSource;
-//
-//    @MockBean
-//    private SisServiceImpl sisService;
 }

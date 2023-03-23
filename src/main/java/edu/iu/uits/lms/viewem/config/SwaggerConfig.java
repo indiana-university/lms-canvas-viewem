@@ -40,6 +40,8 @@ import io.swagger.v3.oas.annotations.security.OAuthFlow;
 import io.swagger.v3.oas.annotations.security.OAuthFlows;
 import io.swagger.v3.oas.annotations.security.OAuthScope;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import org.springdoc.core.GroupedOpenApi;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
@@ -50,5 +52,11 @@ import org.springframework.context.annotation.Configuration;
             scopes = {@OAuthScope(name = "lms:rest")},
             tokenUrl = "${springdoc.oAuthFlow.tokenUrl}")))
 public class SwaggerConfig {
-
+    @Bean
+    public GroupedOpenApi groupedOpenApi() {
+        return GroupedOpenApi.builder()
+                .group("viewem")
+                .packagesToScan("edu.iu.uits.lms.viewem.rest")
+                .build();
+    }
 }

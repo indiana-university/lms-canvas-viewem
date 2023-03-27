@@ -58,16 +58,8 @@ management:
   info.java.enabled: true
 
 springdoc:
-  packagesToScan: edu.iu.uits.lms.viewem
-  swagger-ui:
-    enable: false
-    oauth:
-      clientId: ${oauth.tokenprovider.clientId}
-  oAuthFlow:
-    authorizationUrl: ${oauth.tokenprovider.url}/oauth/authorize
-    tokenUrl: ${oauth.tokenprovider.accessTokenUri}
-  api-docs:
-    path: /api/v3/api-docs
+  api-docs.enabled: false
+  swagger-ui.enabled: false
 
 ---
 
@@ -94,3 +86,25 @@ spring:
       enabled: true
       backend: ua-vpit/enterprise-systems/lms/kv
       application-name: viewem
+---
+
+spring:
+  config:
+    activate.on-profile: swagger
+springdoc:
+  api-docs:
+    enabled: true
+    path: /api/v3/api-docs
+  cache.disabled: true
+  packagesToScan: edu.iu.uits.lms.viewem.rest
+  swagger-ui:
+    enabled: false
+    disable-swagger-default-url: true
+    path: /api/swagger-ui.html
+    # Setting supportedSubmitMethods to an empty list is what turns off the "try it out" button
+    #    supportedSubmitMethods:
+    oauth:
+      clientId: ${oauth.tokenprovider.clientId}
+  oAuthFlow:
+    authorizationUrl: ${oauth.tokenprovider.url}/oauth/authorize
+    tokenUrl: ${oauth.tokenprovider.accessTokenUri}

@@ -1,4 +1,4 @@
-package edu.iu.uits.lms.viewem.controller;
+package edu.iu.uits.lms.viewem.controller.rest;
 
 /*-
  * #%L

@@ -76,7 +76,7 @@
         <jdk.target>17</jdk.target>
         <jquery.version>3.5.1</jquery.version>
         <lms-canvas-rivet.version>5.2.3.1</lms-canvas-rivet.version>
-        <lms-embedded-services.version>5.2.1</lms-embedded-services.version>
+        <lms-embedded-services.version>5.2.3</lms-embedded-services.version>
 
         <lms-team-spring-boot-it12>4.7</lms-team-spring-boot-it12>
 
@@ -232,6 +232,11 @@
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-ui</artifactId>
             <version>${springdoc-openapi-ui.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

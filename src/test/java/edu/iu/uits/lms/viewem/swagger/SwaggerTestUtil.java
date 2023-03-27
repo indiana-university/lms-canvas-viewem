@@ -1,10 +1,10 @@
-package edu.iu.uits.lms.viewem.config;
+package edu.iu.uits.lms.viewem.swagger;
 
 /*-
  * #%L
  * lms-canvas-viewem
  * %%
- * Copyright (C) 2015 - 2022 Indiana University
+ * Copyright (C) 2022 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -33,30 +33,13 @@ package edu.iu.uits.lms.viewem.config;
  * #L%
  */
 
-import io.swagger.v3.oas.annotations.OpenAPIDefinition;
-import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
-import io.swagger.v3.oas.annotations.info.Info;
-import io.swagger.v3.oas.annotations.security.OAuthFlow;
-import io.swagger.v3.oas.annotations.security.OAuthFlows;
-import io.swagger.v3.oas.annotations.security.OAuthScope;
-import io.swagger.v3.oas.annotations.security.SecurityScheme;
-import org.springdoc.core.GroupedOpenApi;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import java.util.ArrayList;
+import java.util.List;
 
-@Configuration
-@OpenAPIDefinition(info = @Info(title = "View'em REST Endpoints", version = "${viewem.version}"))
-@SecurityScheme(name = "security_auth_viewem", type = SecuritySchemeType.OAUTH2,
-      flows = @OAuthFlows(authorizationCode = @OAuthFlow(
-            authorizationUrl = "${springdoc.oAuthFlow.authorizationUrl}",
-            scopes = {@OAuthScope(name = "lms:rest")},
-            tokenUrl = "${springdoc.oAuthFlow.tokenUrl}")))
-public class SwaggerConfig {
-    @Bean
-    public GroupedOpenApi groupedOpenApi() {
-        return GroupedOpenApi.builder()
-                .group("viewem")
-                .packagesToScan("edu.iu.uits.lms.viewem.rest")
-                .build();
-    }
+public class SwaggerTestUtil {
+
+   protected static  List<String> getEmbeddedSwaggerToolPaths(List<String> baseList) {
+      List<String> expandedList = new ArrayList<>(baseList);
+      return expandedList;
+   }
 }

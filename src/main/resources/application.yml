@@ -108,6 +108,3 @@ springdoc:
   oAuthFlow:
     authorizationUrl: ${oauth.tokenprovider.url}/oauth/authorize
     tokenUrl: ${oauth.tokenprovider.accessTokenUri}
-
-
-lms.swagger.cors.origin: http://localhost:8081

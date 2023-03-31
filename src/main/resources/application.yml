@@ -96,7 +96,7 @@ springdoc:
     enabled: true
     path: /api/v3/api-docs
   cache.disabled: true
-  packagesToScan: edu.iu.uits.lms.viewem.rest
+  packagesToScan: edu.iu.uits.lms.viewem.controller.rest
   swagger-ui:
     enabled: false
     disable-swagger-default-url: true
@@ -108,3 +108,6 @@ springdoc:
   oAuthFlow:
     authorizationUrl: ${oauth.tokenprovider.url}/oauth/authorize
     tokenUrl: ${oauth.tokenprovider.accessTokenUri}
+
+
+lms.swagger.cors.origin: http://localhost:8081

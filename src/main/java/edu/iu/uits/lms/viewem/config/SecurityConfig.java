@@ -33,6 +33,7 @@ package edu.iu.uits.lms.viewem.config;
  * #L%
  */
 
+import edu.iu.uits.lms.common.it12logging.LmsFilterSecurityInterceptorObjectPostProcessor;
 import edu.iu.uits.lms.common.it12logging.RestSecurityLoggingConfig;
 import edu.iu.uits.lms.common.oauth.CustomJwtAuthenticationConverter;
 import edu.iu.uits.lms.lti.service.LmsDefaultGrantedAuthoritiesMapper;
@@ -94,7 +95,8 @@ public class SecurityConfig {
                   .and()
                   .authorizeRequests()
                   .antMatchers(WELL_KNOWN_ALL, "/error").permitAll()
-                  .antMatchers("/**").hasRole(BASE_USER_ROLE);
+                  .antMatchers("/**").hasRole(BASE_USER_ROLE)
+                  .withObjectPostProcessor(new LmsFilterSecurityInterceptorObjectPostProcessor());
 
             //Setup the LTI handshake
             Lti13Configurer lti13Configurer = new Lti13Configurer()
@@ -106,8 +108,9 @@ public class SecurityConfig {
             http.requestMatchers().antMatchers("/**")
                     .and()
                     .authorizeRequests()
-                    .anyRequest().authenticated();
-        }
+                    .anyRequest().authenticated()
+                    .withObjectPostProcessor(new LmsFilterSecurityInterceptorObjectPostProcessor());
+      }
 
         @Override
         public void configure(WebSecurity web) throws Exception {

@@ -63,13 +63,13 @@
         <jdk.target>17</jdk.target>
         <jquery.version>3.7.1</jquery.version>
         <lms-canvas-rivet.version>5.2.5.2_2</lms-canvas-rivet.version>
-        <lms-embedded-services.version>5.2.27</lms-embedded-services.version>
+        <lms-embedded-services.version>5.2.28</lms-embedded-services.version>
 
         <lms-team-spring-boot-it12>4.8</lms-team-spring-boot-it12>
 
         <opencsv.version>5.9</opencsv.version>
         <springdoc-openapi-ui.version>1.7.0</springdoc-openapi-ui.version>
-        <spring-cloud.version>2021.0.8</spring-cloud.version>
+        <spring-cloud.version>2021.0.9</spring-cloud.version>
         <webjars-locator.version>0.50</webjars-locator.version>
 
         <plugins.compiler.version>3.11.0</plugins.compiler.version>

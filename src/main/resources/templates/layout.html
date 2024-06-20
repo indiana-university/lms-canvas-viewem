@@ -135,6 +135,7 @@
 <script type="text/javascript" th:src="@{/app/js/viewem.js}"></script>
 <script>
   Rivet.init();
+  parent.postMessage(JSON.stringify({subject: 'lti.hideRightSideWrapper',}), '*');
 </script>
 </body>
 </html>

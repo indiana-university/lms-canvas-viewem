@@ -33,23 +33,23 @@ package edu.iu.uits.lms.viewem.model;
  * #L%
  */
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.NamedQueries;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderColumn;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderColumn;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,13 +60,13 @@ import java.util.List;
 @Entity
 @Table(name = "LMS_VIEWEM_SHEET")
 @NamedQueries({
-    @NamedQuery(name = "Sheet.findByContextAndSystem", query = "from Sheet where context = :context and systemId = :systemId and deleted = 0 " +
-            "order by modifiedon desc"),
+    @NamedQuery(name = "Sheet.findByContextAndSystem", query = "from Sheet where context = :context and systemId = :systemId and deleted = false " +
+            "order by modifiedOn desc"),
     @NamedQuery(name = "Sheet.findByContextAndPublishedAndSystem", query = "from Sheet where published = :published " +
-            "and context = :context and systemId = :systemId and deleted = 0 order by modifiedon desc"),
+            "and context = :context and systemId = :systemId and deleted = false order by modifiedOn desc"),
     @NamedQuery(name = "Sheet.findByContextAndPublishedAndSystemAndUser", query = "select s from Sheet s JOIN s.sheetUsers su " +
-            "where s.published = :published and s.context = :context and s.systemId = :systemId and su.userId = :userId and deleted = 0" +
-            "order by modifiedon desc")
+            "where s.published = :published and s.context = :context and s.systemId = :systemId and su.userId = :userId and deleted = false " +
+            "order by modifiedOn desc")
 })
 @SequenceGenerator(name = "LMS_VIEWEM_SHEET_ID_SEQ", sequenceName = "LMS_VIEWEM_SHEET_ID_SEQ", allocationSize = 1)
 @Data

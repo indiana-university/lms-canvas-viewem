@@ -55,6 +55,8 @@ import edu.iu.uits.lms.viewem.service.SheetExclusionStrategy;
 import edu.iu.uits.lms.viewem.service.SystemUserService;
 import edu.iu.uits.lms.viewem.service.ViewemConstants;
 import edu.iu.uits.lms.viewem.service.ViewemService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -75,8 +77,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import uk.ac.ox.ctl.lti13.security.oauth2.client.lti.authentication.OidcAuthenticationToken;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -568,7 +568,7 @@ public class MainController extends OidcTokenAwareController {
 //        log.error("Request: " + req.getRequestURL() + " raised " + exception);
 //
 //        ModelAndView mav = new ModelAndView();
-//        mav.addObject("errorCode", req.getAttribute("javax.servlet.error.status_code"));
+//        mav.addObject("errorCode", req.getAttribute("jakarta.servlet.error.status_code"));
 //        mav.addObject("exception", exception);
 //        mav.addObject("url", req.getRequestURL());
 //        mav.addObject("timestamp", new Date().toString());

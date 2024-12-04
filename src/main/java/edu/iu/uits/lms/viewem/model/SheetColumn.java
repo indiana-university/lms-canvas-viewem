@@ -34,6 +34,16 @@ package edu.iu.uits.lms.viewem.model;
  */
 
 import edu.iu.uits.lms.viewem.service.RestResource;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -41,24 +51,13 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQuery;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-
 /**
  * Created by chmaurer on 6/11/15.
  */
 @Entity
 @Table(name = "LMS_VIEWEM_SHEET_COLUMN")
 @SequenceGenerator(name = "LMS_VIEWEM_SHEET_COLUMN_ID_SEQ", sequenceName = "LMS_VIEWEM_SHEET_COLUMN_ID_SEQ", allocationSize = 1)
-@NamedQuery(name = "SheetColumn.findBySheet", query = "from SheetColumn where sheetId = ?1")
+@NamedQuery(name = "SheetColumn.findBySheet", query = "from SheetColumn where sheet.sheetId = ?1")
 @Data
 @NoArgsConstructor
 @RequiredArgsConstructor

@@ -34,18 +34,18 @@ package edu.iu.uits.lms.viewem.repository;
  */
 
 import edu.iu.uits.lms.viewem.model.SystemUser;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.ParameterExpression;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.ListUtils;
 import org.springframework.data.repository.query.Param;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.ParameterExpression;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -116,7 +116,7 @@ public class SystemUserRepositoryImpl implements SystemUserRepositoryCustom {
                 query.setParameter(entry.getKey(), entry.getValue());
             }
 
-            String resultSql = query.unwrap(org.hibernate.Query.class).getQueryString();
+            String resultSql = query.unwrap(org.hibernate.query.Query.class).getQueryString();
             log.debug(resultSql);
 
             List<SystemUser> users = query.getResultList();

@@ -4,7 +4,7 @@ package edu.iu.uits.lms.viewem.swagger;
  * #%L
  * lms-canvas-viewem
  * %%
- * Copyright (C) 2022 Indiana University
+ * Copyright (C) 2015 - 2024 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -33,13 +33,42 @@ package edu.iu.uits.lms.viewem.swagger;
  * #L%
  */
 
-import java.util.ArrayList;
-import java.util.List;
+import edu.iu.uits.lms.lti.swagger.AbstractSwaggerCustomTest;
+import edu.iu.uits.lms.lti.swagger.AbstractSwaggerDisabledTest;
+import edu.iu.uits.lms.lti.swagger.AbstractSwaggerEmbeddedToolTest;
+import edu.iu.uits.lms.lti.swagger.AbstractSwaggerUiCustomTest;
+import org.junit.jupiter.api.Nested;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.NestedTestConfiguration;
 
-public class SwaggerTestUtil {
+import static org.springframework.test.context.NestedTestConfiguration.EnclosingConfiguration.INHERIT;
 
-   protected static  List<String> getEmbeddedSwaggerToolPaths(List<String> baseList) {
-      List<String> expandedList = new ArrayList<>(baseList);
-      return expandedList;
-   }
+
+@NestedTestConfiguration(INHERIT)
+public class SwaggerSuiteTest {
+
+
+    @Nested
+    @SpringBootTest(classes = {ViewemSwaggerConfig.class})
+    public class SwaggerCustomTest extends AbstractSwaggerCustomTest {
+
+    }
+
+    @Nested
+    @SpringBootTest(classes = {ViewemSwaggerConfig.class})
+    public class SwaggerDisabledTest extends AbstractSwaggerDisabledTest {
+
+    }
+
+    @Nested
+    @SpringBootTest(classes = {ViewemSwaggerConfig.class})
+    public class SwaggerEmbeddedToolTest extends AbstractSwaggerEmbeddedToolTest {
+
+    }
+
+    @Nested
+    @SpringBootTest(classes = {ViewemSwaggerConfig.class})
+    public class SwaggerUiCustomTest extends AbstractSwaggerUiCustomTest {
+
+    }
 }

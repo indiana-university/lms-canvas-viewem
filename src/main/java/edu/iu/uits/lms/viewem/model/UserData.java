@@ -33,54 +33,29 @@ package edu.iu.uits.lms.viewem.model;
  * #L%
  */
 
-import edu.iu.uits.lms.viewem.service.RestResource;
 import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.SequenceGenerator;
-import jakarta.persistence.Table;
+import jakarta.persistence.Embeddable;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+
+import java.io.Serializable;
 
 /**
  * Created by chmaurer on 6/12/15.
  */
-@Entity
-@Table(name = "LMS_VIEWEM_USER_DATA")
-@SequenceGenerator(name = "LMS_VIEWEM_USER_DATA_ID_SEQ", sequenceName = "LMS_VIEWEM_USER_DATA_ID_SEQ", allocationSize = 1)
+@Embeddable
 @Data
 @NoArgsConstructor
 @RequiredArgsConstructor
-@EqualsAndHashCode(exclude = {"sheetUser"})
-@ToString(exclude = {"sheetUser"})
-public class UserData {
+public class UserData implements Serializable {
     /**
      * database field size for the data field
      */
-    public static int USER_DATA_DATA_SIZE = 4000;
-
-    @Id
-    @GeneratedValue(generator = "LMS_VIEWEM_USER_DATA_ID_SEQ")
-    @Column(name = "VIEWEM_USER_DATA_ID")
-    private Long userGradeId;
+    public static final int USER_DATA_DATA_SIZE = 4000;
 
     @NonNull
-    @Column(name = "DATA", length = 4000)
+    @Column(name = "DATA", length = USER_DATA_DATA_SIZE)
     private String data;
-
-    private int sequence;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "VIEWEM_SHEET_USER_ID")
-    @RestResource(exported = false)
-    private SheetUser sheetUser;
-
 }

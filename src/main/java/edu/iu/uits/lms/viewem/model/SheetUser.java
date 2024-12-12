@@ -87,8 +87,7 @@ public class SheetUser implements Serializable {
     private String userId;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    //TODO Wait to use the legit table until we're ready to deploy to REG
-    @CollectionTable(name = "LMS_VIEWEM_USER_DATA_2", joinColumns = @JoinColumn(name = "VIEWEM_SYSTEM_USER_ID", foreignKey = @ForeignKey(name = "FK_VIEWEM_SYSTEM_USER_ID")))
+    @CollectionTable(name = "LMS_VIEWEM_USER_DATA", joinColumns = @JoinColumn(name = "VIEWEM_SHEET_USER_ID", foreignKey = @ForeignKey(name = "FK_VIEWEM_SHEET_USER_DATA")))
     @OrderColumn(name = "sequence")
     private List<UserData> data;
 

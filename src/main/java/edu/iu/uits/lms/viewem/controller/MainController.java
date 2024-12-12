@@ -299,7 +299,7 @@ public class MainController extends OidcTokenAwareController {
      * @param model Model containing details necessary to render the page
      * @return The view (fragment) to render
      */
-    @RequestMapping(value = "/{context}/view/{sheetId}/{userId}")
+    @RequestMapping(value = "/{context}/view/{sheetId}/{userId}/")
     @Secured(LTIConstants.INSTRUCTOR_AUTHORITY)
     public String loadUserDataForSheet(@PathVariable("context") String context, @PathVariable("sheetId") Long sheetId, @PathVariable("userId") String userId, Model model) {
         OidcAuthenticationToken token = getValidatedToken(context);

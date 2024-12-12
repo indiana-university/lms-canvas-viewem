@@ -33,8 +33,6 @@ package edu.iu.uits.lms.viewem.controller;
  * #L%
  */
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.opencsv.CSVWriter;
 import edu.iu.uits.lms.canvas.model.User;
 import edu.iu.uits.lms.canvas.services.CourseService;
@@ -51,10 +49,11 @@ import edu.iu.uits.lms.viewem.model.UserData;
 import edu.iu.uits.lms.viewem.repository.SheetRepository;
 import edu.iu.uits.lms.viewem.repository.SheetUserRepository;
 import edu.iu.uits.lms.viewem.repository.SystemUserRepository;
-import edu.iu.uits.lms.viewem.service.SheetExclusionStrategy;
 import edu.iu.uits.lms.viewem.service.SystemUserService;
 import edu.iu.uits.lms.viewem.service.ViewemConstants;
 import edu.iu.uits.lms.viewem.service.ViewemService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -75,8 +74,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import uk.ac.ox.ctl.lti13.security.oauth2.client.lti.authentication.OidcAuthenticationToken;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -93,6 +90,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import static edu.iu.uits.lms.viewem.service.ViewemConstants.DATA_KEY_ROSTER_USER_IDS;
+import static edu.iu.uits.lms.viewem.service.ViewemConstants.DATA_KEY_SHEET;
 
 /**
  * Created by chmaurer on 6/4/15.
@@ -301,7 +299,7 @@ public class MainController extends OidcTokenAwareController {
      * @param model Model containing details necessary to render the page
      * @return The view (fragment) to render
      */
-    @RequestMapping(value = "/{context}/view/{sheetId}/{userId}")
+    @RequestMapping(value = "/{context}/view/{sheetId}/{userId}/")
     @Secured(LTIConstants.INSTRUCTOR_AUTHORITY)
     public String loadUserDataForSheet(@PathVariable("context") String context, @PathVariable("sheetId") Long sheetId, @PathVariable("userId") String userId, Model model) {
         OidcAuthenticationToken token = getValidatedToken(context);
@@ -330,8 +328,9 @@ public class MainController extends OidcTokenAwareController {
             model.addAttribute("sheetUser", userFullName);
             model.addAttribute("sheetUserId", sheetUser.getUserId());
 
+            int dataIndex = 0;
             for (UserData ud : sheetUser.getData()) {
-                String[] dataRow = {columns.get(ud.getSequence()).getTitle(), ud.getData()};
+                String[] dataRow = {columns.get(dataIndex++).getTitle(), ud.getData()};
                 userData.add(dataRow);
             }
         }
@@ -431,10 +430,7 @@ public class MainController extends OidcTokenAwareController {
                     List<SheetUser> sheetUsers = sheet.getSheetUsers();
                     if (sheetUsers != null && sheetUsers.size() > 0) {
                         addPreviewDataToModel(sheet, sheet.getSheetUsers().get(0), model, systemId);
-                        GsonBuilder builder = new GsonBuilder().setExclusionStrategies(new SheetExclusionStrategy());
-                        Gson gson = builder.create();
-
-                        model.addAttribute("sheetJson", gson.toJson(sheet));
+                        courseSessionService.addAttributeToSession(request.getSession(), context, DATA_KEY_SHEET, sheet);
 
                         if (skippedUserIds.size() > 0) {
                             String delimitedUsers = StringUtils.arrayToDelimitedString(skippedUserIds.toArray(new String[skippedUserIds.size()]), ", ");
@@ -492,7 +488,7 @@ public class MainController extends OidcTokenAwareController {
 
     @RequestMapping(value = "/{context}/upload", method = RequestMethod.POST, params="action=back")
     @Secured(LTIConstants.INSTRUCTOR_AUTHORITY)
-    public String backToUpload(@PathVariable("context") String context, Model model, @RequestParam("sheetTitle") String sheetTitle, SecurityContextHolderAwareRequestWrapper request) {
+    public String backToUpload(@PathVariable("context") String context, Model model, @RequestParam("sheetTitle") String sheetTitle) {
         model.addAttribute("sheetTitle", sheetTitle);
         return uploadSheet(context, model);
     }
@@ -505,59 +501,57 @@ public class MainController extends OidcTokenAwareController {
 
     @RequestMapping(value = "/{context}/upload", method = RequestMethod.POST, params="action=" + ViewemConstants.ACTION_SAVE_PUBLISH)
     @Secured(LTIConstants.INSTRUCTOR_AUTHORITY)
-    public String uploadAndPublish(@PathVariable("context") String context, Model model, @RequestParam("sheetTitle") String sheetTitle, @RequestParam("sheetJson") String sheetJson, SecurityContextHolderAwareRequestWrapper request) {
-        String result = upload(context, model, sheetTitle, sheetJson, request, true);
+    public String uploadAndPublish(@PathVariable("context") String context, Model model, @RequestParam("sheetTitle") String sheetTitle,
+                                   SecurityContextHolderAwareRequestWrapper request) {
+        String result = upload(context, model, sheetTitle, request, true);
         return result;
     }
 
     /**
      * Upload a new sheet without publish
      * @param sheetTitle title of the sheet
-     * @param sheetJson Json info of the Sheet
      * @param model Model containing details necessary to render the page
-     * @return The the page with all sheets listed
+     * @return The page with all sheets listed
      */
 
     @RequestMapping(value = "/{context}/upload", method = RequestMethod.POST, params="action=" + ViewemConstants.ACTION_SAVE_UNPUBLISH)
     @Secured(LTIConstants.INSTRUCTOR_AUTHORITY)
-    public String uploadAndUnpublish(@PathVariable("context") String context, Model model, @RequestParam("sheetTitle") String sheetTitle, @RequestParam("sheetJson") String sheetJson, SecurityContextHolderAwareRequestWrapper request) {
-        String result = upload(context, model, sheetTitle, sheetJson, request, false);
+    public String uploadAndUnpublish(@PathVariable("context") String context, Model model, @RequestParam("sheetTitle") String sheetTitle,
+                                     SecurityContextHolderAwareRequestWrapper request) {
+        String result = upload(context, model, sheetTitle, request, false);
         return result;
     }
 
     /**
      * Upload a new sheet
      * @param sheetTitle title of the sheet
-     * @param sheetJson Json info of the Sheet
      * @param model Model containing details necessary to render the page
-     * @return The the page with all sheets listed
+     * @return The page with all sheets listed
      */
 
     @RequestMapping(value = "/{context}/upload", method = RequestMethod.POST, params="action=" + ViewemConstants.ACTION_SAVE)
     @Secured(LTIConstants.INSTRUCTOR_AUTHORITY)
-    public String uploadSave(@PathVariable("context") String context, Model model, @RequestParam("sheetTitle") String sheetTitle, @RequestParam("sheetJson") String sheetJson, SecurityContextHolderAwareRequestWrapper request) {
+    public String uploadSave(@PathVariable("context") String context, Model model, @RequestParam("sheetTitle") String sheetTitle,
+                             SecurityContextHolderAwareRequestWrapper request) {
         //this part is a duplicate with upload(), but if I pass "true" or "false" as the placehold, and let upload() deal with published status,
         //it will break SAVE_UNPUBLISH or SAVE_PUBLISH feature.
-        Gson gsonSheet = new Gson();
-        Sheet sheet = gsonSheet.fromJson(sheetJson, Sheet.class);
-        boolean published = sheet.isPublished();
-
-        String result = upload(context, model, sheetTitle, sheetJson, request, published);
+        String result = upload(context, model, sheetTitle, request, null);
         return result;
     }
 
-    private String upload(String context, Model model, @RequestParam("sheetTitle") String sheetTitle, @RequestParam("sheetJson") String sheetJson, SecurityContextHolderAwareRequestWrapper request, boolean published) {
+    private String upload(String context, Model model, @RequestParam("sheetTitle") String sheetTitle,
+                          SecurityContextHolderAwareRequestWrapper request, Boolean published) {
         getValidatedToken(context);
 
-        if (sheetJson != null) {
-            Gson gsonSheet = new Gson();
-            Sheet sheet = gsonSheet.fromJson(sheetJson, Sheet.class);
-            if (sheet != null) {
-                sheet.setTitle(sheetTitle);
+        Sheet sheet = courseSessionService.getAttributeFromSession(request.getSession(), context, DATA_KEY_SHEET, Sheet.class);
+
+        if (sheet != null) {
+            sheet.setTitle(sheetTitle);
+            if (published != null) {
                 sheet.setPublished(published);
-                viewemService.reattachChildElements(sheet);
-                sheetRepository.save(sheet);
             }
+
+            sheetRepository.save(sheet);
         }
         return listSheets(context, model, request);
     }
@@ -568,7 +562,7 @@ public class MainController extends OidcTokenAwareController {
 //        log.error("Request: " + req.getRequestURL() + " raised " + exception);
 //
 //        ModelAndView mav = new ModelAndView();
-//        mav.addObject("errorCode", req.getAttribute("javax.servlet.error.status_code"));
+//        mav.addObject("errorCode", req.getAttribute("jakarta.servlet.error.status_code"));
 //        mav.addObject("exception", exception);
 //        mav.addObject("url", req.getRequestURL());
 //        mav.addObject("timestamp", new Date().toString());

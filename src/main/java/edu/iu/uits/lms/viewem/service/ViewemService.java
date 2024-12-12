@@ -84,7 +84,7 @@ public class ViewemService {
     * @param validUserIds List of valid userIds to compare
     * @param skippedUserIds List of userIds that were skipped from the sheet as they weren't in the list of valid ids.  Will be displayed to the end user.
     * @return a persisted Sheet object
-    * @throws FileUploadException Throws exception of the file is improperly formatted (i.e. not enough rows/columns)
+    * @throws FileUploadException Throws exception if the file is improperly formatted (i.e. not enough rows/columns)
     * @throws DataTooBigException Throws an exception if some of the data is going to be too big for the database
     */
     public Sheet processCsvFile(InputStream csvFile, String title, String context, String systemId, boolean published,
@@ -239,20 +239,5 @@ public class ViewemService {
     	return sheetContents;
     }
 
-   /**
-    * When the object is deserialized from json, we need to hook up all the relationships again
-    * @param sheet Sheet to fix
-    */
-    public void reattachChildElements(Sheet sheet) {
-        for (SheetColumn sheetColumn : sheet.getColumns()) {
-            sheetColumn.setSheet(sheet);
-        }
-        for (SheetUser sheetUser : sheet.getSheetUsers()) {
-            sheetUser.setSheet(sheet);
-            for (UserData userData : sheetUser.getData()) {
-                userData.setSheetUser(sheetUser);
-            }
-        }
-    }
-   
+
 }

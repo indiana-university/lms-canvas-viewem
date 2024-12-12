@@ -43,9 +43,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta id="_csrf" name="_csrf" th:content="${_csrf.token}"/>
     <meta id="_csrf_header" name="_csrf_header" th:content="${_csrf.headerName}"/>
-    <link media="all" rel="stylesheet" type="text/css" th:href="@{/app/jsrivet/rivet.min.css}" />
+    <link media="all" rel="stylesheet" type="text/css" th:href="@{/app/jsrivet/rivet-core/rivet.min.css}" />
     <link media="all" rel="stylesheet" type="text/css" th:href="@{/app/css/viewem.css}" />
-
+    <!-- The below link references commonFragments which lives in common-configuration and comes along on the classpath  -->
+    <link th:replace="~{commonFragments/favicon :: favicon}" />
 </head>
 <body>
 
@@ -130,7 +131,7 @@
     <div id="footer" th:text="${@serverInfo}"></div>
 </footer>
 
-<script type="text/javascript" th:src="@{/app/jsrivet/rivet.min.js}"></script>
+<script type="text/javascript" th:src="@{/app/jsrivet/rivet-core/rivet.min.js}"></script>
 <script type="text/javascript" th:src="@{/app/webjars/jquery/jquery.min.js}"></script>
 <script type="text/javascript" th:src="@{/app/js/viewem.js}"></script>
 <script>

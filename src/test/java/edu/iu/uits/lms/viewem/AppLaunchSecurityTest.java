@@ -33,13 +33,13 @@ package edu.iu.uits.lms.viewem;
  * #L%
  */
 
-import com.nimbusds.jose.shaded.json.JSONObject;
-import edu.iu.uits.lms.canvas.config.CanvasClientTestConfig;
 import edu.iu.uits.lms.canvas.services.CourseService;
+import edu.iu.uits.lms.common.server.ServerInfo;
 import edu.iu.uits.lms.common.session.CourseSessionService;
 import edu.iu.uits.lms.lti.LTIConstants;
-import edu.iu.uits.lms.lti.config.LtiClientTestConfig;
 import edu.iu.uits.lms.lti.config.TestUtils;
+import edu.iu.uits.lms.lti.service.LmsDefaultGrantedAuthoritiesMapper;
+import edu.iu.uits.lms.viewem.config.SecurityConfig;
 import edu.iu.uits.lms.viewem.config.ToolConfig;
 import edu.iu.uits.lms.viewem.controller.MainController;
 import edu.iu.uits.lms.viewem.repository.SheetRepository;
@@ -51,11 +51,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import uk.ac.ox.ctl.lti13.lti.Claims;
@@ -68,11 +69,18 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(value = MainController.class, properties = {"oauth.tokenprovider.url=http://foo"})
-@Import({ToolConfig.class, CanvasClientTestConfig.class, LtiClientTestConfig.class})
+@ContextConfiguration(classes = {ToolConfig.class, MainController.class, SecurityConfig.class})
 public class AppLaunchSecurityTest {
 
     @Autowired
     private MockMvc mvc;
+
+    @MockBean
+    private LmsDefaultGrantedAuthoritiesMapper lmsDefaultGrantedAuthoritiesMapper;
+    @MockBean
+    private ClientRegistrationRepository clientRegistrationRepository;
+    @MockBean(name = ServerInfo.BEAN_NAME)
+    private ServerInfo serverInfo;
 
     @MockBean
     private ViewemService viewemService = null;
@@ -121,11 +129,11 @@ public class AppLaunchSecurityTest {
     public void appAuthnLaunch() throws Exception {
         Map<String, Object> extraAttributes = new HashMap<>();
 
-        JSONObject platformObject = new JSONObject();
+        Map<String, Object> platformObject = new HashMap<>();
         platformObject.put(LTIConstants.CLAIMS_PLATFORM_GUID_KEY, "systemId");
         extraAttributes.put(Claims.PLATFORM_INSTANCE, platformObject);
 
-        JSONObject customMap = new JSONObject();
+        Map<String, Object> customMap = new HashMap<>();
         customMap.put(LTIConstants.CUSTOM_CANVAS_COURSE_ID_KEY, "1234");
 
         OidcAuthenticationToken token = TestUtils.buildToken("userId", LTIConstants.INSTRUCTOR_AUTHORITY,
@@ -152,7 +160,7 @@ public class AppLaunchSecurityTest {
 
     @Test
     public void randomUrlWithAuth() throws Exception {
-        OidcAuthenticationToken token = TestUtils.buildToken("userId", "foo", TestUtils.defaultRole());
+        OidcAuthenticationToken token = TestUtils.buildToken("userId", "foo", TestUtils.defaultAuthority());
         SecurityContextHolder.getContext().setAuthentication(token);
 
         //This is a secured endpoint and should not allow access without authn

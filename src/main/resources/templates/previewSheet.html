@@ -45,7 +45,6 @@
     <div layout:fragment="content">
         <form id="upload" action="listSheet.html" th:action="@{|/app/${context}/upload|}" method="post" enctype="multipart/form-data">
             <div th:insert="fragments/preview :: preview"></div>
-            <input type="hidden" id="sheetJson" name="sheetJson" th:value="${sheetJson}" />
             <div class="rvt-button-group rvt-button-group--right rvt-m-top-sm rvt-flex">
                 <button id="cancelButton" type="submit" class="rvt-button rvt-button--secondary loading-btn" data-action="cancel">
                     <span class="rvt-button__content" th:text="#{preview.cancelButton}" >Cancel Button Text</span>

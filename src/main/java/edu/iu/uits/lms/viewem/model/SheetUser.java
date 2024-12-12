@@ -34,6 +34,21 @@ package edu.iu.uits.lms.viewem.model;
  */
 
 import edu.iu.uits.lms.viewem.service.RestResource;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.NamedQueries;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.OrderColumn;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -41,20 +56,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderColumn;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -73,7 +75,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @EqualsAndHashCode(exclude = {"sheet"})
 @ToString(exclude = {"sheet"})
-public class SheetUser {
+public class SheetUser implements Serializable {
 
     @Id
     @GeneratedValue(generator = "LMS_VIEWEM_SHEET_USER_ID_SEQ")
@@ -84,7 +86,8 @@ public class SheetUser {
     @Column(name = "userid")
     private String userId;
 
-    @OneToMany(cascade = CascadeType.ALL, targetEntity = UserData.class, mappedBy = "sheetUser", fetch = FetchType.EAGER, orphanRemoval = true)
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "LMS_VIEWEM_USER_DATA", joinColumns = @JoinColumn(name = "VIEWEM_SHEET_USER_ID", foreignKey = @ForeignKey(name = "FK_VIEWEM_SHEET_USER_DATA")))
     @OrderColumn(name = "sequence")
     private List<UserData> data;
 
@@ -101,7 +104,6 @@ public class SheetUser {
         if (data == null) {
             data = new ArrayList<UserData>();
         }
-        userData.setSheetUser(this);
         data.add(userData);
     }
 }

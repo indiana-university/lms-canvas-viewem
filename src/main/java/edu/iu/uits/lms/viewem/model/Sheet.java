@@ -50,6 +50,7 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -72,7 +73,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @RequiredArgsConstructor
-public class Sheet extends ModelWithDates {
+public class Sheet extends ModelWithDates implements Serializable {
 
     @Id
     @GeneratedValue(generator = "LMS_VIEWEM_SHEET_ID_SEQ")

@@ -51,6 +51,8 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
+import java.io.Serializable;
+
 /**
  * Created by chmaurer on 6/11/15.
  */
@@ -63,7 +65,7 @@ import lombok.ToString;
 @RequiredArgsConstructor
 @EqualsAndHashCode(exclude = {"sheet"})
 @ToString(exclude = {"sheet"})
-public class SheetColumn {
+public class SheetColumn implements Serializable {
     /**
      * database field size for the title
      */

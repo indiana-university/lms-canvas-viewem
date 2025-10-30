@@ -96,43 +96,31 @@
                                 <path fill="currentColor" d="M8,12.46a2,2,0,0,1-1.52-.7L1.24,5.65a1,1,0,1,1,1.52-1.3L8,10.46l5.24-6.11a1,1,0,0,1,1.52,1.3L9.52,11.76A2,2,0,0,1,8,12.46Z" />
                             </svg>
                         </button>
-                        <div class="rvt-dropdown__menu rvt-dropdown__menu--right" th:id="@{|sheet-navigation-${sheet.sheetId}|}"
+                        <div class="rvt-dropdown__menu rvt-dropdown__menu--right action-menu" th:id="@{|sheet-navigation-${sheet.sheetId}|}"
                              hidden role="menu" data-rvt-dropdown-menu>
                             <button type="button" class="publish-worksheet dropdown-item" role="menuitem" >
-                                <svg th:if="${sheet.published}" class="rvt-icon rvt-m-right-xs" aria-hidden="true">
-                                    <use th:href="@{/app/jsrivet/rivet-icons.svg#rvt-icon-undo}"></use>
-                                </svg>
+                                <rvt-icon th:if="${sheet.published}" name="undo" class="rvt-icon rvt-m-right-xs"></rvt-icon>
                                 <span th:if="${sheet.published}" class="publish-text">Unpublish</span>
-                                <svg th:unless="${sheet.published}" class="rvt-icon rvt-m-right-xs" aria-hidden="true">
-                                    <use th:href="@{/app/jsrivet/rivet-icons.svg#rvt-icon-check-circle-breakout}"></use>
-                                </svg>
+                                <rvt-icon th:unless="${sheet.published}" name="check-circle-breakout" class="rvt-icon rvt-m-right-xs"></rvt-icon>
                                 <span th:unless="${sheet.published}" class="publish-text">Publish</span>
                             </button>
                             <a href="#" th:href="@{|/app/${sheet.context}/edit/${sheet.sheetId}|}" role="menuitem"
                                class="dropdown-item">
-                                <svg class="rvt-icon rvt-m-right-xs" aria-hidden="true">
-                                    <use th:href="@{/app/jsrivet/rivet-icons.svg#rvt-icon-pencil}"></use>
-                                </svg>
+                                <rvt-icon name="pencil" class="rvt-icon rvt-m-right-xs"></rvt-icon>
                                 <span>Edit</span>
                             </a>
                             <button type="button" class="delete-worksheet dropdown-item" role="menuitem">
-                                <svg class="rvt-icon rvt-m-right-xs" aria-hidden="true">
-                                    <use th:href="@{/app/jsrivet/rivet-icons.svg#rvt-icon-trash}"></use>
-                                </svg>
+                                <rvt-icon name="trash" class="rvt-icon rvt-m-right-xs"></rvt-icon>
                                 <span>Delete</span>
                             </button>
                             <a href="#" th:href="@{|/app/${sheet.context}/view/${sheet.sheetId}|}" role="menuitem"
                                class="dropdown-item">
-                                <svg class="rvt-icon rvt-m-right-xs" aria-hidden="true">
-                                    <use th:href="@{/app/jsrivet/rivet-icons.svg#rvt-icon-eye}"></use>
-                                </svg>
+                                <rvt-icon name="eye" class="rvt-icon rvt-m-right-xs"></rvt-icon>
                                 <span>View worksheet</span>
                             </a>
                             <a href="#" th:href="@{|/app/${sheet.context}/download/${sheet.sheetId}|}" role="menuitem"
                                class="dropdown-item">
-                                <svg class="rvt-icon rvt-m-right-xs" aria-hidden="true">
-                                    <use th:href="@{/app/jsrivet/rivet-icons.svg#rvt-icon-download}"></use>
-                                </svg>
+                                <rvt-icon name="download" class="rvt-icon rvt-m-right-xs"></rvt-icon>
                                 <span>Download worksheet</span>
                             </a>
                         </div>

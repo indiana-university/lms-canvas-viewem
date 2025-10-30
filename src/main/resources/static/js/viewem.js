@@ -44,8 +44,8 @@
             var hrefText = parentTitle.attr("href");
             var hrefEditText = hrefText.replace("\/view\/","\/edit\/");
 
-            var icon = $('use', this);
-            var hrefIcon = icon.attr("href");
+            var icon = $('rvt-icon', this);
+            var iconName = icon.attr("name");
             var menuText = $('.publish-text', this);
 
             const dropdownId = $(this).parent().attr("id");
@@ -56,8 +56,8 @@
                 if(confirmPublish == true) {
                     menuText.text('Unpublish'); // change menu text
                     publishStatus.text('Published'); // change status text
-                    var hrefIconReplacement = hrefIcon.replace("check-circle-breakout","undo"); // replace the icon type
-                    icon.attr("href", hrefIconReplacement); // implement new href on icon
+                    var iconNameReplacement = iconName.replace("check-circle-breakout","undo"); // replace the icon type
+                    icon.attr("name", iconNameReplacement); // implement new name on icon
                     parentTitle.addClass('rvt-button--success-secondary'); // make worksheet title green
                     $.post(hrefEditText + "/publish"); // ajax call to set publish status
                     var publishAlert = document.getElementById("publish-success-alert");
@@ -72,8 +72,8 @@
                 if(confirmUnpublish == true) {
                     menuText.text('Publish'); // change menu text
                     publishStatus.text('Unpublished'); // change status text
-                    var hrefIconReplacement = hrefIcon.replace("undo","check-circle-breakout"); // replace the icon type
-                    icon.attr("href", hrefIconReplacement); // implement new href on icon
+                    var iconNameReplacement = iconName.replace("undo","check-circle-breakout"); // replace the icon type
+                    icon.attr("name", iconNameReplacement); // switch the icon
                     parentTitle.removeClass('rvt-button--success-secondary'); // make worksheet title green
                     $.post(hrefEditText + "/unpublish"); // ajax call to set publish status
                     var unpublishAlert = document.getElementById("unpublish-success-alert");

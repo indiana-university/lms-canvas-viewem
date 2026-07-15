@@ -49,6 +49,7 @@ import edu.iu.uits.lms.viewem.model.UserData;
 import edu.iu.uits.lms.viewem.repository.SheetRepository;
 import edu.iu.uits.lms.viewem.repository.SheetUserRepository;
 import edu.iu.uits.lms.viewem.repository.SystemUserRepository;
+import edu.iu.uits.lms.viewem.service.EventService;
 import edu.iu.uits.lms.viewem.service.SystemUserService;
 import edu.iu.uits.lms.viewem.service.ViewemConstants;
 import edu.iu.uits.lms.viewem.service.ViewemService;
@@ -116,6 +117,8 @@ public class MainController extends OidcTokenAwareController {
     private CourseService courseService = null;
     @Autowired
     private SystemUserService systemUserService = null;
+    @Autowired
+    private EventService eventService = null;
 
     @GetMapping("/launch")
     public String launch(Model model, SecurityContextHolderAwareRequestWrapper request) {
@@ -157,6 +160,9 @@ public class MainController extends OidcTokenAwareController {
 
         model.addAttribute("sheets", sheets);
         model.addAttribute("context", context);
+
+        eventService.caliper("/list", context, oidcTokenUtils.getUserId(), "ROLE_GOES_HERE");
+
         return "listSheets";
     }
 

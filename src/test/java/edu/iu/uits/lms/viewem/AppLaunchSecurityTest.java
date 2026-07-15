@@ -45,6 +45,7 @@ import edu.iu.uits.lms.viewem.controller.MainController;
 import edu.iu.uits.lms.viewem.repository.SheetRepository;
 import edu.iu.uits.lms.viewem.repository.SheetUserRepository;
 import edu.iu.uits.lms.viewem.repository.SystemUserRepository;
+import edu.iu.uits.lms.viewem.service.EventService;
 import edu.iu.uits.lms.viewem.service.SystemUserService;
 import edu.iu.uits.lms.viewem.service.ViewemService;
 import org.junit.jupiter.api.Test;
@@ -98,6 +99,8 @@ public class AppLaunchSecurityTest {
     private SystemUserService systemUserService = null;
     @MockBean
     private CourseService courseService = null;
+    @MockBean
+    private EventService eventService = null;
 
     @Test
     public void appNoAuthnLaunch() throws Exception {

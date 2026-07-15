@@ -363,6 +363,16 @@
                 </repository>
             </repositories>
         </profile>
+        <profile>
+            <id>caliper</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.imsglobal.caliper</groupId>
+                    <artifactId>caliper-java</artifactId>
+                    <version>1.1.2</version>
+                </dependency>
+            </dependencies>
+        </profile>
     </profiles>
 
 </project>

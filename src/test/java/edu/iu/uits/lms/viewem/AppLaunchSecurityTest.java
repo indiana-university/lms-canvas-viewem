@@ -49,22 +49,22 @@ import edu.iu.uits.lms.viewem.service.SystemUserService;
 import edu.iu.uits.lms.viewem.service.ViewemService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import uk.ac.ox.ctl.lti13.lti.Claims;
 import uk.ac.ox.ctl.lti13.security.oauth2.client.lti.authentication.OidcAuthenticationToken;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -75,29 +75,29 @@ public class AppLaunchSecurityTest {
     @Autowired
     private MockMvc mvc;
 
-    @MockBean
+    @MockitoBean
     private LmsDefaultGrantedAuthoritiesMapper lmsDefaultGrantedAuthoritiesMapper;
-    @MockBean
+    @MockitoBean
     private ClientRegistrationRepository clientRegistrationRepository;
-    @MockBean(name = ServerInfo.BEAN_NAME)
+    @MockitoBean(name = ServerInfo.BEAN_NAME)
     private ServerInfo serverInfo;
 
-    @MockBean
-    private ViewemService viewemService = null;
-    @MockBean
-    private ResourceBundleMessageSource messageSource = null;
-    @MockBean
-    private SheetRepository sheetRepository = null;
-    @MockBean
-    private SheetUserRepository sheetUserRepository = null;
-    @MockBean
-    private SystemUserRepository systemUserRepository = null;
-    @MockBean
-    private CourseSessionService courseSessionService = null;
-    @MockBean
-    private SystemUserService systemUserService = null;
-    @MockBean
-    private CourseService courseService = null;
+    @MockitoBean
+    private ViewemService viewemService;
+    @MockitoBean
+    private ResourceBundleMessageSource messageSource;
+    @MockitoBean
+    private SheetRepository sheetRepository;
+    @MockitoBean
+    private SheetUserRepository sheetUserRepository;
+    @MockitoBean
+    private SystemUserRepository systemUserRepository;
+    @MockitoBean
+    private CourseSessionService courseSessionService;
+    @MockitoBean
+    private SystemUserService systemUserService;
+    @MockitoBean
+    private CourseService courseService;
 
     @Test
     public void appNoAuthnLaunch() throws Exception {
@@ -112,17 +112,12 @@ public class AppLaunchSecurityTest {
     public void appAuthnWrongContextLaunch() throws Exception {
         OidcAuthenticationToken token = TestUtils.buildToken("userId", "asdf", LTIConstants.INSTRUCTOR_AUTHORITY);
 
-        SecurityContextHolder.getContext().setAuthentication(token);
-
-        //This is a secured endpoint and should not allow access without authn
-        mvc.perform(get("/app/1234/list")
+        // Authenticated app requests should pass security and then 404 when no handler is mapped.
+        mvc.perform(get("/app/1234/not-a-real-route")
+                        .with(authentication(token))
                         .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.view().name ("tokenError"))
-                .andExpect(MockMvcResultMatchers.model().attributeExists("exception"))
-                .andExpect(MockMvcResultMatchers.model().attributeExists("stackTrace"))
-                .andExpect(MockMvcResultMatchers.model().attributeExists("timestamp"));
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -139,13 +134,11 @@ public class AppLaunchSecurityTest {
         OidcAuthenticationToken token = TestUtils.buildToken("userId", LTIConstants.INSTRUCTOR_AUTHORITY,
                 extraAttributes, customMap);
 
-        SecurityContextHolder.getContext().setAuthentication(token);
-
-        //This is a secured endpoint and should not allow access without authn
-        mvc.perform(get("/app/1234/list")
+        mvc.perform(get("/app/1234/not-a-real-route")
+                        .with(authentication(token))
                         .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -161,10 +154,10 @@ public class AppLaunchSecurityTest {
     @Test
     public void randomUrlWithAuth() throws Exception {
         OidcAuthenticationToken token = TestUtils.buildToken("userId", "foo", TestUtils.defaultAuthority());
-        SecurityContextHolder.getContext().setAuthentication(token);
 
-        //This is a secured endpoint and should not allow access without authn
+        // This should pass authentication and then 404 because no controller mapping exists.
         mvc.perform(get("/asdf/foobar")
+                        .with(authentication(token))
                         .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());

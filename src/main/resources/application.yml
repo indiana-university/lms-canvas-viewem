@@ -1,23 +1,11 @@
 spring:
   application:
     name: viewem
-  session:
-    store-type: none
   config.import: optional:${app.fullFilePath}/${app.overridesFileName}, optional:${app.fullFilePath}/security.properties, classpath:canvas.properties, optional:classpath:git.properties, classpath:lti-registrations.properties
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: none
-    properties:
-      hibernate:
-        jdbc:
-          lob:
-            non_contextual_creation: true
-        temp:
-          use_jdbc_metadata_defaults: false
-      jadira:
-        usertype:
-          autoRegisterUserTypes: true
   datasource:
     url: ${lms.db.url}
     username: ${lms.db.user}
@@ -33,15 +21,13 @@ spring:
       resourceserver:
         jwt:
           jwk-set-uri: ${oauth.tokenprovider.url}/.well-known/jwks.json
+  web.error.whitelabel.enabled: false
 viewem:
   version: @app.version@
   env: ${app.env}
   instructorRoles: ["http://purl.imsglobal.org/vocab/lis/v2/membership#Instructor","http://purl.imsglobal.org/vocab/lis/v2/institution/person#Administrator"]
 
 server:
-  error:
-    whitelabel:
-      enabled: false
   servlet:
     session:
       timeout: 30m
@@ -65,9 +51,7 @@ springdoc:
 
 spring:
   config.activate.on-profile: redis-session
-  session:
-    store-type: redis
-    redis.namespace: viewem-@app.version@:session
+  session.data.redis.namespace: viewem-@app.version@:session
 management.health.redis.enabled: true
 
 ---

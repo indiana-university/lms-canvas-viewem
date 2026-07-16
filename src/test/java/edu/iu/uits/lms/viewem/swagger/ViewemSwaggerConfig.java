@@ -40,8 +40,8 @@ import edu.iu.uits.lms.lti.service.LmsDefaultGrantedAuthoritiesMapper;
 import edu.iu.uits.lms.lti.swagger.SwaggerTestingBean;
 import edu.iu.uits.lms.viewem.config.SecurityConfig;
 import edu.iu.uits.lms.viewem.config.SwaggerConfig;
+import org.mockito.Mockito;
 import org.springframework.boot.context.metrics.buffering.BufferingApplicationStartup;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
@@ -60,20 +60,30 @@ import java.util.List;
 })
 public class ViewemSwaggerConfig {
 
-   @MockBean
-   private BufferingApplicationStartup bufferingApplicationStartup;
+   @Bean
+   public BufferingApplicationStartup bufferingApplicationStartup() {
+      return Mockito.mock(BufferingApplicationStartup.class);
+   }
 
-   @MockBean
-   private LmsDefaultGrantedAuthoritiesMapper lmsDefaultGrantedAuthoritiesMapper;
+   @Bean
+   public LmsDefaultGrantedAuthoritiesMapper lmsDefaultGrantedAuthoritiesMapper() {
+      return Mockito.mock(LmsDefaultGrantedAuthoritiesMapper.class);
+   }
 
-   @MockBean
-   private DefaultInstructorRoleRepository defaultInstructorRoleRepository;
+   @Bean
+   public DefaultInstructorRoleRepository defaultInstructorRoleRepository() {
+      return Mockito.mock(DefaultInstructorRoleRepository.class);
+   }
 
-   @MockBean
-   private ClientRegistrationRepository clientRegistrationRepository;
+   @Bean
+   public ClientRegistrationRepository clientRegistrationRepository() {
+      return Mockito.mock(ClientRegistrationRepository.class);
+   }
 
-   @MockBean
-   private OAuth2AuthorizedClientService oAuth2AuthorizedClientService;
+   @Bean
+   public OAuth2AuthorizedClientService oAuth2AuthorizedClientService() {
+      return Mockito.mock(OAuth2AuthorizedClientService.class);
+   }
 
    @Bean
    public SwaggerTestingBean swaggerTestingBean() {

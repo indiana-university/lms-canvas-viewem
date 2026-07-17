@@ -67,7 +67,6 @@
 
         <lms-team-spring-boot-it12>7.6.0_0</lms-team-spring-boot-it12>
 
-        <logcaptor.version>2.12.6</logcaptor.version>
         <opencsv.version>5.12.0</opencsv.version>
         <springdoc-openapi-ui.version>3.0.3</springdoc-openapi-ui.version>
         <spring-cloud.version>2025.1.2</spring-cloud.version>
@@ -223,12 +222,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-webmvc-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.github.hakky54</groupId>
-            <artifactId>logcaptor</artifactId>
-            <version>${logcaptor.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

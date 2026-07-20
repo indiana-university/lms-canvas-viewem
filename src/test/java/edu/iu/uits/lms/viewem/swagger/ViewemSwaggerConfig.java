@@ -4,7 +4,7 @@ package edu.iu.uits.lms.viewem.swagger;
  * #%L
  * lms-canvas-viewem
  * %%
- * Copyright (C) 2015 - 2024 Indiana University
+ * Copyright (C) 2015 - 2026 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -35,21 +35,14 @@ package edu.iu.uits.lms.viewem.swagger;
 
 import edu.iu.uits.lms.lti.config.LtiClientTestConfig;
 import edu.iu.uits.lms.lti.config.LtiRestConfiguration;
-import edu.iu.uits.lms.lti.repository.DefaultInstructorRoleRepository;
-import edu.iu.uits.lms.lti.service.LmsDefaultGrantedAuthoritiesMapper;
 import edu.iu.uits.lms.lti.swagger.SwaggerTestingBean;
 import edu.iu.uits.lms.viewem.config.SecurityConfig;
 import edu.iu.uits.lms.viewem.config.SwaggerConfig;
-import org.springframework.boot.context.metrics.buffering.BufferingApplicationStartup;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
-import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 
 import java.util.ArrayList;
 import java.util.List;
-
 
 @Import({
         SecurityConfig.class,
@@ -59,21 +52,6 @@ import java.util.List;
         LtiClientTestConfig.class
 })
 public class ViewemSwaggerConfig {
-
-   @MockBean
-   private BufferingApplicationStartup bufferingApplicationStartup;
-
-   @MockBean
-   private LmsDefaultGrantedAuthoritiesMapper lmsDefaultGrantedAuthoritiesMapper;
-
-   @MockBean
-   private DefaultInstructorRoleRepository defaultInstructorRoleRepository;
-
-   @MockBean
-   private ClientRegistrationRepository clientRegistrationRepository;
-
-   @MockBean
-   private OAuth2AuthorizedClientService oAuth2AuthorizedClientService;
 
    @Bean
    public SwaggerTestingBean swaggerTestingBean() {

@@ -4,7 +4,7 @@ package edu.iu.uits.lms.viewem.swagger;
  * #%L
  * lms-canvas-viewem
  * %%
- * Copyright (C) 2015 - 2024 Indiana University
+ * Copyright (C) 2015 - 2026 Indiana University
  * %%
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
@@ -33,13 +33,19 @@ package edu.iu.uits.lms.viewem.swagger;
  * #L%
  */
 
+import edu.iu.uits.lms.lti.repository.DefaultInstructorRoleRepository;
+import edu.iu.uits.lms.lti.service.LmsDefaultGrantedAuthoritiesMapper;
 import edu.iu.uits.lms.lti.swagger.AbstractSwaggerCustomTest;
 import edu.iu.uits.lms.lti.swagger.AbstractSwaggerDisabledTest;
 import edu.iu.uits.lms.lti.swagger.AbstractSwaggerEmbeddedToolTest;
 import edu.iu.uits.lms.lti.swagger.AbstractSwaggerUiCustomTest;
 import org.junit.jupiter.api.Nested;
+import org.springframework.boot.context.metrics.buffering.BufferingApplicationStartup;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.test.context.NestedTestConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import static org.springframework.test.context.NestedTestConfiguration.EnclosingConfiguration.INHERIT;
 
@@ -47,6 +53,20 @@ import static org.springframework.test.context.NestedTestConfiguration.Enclosing
 @NestedTestConfiguration(INHERIT)
 public class SwaggerSuiteTest {
 
+    @MockitoBean
+    private BufferingApplicationStartup bufferingApplicationStartup;
+
+    @MockitoBean
+    private LmsDefaultGrantedAuthoritiesMapper lmsDefaultGrantedAuthoritiesMapper;
+
+    @MockitoBean
+    private DefaultInstructorRoleRepository defaultInstructorRoleRepository;
+
+    @MockitoBean
+    private ClientRegistrationRepository clientRegistrationRepository;
+
+    @MockitoBean
+    private OAuth2AuthorizedClientService oAuth2AuthorizedClientService;
 
     @Nested
     @SpringBootTest(classes = {ViewemSwaggerConfig.class})

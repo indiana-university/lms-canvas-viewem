@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
   #%L
   lms-canvas-viewem
@@ -32,28 +32,19 @@
   #L%
   -->
 
-<html lang="en-US" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title></title>
-</head>
-<body>
-<div th:fragment="userData">
-    <h3 aria-live="polite" class="rvt-ts-18 rvt-m-bottom-sm"><span th:text="#{view.results}">Results for</span> <span id="student-name" th:text="${sheetUser}">First Last</span></h3>
-    <table class="rvt-table-cells">
-        <thead>
-        <tr>
-            <th scope="col" th:text="#{preview.nameHeader}">Item Name</th>
-            <th scope="col" th:text="#{preview.scoreHeader}">Score/Feedback</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="entry : ${sheetUserData}">
-            <th scope="row" th:text="${entry[0]}">June 24, 2015 Attendance</th>
-            <td th:text="${entry[1]}">2</td>
-        </tr>
-        </tbody>
-    </table>
-</div>
-</body>
-</html>
+<persistence version="3.0"
+             xmlns="https://jakarta.ee/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd">
+
+    <persistence-unit name="postgresql" transaction-type="RESOURCE_LOCAL">
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+        <jar-file>file:@project.build.directory@/schemagen-jars/lms-canvas-lti-framework.jar</jar-file>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        <properties>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
+        </properties>
+    </persistence-unit>
+
+</persistence>
+

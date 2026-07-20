@@ -51,13 +51,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.support.ResourceBundleMessageSource;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import uk.ac.ox.ctl.lti13.lti.Claims;
 import uk.ac.ox.ctl.lti13.security.oauth2.client.lti.authentication.OidcAuthenticationToken;
 
@@ -112,12 +113,15 @@ public class AppLaunchSecurityTest {
     public void appAuthnWrongContextLaunch() throws Exception {
         OidcAuthenticationToken token = TestUtils.buildToken("userId", "asdf", LTIConstants.INSTRUCTOR_AUTHORITY);
 
-        // Authenticated app requests should pass security and then 404 when no handler is mapped.
-        mvc.perform(get("/app/1234/not-a-real-route")
+        mvc.perform(get("/app/1234/list")
                         .with(authentication(token))
                         .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.view().name("tokenError"))
+                .andExpect(MockMvcResultMatchers.model().attributeExists("exception"))
+                .andExpect(MockMvcResultMatchers.model().attributeExists("stackTrace"))
+                .andExpect(MockMvcResultMatchers.model().attributeExists("timestamp"));
     }
 
     @Test
@@ -134,11 +138,11 @@ public class AppLaunchSecurityTest {
         OidcAuthenticationToken token = TestUtils.buildToken("userId", LTIConstants.INSTRUCTOR_AUTHORITY,
                 extraAttributes, customMap);
 
-        mvc.perform(get("/app/1234/not-a-real-route")
+        mvc.perform(get("/app/1234/list")
                         .with(authentication(token))
                         .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isOk());
     }
 
     @Test

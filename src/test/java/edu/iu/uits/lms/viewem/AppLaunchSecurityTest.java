@@ -113,6 +113,8 @@ public class AppLaunchSecurityTest {
     public void appAuthnWrongContextLaunch() throws Exception {
         OidcAuthenticationToken token = TestUtils.buildToken("userId", "asdf", LTIConstants.INSTRUCTOR_AUTHORITY);
 
+        // Context in token ("asdf") does not match the request URL ("1234"), so the
+        // tokenError page is rendered
         mvc.perform(get("/app/1234/list")
                         .with(authentication(token))
                         .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
@@ -138,6 +140,7 @@ public class AppLaunchSecurityTest {
         OidcAuthenticationToken token = TestUtils.buildToken("userId", LTIConstants.INSTRUCTOR_AUTHORITY,
                 extraAttributes, customMap);
 
+        //Instructor with matching context should successfully reach the list view
         mvc.perform(get("/app/1234/list")
                         .with(authentication(token))
                         .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())

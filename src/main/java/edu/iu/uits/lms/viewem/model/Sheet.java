@@ -121,6 +121,11 @@ public class Sheet extends ModelWithDates implements Serializable {
             columns = new ArrayList<SheetColumn>();
         }
         sheetColumn.setSheet(this);
+        // In Hibernate 6, @OrderColumn(name = "sequence") on Sheet.columns automatically
+        // wrote each column's list position into this column. Hibernate 7 no longer does,
+        // so we must set it explicitly: columns.size() before the add gives 0 for the 1st
+        // column, 1 for the 2nd, and so on.
+        sheetColumn.setSequence(columns.size());
         columns.add(sheetColumn);
     }
 

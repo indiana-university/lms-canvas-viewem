@@ -42,7 +42,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.NamedQueries;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OrderColumn;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.Data;
@@ -105,7 +105,8 @@ public class Sheet extends ModelWithDates implements Serializable {
 
 
     @OneToMany(cascade = CascadeType.ALL, targetEntity = SheetColumn.class, mappedBy = "sheet", fetch = FetchType.EAGER, orphanRemoval = true)
-    @OrderColumn(name = "sequence")
+    // Hibernate 7 no longer supports @OrderColumn on mappedBy associations; use @OrderBy instead.
+    @OrderBy("sequence")
     private List<SheetColumn> columns;
 
     @OneToMany(cascade = CascadeType.ALL, targetEntity = SheetUser.class, mappedBy = "sheet", orphanRemoval = true)
@@ -121,10 +122,9 @@ public class Sheet extends ModelWithDates implements Serializable {
             columns = new ArrayList<SheetColumn>();
         }
         sheetColumn.setSheet(this);
-        // In Hibernate 6, @OrderColumn(name = "sequence") on Sheet.columns automatically
-        // wrote each column's list position into this column. Hibernate 7 no longer does,
-        // so we must set it explicitly: columns.size() before the add gives 0 for the 1st
-        // column, 1 for the 2nd, and so on.
+        // Hibernate 7 does not auto-populate the sequence column on mappedBy
+        // associations, so we set each column's list position explicitly.
+        // columns.size() before the add gives 0 for the 1st column, 1 for the 2nd, etc.
         sheetColumn.setSequence(columns.size());
         columns.add(sheetColumn);
     }

@@ -34,6 +34,7 @@ package edu.iu.uits.lms.viewem;
  */
 
 import edu.iu.uits.lms.canvas.services.CourseService;
+import edu.iu.uits.lms.canvasoauth2.CanvasOAuth2Constants;
 import edu.iu.uits.lms.common.server.ServerInfo;
 import edu.iu.uits.lms.common.session.CourseSessionService;
 import edu.iu.uits.lms.lti.LTIConstants;
@@ -54,23 +55,38 @@ import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
+import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
+import org.springframework.security.oauth2.core.AuthorizationGrantType;
+import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
+import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.web.client.RestTemplate;
 import uk.ac.ox.ctl.lti13.lti.Claims;
 import uk.ac.ox.ctl.lti13.security.oauth2.client.lti.authentication.OidcAuthenticationToken;
 
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(value = MainController.class, properties = {"oauth.tokenprovider.url=http://foo"})
-@ContextConfiguration(classes = {ToolConfig.class, MainController.class, SecurityConfig.class})
+@ContextConfiguration(classes = {ToolConfig.class, MainController.class, SecurityConfig.class,
+        edu.iu.uits.lms.viewem.controller.OAuth2ConsentControllerAdvice.class})
 public class AppLaunchSecurityTest {
 
     @Autowired
@@ -99,6 +115,105 @@ public class AppLaunchSecurityTest {
     private SystemUserService systemUserService;
     @MockitoBean
     private CourseService courseService;
+    @MockitoBean(name = "CanvasRestTemplateAsUser")
+    private RestTemplate canvasRestTemplateAsUser;
+    @MockitoBean
+    private OAuth2AuthorizedClientRepository canvasOAuth2AuthorizedClientRepository;
+
+    @Test
+    public void appAuthnLaunchRequiresCanvasOAuth2ConsentWhenNoAuthorizedClient() throws Exception {
+        when(canvasOAuth2AuthorizedClientRepository.loadAuthorizedClient(eq(CanvasOAuth2Constants.REGISTRATION_ID), any(), any())).thenReturn(null);
+
+        Map<String, Object> extraAttributes = new HashMap<>();
+        Map<String, Object> platformObject = new HashMap<>();
+        platformObject.put(LTIConstants.CLAIMS_PLATFORM_GUID_KEY, "systemId");
+        extraAttributes.put(Claims.PLATFORM_INSTANCE, platformObject);
+
+        Map<String, Object> customMap = new HashMap<>();
+        customMap.put(LTIConstants.CUSTOM_CANVAS_COURSE_ID_KEY, "1234");
+
+        OidcAuthenticationToken token = TestUtils.buildToken("userId", LTIConstants.INSTRUCTOR_AUTHORITY,
+                extraAttributes, customMap);
+
+        mvc.perform(get("/app/launch")
+                        .with(authentication(token))
+                        .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.view().name("connectCanvas"))
+                .andExpect(MockMvcResultMatchers.model().attribute("authorizationUri", "/oauth2/authorization/" + CanvasOAuth2Constants.REGISTRATION_ID));
+
+        // The roster call must never happen before Canvas OAuth2 consent has been established.
+        verifyNoInteractions(courseService);
+    }
+
+    @Test
+    public void appAuthnLaunchFetchesRosterWithPerUserRestTemplateWhenAuthorizedClientExists() throws Exception {
+        ClientRegistration clientRegistration = ClientRegistration.withRegistrationId(CanvasOAuth2Constants.REGISTRATION_ID)
+                .clientId("test-client")
+                .clientSecret("test-secret")
+                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_POST)
+                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+                .redirectUri("{baseUrl}/login/oauth2/code/{registrationId}")
+                .authorizationUri("https://canvas.test/login/oauth2/auth")
+                .tokenUri("https://canvas.test/login/oauth2/token")
+                .build();
+
+        OAuth2AccessToken accessToken = new OAuth2AccessToken(OAuth2AccessToken.TokenType.BEARER,
+                "test-access-token", Instant.now(), Instant.now().plusSeconds(3600));
+        OAuth2AuthorizedClient authorizedClient = new OAuth2AuthorizedClient(clientRegistration, "userId", accessToken);
+        when(canvasOAuth2AuthorizedClientRepository.loadAuthorizedClient(eq(CanvasOAuth2Constants.REGISTRATION_ID), any(), any()))
+                .thenReturn(authorizedClient);
+
+        Map<String, Object> extraAttributes = new HashMap<>();
+        Map<String, Object> platformObject = new HashMap<>();
+        platformObject.put(LTIConstants.CLAIMS_PLATFORM_GUID_KEY, "systemId");
+        extraAttributes.put(Claims.PLATFORM_INSTANCE, platformObject);
+
+        Map<String, Object> customMap = new HashMap<>();
+        customMap.put(LTIConstants.CUSTOM_CANVAS_COURSE_ID_KEY, "1234");
+
+        OidcAuthenticationToken token = TestUtils.buildToken("userId", LTIConstants.INSTRUCTOR_AUTHORITY,
+                extraAttributes, customMap);
+
+        //Instructor with a valid Canvas OAuth2 authorized client should reach the roster-fetching success path
+        mvc.perform(get("/app/launch")
+                        .with(authentication(token))
+                        .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.view().name("listSheets"));
+
+        // The migration's actual behavior change: the roster call must use the per-user RestTemplate,
+        // not the shared admin one.
+        verify(courseService).getRosterForCourseAsUser(eq("1234"), isNull(), isNull(), eq(canvasRestTemplateAsUser));
+    }
+
+    @Test
+    public void appAuthnLaunchAsStudentDoesNotRequireCanvasOAuth2Consent() throws Exception {
+        Map<String, Object> extraAttributes = new HashMap<>();
+        Map<String, Object> platformObject = new HashMap<>();
+        platformObject.put(LTIConstants.CLAIMS_PLATFORM_GUID_KEY, "systemId");
+        extraAttributes.put(Claims.PLATFORM_INSTANCE, platformObject);
+
+        Map<String, Object> customMap = new HashMap<>();
+        customMap.put(LTIConstants.CUSTOM_CANVAS_COURSE_ID_KEY, "1234");
+
+        OidcAuthenticationToken token = TestUtils.buildToken("userId", LTIConstants.STUDENT_AUTHORITY,
+                extraAttributes, customMap);
+
+        // A student never reaches the instructor-gated roster fetch, so it must not be forced through
+        // the Canvas OAuth2 consent breakout either - only the instructor path needs a token at all.
+        mvc.perform(get("/app/launch")
+                        .with(authentication(token))
+                        .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.view().name("listSheets"));
+
+        verifyNoInteractions(courseService);
+        verifyNoInteractions(canvasOAuth2AuthorizedClientRepository);
+    }
 
     @Test
     public void appNoAuthnLaunch() throws Exception {

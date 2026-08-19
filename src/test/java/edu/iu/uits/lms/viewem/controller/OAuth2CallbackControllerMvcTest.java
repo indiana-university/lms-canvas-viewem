@@ -1,0 +1,127 @@
+package edu.iu.uits.lms.viewem.controller;
+
+/*-
+ * #%L
+ * lms-canvas-viewem
+ * %%
+ * Copyright (C) 2015 - 2026 Indiana University
+ * %%
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * 3. Neither the name of the Indiana University nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software without
+ *    specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+ * OF THE POSSIBILITY OF SUCH DAMAGE.
+ * #L%
+ */
+
+import edu.iu.uits.lms.canvas.config.CanvasConfiguration;
+import edu.iu.uits.lms.canvasoauth2.CanvasOAuth2Constants;
+import edu.iu.uits.lms.common.server.ServerInfo;
+import edu.iu.uits.lms.lti.LTIConstants;
+import edu.iu.uits.lms.lti.config.TestUtils;
+import edu.iu.uits.lms.lti.service.LmsDefaultGrantedAuthoritiesMapper;
+import edu.iu.uits.lms.viewem.config.SecurityConfig;
+import edu.iu.uits.lms.viewem.config.ToolConfig;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import uk.ac.ox.ctl.lti13.security.oauth2.client.lti.authentication.OidcAuthenticationToken;
+
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+/**
+ * Exercises {@link OAuth2CallbackController} through the real
+ * {@code /login/oauth2/code/lms_canvas_oauth2} mapping and the real {@link SecurityConfig} filter
+ * chain, so a mistake in the {@code @GetMapping} path (the
+ * {@code CanvasOAuth2Constants.REGISTRATION_ID} string concatenation) or in the security matcher
+ * configuration would actually be caught, unlike {@link OAuth2CallbackControllerTest}'s direct
+ * method-call style.
+ */
+@WebMvcTest(value = OAuth2CallbackController.class,
+        properties = {"oauth.tokenprovider.url=http://foo", "canvas.baseUrl=https://canvas.test"})
+@ContextConfiguration(classes = {ToolConfig.class, CanvasConfiguration.class, OAuth2CallbackController.class,
+        OAuth2ConsentControllerAdvice.class, SecurityConfig.class})
+public class OAuth2CallbackControllerMvcTest {
+
+    @Autowired
+    private MockMvc mvc;
+
+    @MockitoBean
+    private LmsDefaultGrantedAuthoritiesMapper lmsDefaultGrantedAuthoritiesMapper;
+    @MockitoBean
+    private ClientRegistrationRepository clientRegistrationRepository;
+    @MockitoBean(name = ServerInfo.BEAN_NAME)
+    private ServerInfo serverInfo;
+
+    @Test
+    public void callbackWithoutErrorRendersCanvasConnectedWithBaseUrl() throws Exception {
+        OidcAuthenticationToken token = TestUtils.buildToken("userId", "1234", LTIConstants.INSTRUCTOR_AUTHORITY);
+
+        mvc.perform(get("/login/oauth2/code/" + CanvasOAuth2Constants.REGISTRATION_ID)
+                        .with(authentication(token))
+                        .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.view().name("canvasConnected"))
+                .andExpect(MockMvcResultMatchers.model().attribute("returnUrl", "https://canvas.test"));
+    }
+
+    @Test
+    public void callbackWithErrorParamRendersConnectInterstitial() throws Exception {
+        OidcAuthenticationToken token = TestUtils.buildToken("userId", "1234", LTIConstants.INSTRUCTOR_AUTHORITY);
+
+        // Simulates OAuth2AuthorizationCodeGrantFilter's real redirect-on-failure behavior: Canvas
+        // rejected the authorization code, and the filter bounced the browser back to this exact URL
+        // with error/error_description query parameters rather than completing the connection.
+        mvc.perform(get("/login/oauth2/code/" + CanvasOAuth2Constants.REGISTRATION_ID)
+                        .param("error", "invalid_grant")
+                        .param("error_description", "Authorization code expired")
+                        .with(authentication(token))
+                        .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.view().name("connectCanvas"))
+                .andExpect(MockMvcResultMatchers.model().attribute("authorizationUri",
+                        "/oauth2/authorization/" + CanvasOAuth2Constants.REGISTRATION_ID));
+    }
+
+    @Test
+    public void callbackWithoutAuthenticationIsForbidden() throws Exception {
+        // This mapping sits behind SecurityConfig's catchall filter chain (anyRequest().authenticated()),
+        // same as every other viewem URL - a mid-flow OAuth2 callback still arrives on the same
+        // browser session that already carries the LTI-launch authentication, so it must not be
+        // reachable anonymously.
+        mvc.perform(get("/login/oauth2/code/" + CanvasOAuth2Constants.REGISTRATION_ID)
+                        .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden());
+    }
+}

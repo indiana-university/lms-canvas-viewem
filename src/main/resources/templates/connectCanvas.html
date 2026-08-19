@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE HTML>
 <!--
   #%L
   lms-canvas-viewem
@@ -7,18 +7,18 @@
   %%
   Redistribution and use in source and binary forms, with or without modification,
   are permitted provided that the following conditions are met:
-  
+
   1. Redistributions of source code must retain the above copyright notice, this
      list of conditions and the following disclaimer.
-  
+
   2. Redistributions in binary form must reproduce the above copyright notice,
      this list of conditions and the following disclaimer in the documentation
      and/or other materials provided with the distribution.
-  
+
   3. Neither the name of the Indiana University nor the names of its contributors
      may be used to endorse or promote products derived from this software without
      specific prior written permission.
-  
+
   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
@@ -32,20 +32,25 @@
   #L%
   -->
 
-<persistence version="3.0"
-             xmlns="https://jakarta.ee/xml/ns/persistence"
-             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd">
-
-    <persistence-unit name="postgresql" transaction-type="RESOURCE_LOCAL">
-        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-        <jar-file>file:@project.build.directory@/schemagen-jars/lms-canvas-lti-framework.jar</jar-file>
-        <jar-file>file:@project.build.directory@/schemagen-jars/lms-canvas-oauth2-client.jar</jar-file>
-        <exclude-unlisted-classes>false</exclude-unlisted-classes>
-        <properties>
-            <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
-        </properties>
-    </persistence-unit>
-
-</persistence>
-
+<html lang="en-US"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>View'em - Connect Canvas Account</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+<div layout:fragment="content">
+    <h1 class="rvt-ts-26" th:text="#{connectCanvas.heading}">Connect your Canvas account to continue</h1>
+    <p class="rvt-m-bottom-md" th:text="#{connectCanvas.instructions}">
+        View'em needs your permission to access Canvas on your behalf before it can show your course roster.
+        This only needs to happen once - after you connect, every View'em launch will use your own Canvas
+        permissions instead of asking again.
+    </p>
+    <a th:href="${authorizationUri}" target="_top" class="rvt-button" th:text="#{connectCanvas.connectButton}">
+        Connect your Canvas account
+    </a>
+</div>
+</body>
+</html>

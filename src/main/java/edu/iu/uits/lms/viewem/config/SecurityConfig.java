@@ -137,7 +137,7 @@ public class SecurityConfig {
 
     /**
      * Applies the Canvas-specific quirks (replace_tokens=true, non-standard token response JSON)
-     * to the authorization_code token exchange used only by the lms_canvas_oauth2 registration -
+     * to the authorization_code token exchange used only by the lms_canvas_oauth2_viewem registration -
      * the LTI 1.3 launch's own (implicit-grant) registration is handled entirely separately by
      * Lti13Configurer and is unaffected by this.
      * <p>

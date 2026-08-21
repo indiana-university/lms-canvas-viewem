@@ -34,7 +34,7 @@ package edu.iu.uits.lms.viewem;
  */
 
 import edu.iu.uits.lms.canvas.services.CourseService;
-import edu.iu.uits.lms.canvasoauth2.CanvasOAuth2Constants;
+import edu.iu.uits.lms.canvasoauth2.CanvasOAuth2Registration;
 import edu.iu.uits.lms.common.server.ServerInfo;
 import edu.iu.uits.lms.common.session.CourseSessionService;
 import edu.iu.uits.lms.lti.LTIConstants;
@@ -50,7 +50,9 @@ import edu.iu.uits.lms.viewem.service.SystemUserService;
 import edu.iu.uits.lms.viewem.service.ViewemService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -86,8 +88,28 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(value = MainController.class, properties = {"oauth.tokenprovider.url=http://foo"})
 @ContextConfiguration(classes = {ToolConfig.class, MainController.class, SecurityConfig.class,
-        edu.iu.uits.lms.viewem.controller.OAuth2ConsentControllerAdvice.class})
+        edu.iu.uits.lms.canvasoauth2.controller.OAuth2ConsentControllerAdvice.class,
+        edu.iu.uits.lms.canvasoauth2.controller.CanvasOAuth2ConsentText.class,
+        AppLaunchSecurityTest.TestConfig.class})
 public class AppLaunchSecurityTest {
+
+    private static final String REGISTRATION_ID = "lms_canvas_oauth2_viewem";
+
+    /**
+     * {@code CanvasOAuth2Registration} is no longer a {@code @Component} Spring can auto-detect by
+     * listing its class directly - it's only ever produced by {@code CanvasOAuth2ClientConfig}'s
+     * {@code @Bean} method, which itself needs {@code @EnableCanvasOAuth2Client}'s real
+     * {@code ImportAware} wiring to know its suffix. This narrow {@code @WebMvcTest} slice
+     * deliberately avoids pulling in the full {@code CanvasOAuth2ClientConfig} (with its JPA/DataSource
+     * machinery), so it supplies the one bean it actually needs directly instead.
+     */
+    @TestConfiguration
+    static class TestConfig {
+        @Bean
+        public CanvasOAuth2Registration canvasOAuth2Registration() {
+            return new CanvasOAuth2Registration("viewem");
+        }
+    }
 
     @Autowired
     private MockMvc mvc;
@@ -122,7 +144,7 @@ public class AppLaunchSecurityTest {
 
     @Test
     public void appAuthnLaunchRequiresCanvasOAuth2ConsentWhenNoAuthorizedClient() throws Exception {
-        when(canvasOAuth2AuthorizedClientRepository.loadAuthorizedClient(eq(CanvasOAuth2Constants.REGISTRATION_ID), any(), any())).thenReturn(null);
+        when(canvasOAuth2AuthorizedClientRepository.loadAuthorizedClient(eq(REGISTRATION_ID), any(), any())).thenReturn(null);
 
         Map<String, Object> extraAttributes = new HashMap<>();
         Map<String, Object> platformObject = new HashMap<>();
@@ -141,7 +163,7 @@ public class AppLaunchSecurityTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.view().name("connectCanvas"))
-                .andExpect(MockMvcResultMatchers.model().attribute("authorizationUri", "/oauth2/authorization/" + CanvasOAuth2Constants.REGISTRATION_ID));
+                .andExpect(MockMvcResultMatchers.model().attribute("authorizationUri", "/oauth2/authorization/" + REGISTRATION_ID));
 
         // The roster call must never happen before Canvas OAuth2 consent has been established.
         verifyNoInteractions(courseService);
@@ -149,7 +171,7 @@ public class AppLaunchSecurityTest {
 
     @Test
     public void appAuthnLaunchFetchesRosterWithPerUserRestTemplateWhenAuthorizedClientExists() throws Exception {
-        ClientRegistration clientRegistration = ClientRegistration.withRegistrationId(CanvasOAuth2Constants.REGISTRATION_ID)
+        ClientRegistration clientRegistration = ClientRegistration.withRegistrationId(REGISTRATION_ID)
                 .clientId("test-client")
                 .clientSecret("test-secret")
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_POST)
@@ -162,7 +184,7 @@ public class AppLaunchSecurityTest {
         OAuth2AccessToken accessToken = new OAuth2AccessToken(OAuth2AccessToken.TokenType.BEARER,
                 "test-access-token", Instant.now(), Instant.now().plusSeconds(3600));
         OAuth2AuthorizedClient authorizedClient = new OAuth2AuthorizedClient(clientRegistration, "userId", accessToken);
-        when(canvasOAuth2AuthorizedClientRepository.loadAuthorizedClient(eq(CanvasOAuth2Constants.REGISTRATION_ID), any(), any()))
+        when(canvasOAuth2AuthorizedClientRepository.loadAuthorizedClient(eq(REGISTRATION_ID), any(), any()))
                 .thenReturn(authorizedClient);
 
         Map<String, Object> extraAttributes = new HashMap<>();

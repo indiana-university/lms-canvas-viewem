@@ -54,7 +54,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
- * Narrow slice test for the shared {@code lms_canvas_oauth2} client registration.
+ * Narrow slice test for {@code viewem}'s own {@code lms_canvas_oauth2_viewem} client registration.
  * <p>
  * A bare {@code @Configuration} annotated only with {@code @EnableLtiClient} is NOT enough to load
  * successfully under {@code @SpringBootTest(classes = ...)}: unlike the real {@code WebApplication}
@@ -109,8 +109,8 @@ class CanvasOAuth2RegistrationTest {
     private ClientRegistrationRepository clientRegistrationRepository;
 
     @Test
-    void resolvesSharedCanvasOAuth2Registration() {
-        ClientRegistration registration = clientRegistrationRepository.findByRegistrationId("lms_canvas_oauth2");
+    void resolvesViewemCanvasOAuth2Registration() {
+        ClientRegistration registration = clientRegistrationRepository.findByRegistrationId("lms_canvas_oauth2_viewem");
 
         assertNotNull(registration);
         assertEquals(AuthorizationGrantType.AUTHORIZATION_CODE, registration.getAuthorizationGrantType());

@@ -34,7 +34,10 @@ package edu.iu.uits.lms.viewem.controller;
  */
 
 import edu.iu.uits.lms.canvas.config.CanvasConfiguration;
-import edu.iu.uits.lms.canvasoauth2.CanvasOAuth2Constants;
+import edu.iu.uits.lms.canvasoauth2.CanvasOAuth2Registration;
+import edu.iu.uits.lms.canvasoauth2.controller.CanvasOAuth2ConsentText;
+import edu.iu.uits.lms.canvasoauth2.controller.OAuth2CallbackController;
+import edu.iu.uits.lms.canvasoauth2.controller.OAuth2ConsentControllerAdvice;
 import edu.iu.uits.lms.common.server.ServerInfo;
 import edu.iu.uits.lms.lti.LTIConstants;
 import edu.iu.uits.lms.lti.config.TestUtils;
@@ -43,7 +46,9 @@ import edu.iu.uits.lms.viewem.config.SecurityConfig;
 import edu.iu.uits.lms.viewem.config.ToolConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
@@ -59,17 +64,31 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 /**
  * Exercises {@link OAuth2CallbackController} through the real
- * {@code /login/oauth2/code/lms_canvas_oauth2} mapping and the real {@link SecurityConfig} filter
- * chain, so a mistake in the {@code @GetMapping} path (the
- * {@code CanvasOAuth2Constants.REGISTRATION_ID} string concatenation) or in the security matcher
- * configuration would actually be caught, unlike {@link OAuth2CallbackControllerTest}'s direct
- * method-call style.
+ * {@code /login/oauth2/code/lms_canvas_oauth2_viewem} mapping and the real {@link SecurityConfig} filter
+ * chain, so a mistake in the {@code @GetMapping} path or in the security matcher
+ * configuration would actually be caught, unlike the direct method-call style used in
+ * the unit tests for {@code OAuth2CallbackController}.
  */
 @WebMvcTest(value = OAuth2CallbackController.class,
         properties = {"oauth.tokenprovider.url=http://foo", "canvas.baseUrl=https://canvas.test"})
 @ContextConfiguration(classes = {ToolConfig.class, CanvasConfiguration.class, OAuth2CallbackController.class,
-        OAuth2ConsentControllerAdvice.class, SecurityConfig.class})
+        OAuth2ConsentControllerAdvice.class, SecurityConfig.class, CanvasOAuth2ConsentText.class,
+        OAuth2CallbackControllerMvcTest.TestConfig.class})
 public class OAuth2CallbackControllerMvcTest {
+
+    private static final String REGISTRATION_ID = "lms_canvas_oauth2_viewem";
+
+    /**
+     * See {@code AppLaunchSecurityTest.TestConfig}'s javadoc for why this narrow slice supplies
+     * {@code CanvasOAuth2Registration} directly instead of relying on component-scan/ImportAware.
+     */
+    @TestConfiguration
+    static class TestConfig {
+        @Bean
+        public CanvasOAuth2Registration canvasOAuth2Registration() {
+            return new CanvasOAuth2Registration("viewem");
+        }
+    }
 
     @Autowired
     private MockMvc mvc;
@@ -85,7 +104,7 @@ public class OAuth2CallbackControllerMvcTest {
     public void callbackWithoutErrorRendersCanvasConnectedWithBaseUrl() throws Exception {
         OidcAuthenticationToken token = TestUtils.buildToken("userId", "1234", LTIConstants.INSTRUCTOR_AUTHORITY);
 
-        mvc.perform(get("/login/oauth2/code/" + CanvasOAuth2Constants.REGISTRATION_ID)
+        mvc.perform(get("/login/oauth2/code/" + REGISTRATION_ID)
                         .with(authentication(token))
                         .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
                         .contentType(MediaType.APPLICATION_JSON))
@@ -101,7 +120,7 @@ public class OAuth2CallbackControllerMvcTest {
         // Simulates OAuth2AuthorizationCodeGrantFilter's real redirect-on-failure behavior: Canvas
         // rejected the authorization code, and the filter bounced the browser back to this exact URL
         // with error/error_description query parameters rather than completing the connection.
-        mvc.perform(get("/login/oauth2/code/" + CanvasOAuth2Constants.REGISTRATION_ID)
+        mvc.perform(get("/login/oauth2/code/" + REGISTRATION_ID)
                         .param("error", "invalid_grant")
                         .param("error_description", "Authorization code expired")
                         .with(authentication(token))
@@ -110,7 +129,7 @@ public class OAuth2CallbackControllerMvcTest {
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.view().name("connectCanvas"))
                 .andExpect(MockMvcResultMatchers.model().attribute("authorizationUri",
-                        "/oauth2/authorization/" + CanvasOAuth2Constants.REGISTRATION_ID));
+                        "/oauth2/authorization/" + REGISTRATION_ID));
     }
 
     @Test
@@ -119,7 +138,7 @@ public class OAuth2CallbackControllerMvcTest {
         // same as every other viewem URL - a mid-flow OAuth2 callback still arrives on the same
         // browser session that already carries the LTI-launch authentication, so it must not be
         // reachable anonymously.
-        mvc.perform(get("/login/oauth2/code/" + CanvasOAuth2Constants.REGISTRATION_ID)
+        mvc.perform(get("/login/oauth2/code/" + REGISTRATION_ID)
                         .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isForbidden());

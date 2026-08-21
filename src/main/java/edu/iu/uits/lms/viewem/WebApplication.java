@@ -59,7 +59,7 @@ import java.util.Date;
 @EnableCookieFilter
 @EnableLtiClient(toolKeys = {"lms_lti_viewem"})
 @EnableCanvasClient
-@EnableCanvasOAuth2Client
+@EnableCanvasOAuth2Client(registrationIdSuffix = "viewem")
 @EnableCourseSessionService(sessionKey = "viewem_course_session")
 @EnableConfigurationProperties(GitRepositoryState.class)
 public class WebApplication {

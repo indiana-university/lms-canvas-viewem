@@ -36,7 +36,7 @@ package edu.iu.uits.lms.viewem.controller;
 import com.opencsv.CSVWriter;
 import edu.iu.uits.lms.canvas.model.User;
 import edu.iu.uits.lms.canvas.services.CourseService;
-import edu.iu.uits.lms.canvasoauth2.CanvasOAuth2Constants;
+import edu.iu.uits.lms.canvasoauth2.CanvasOAuth2Registration;
 import edu.iu.uits.lms.common.session.CourseSessionService;
 import edu.iu.uits.lms.lti.LTIConstants;
 import edu.iu.uits.lms.lti.controller.InvalidTokenContextException;
@@ -129,6 +129,8 @@ public class MainController extends OidcTokenAwareController {
     private RestTemplate canvasRestTemplateAsUser = null;
     @Autowired
     private OAuth2AuthorizedClientRepository canvasOAuth2AuthorizedClientRepository = null;
+    @Autowired
+    private CanvasOAuth2Registration canvasOAuth2Registration = null;
 
     @GetMapping("/launch")
     public String launch(Model model, SecurityContextHolderAwareRequestWrapper request) {
@@ -168,9 +170,9 @@ public class MainController extends OidcTokenAwareController {
      */
     private void ensureCanvasOAuth2Consent(Authentication principal, HttpServletRequest request) {
         OAuth2AuthorizedClient authorizedClient = canvasOAuth2AuthorizedClientRepository
-                .loadAuthorizedClient(CanvasOAuth2Constants.REGISTRATION_ID, principal, request);
+                .loadAuthorizedClient(canvasOAuth2Registration.getRegistrationId(), principal, request);
         if (authorizedClient == null) {
-            throw new ClientAuthorizationRequiredException(CanvasOAuth2Constants.REGISTRATION_ID);
+            throw new ClientAuthorizationRequiredException(canvasOAuth2Registration.getRegistrationId());
         }
     }
 

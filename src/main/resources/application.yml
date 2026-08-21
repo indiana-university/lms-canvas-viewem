@@ -23,7 +23,7 @@ spring:
           jwk-set-uri: ${oauth.tokenprovider.url}/.well-known/jwks.json
       client:
         registration:
-          lms_canvas_oauth2:
+          lms_canvas_oauth2_viewem:
             client-id: ${canvas.oauth2.clientId}
             client-secret: ${canvas.oauth2.clientSecret}
             authorization-grant-type: authorization_code
@@ -31,7 +31,7 @@ spring:
             redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
             scope: [url:GET|/api/v1/courses/:course_id/users]
         provider:
-          lms_canvas_oauth2:
+          lms_canvas_oauth2_viewem:
             authorization-uri: ${canvas.baseUrl}/login/oauth2/auth
             token-uri: ${canvas.baseUrl}/login/oauth2/token
   web.error.whitelabel.enabled: false

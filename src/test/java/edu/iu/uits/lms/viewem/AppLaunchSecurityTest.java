@@ -35,6 +35,7 @@ package edu.iu.uits.lms.viewem;
 
 import edu.iu.uits.lms.canvas.services.CourseService;
 import edu.iu.uits.lms.canvasoauth2.CanvasOAuth2Registration;
+import edu.iu.uits.lms.canvasoauth2.security.CanvasOAuth2AuthorizedClientRepository;
 import edu.iu.uits.lms.common.server.ServerInfo;
 import edu.iu.uits.lms.common.session.CourseSessionService;
 import edu.iu.uits.lms.lti.LTIConstants;
@@ -48,6 +49,7 @@ import edu.iu.uits.lms.viewem.repository.SheetUserRepository;
 import edu.iu.uits.lms.viewem.repository.SystemUserRepository;
 import edu.iu.uits.lms.viewem.service.SystemUserService;
 import edu.iu.uits.lms.viewem.service.ViewemService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -58,9 +60,10 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
+import org.springframework.security.oauth2.client.endpoint.OAuth2AccessTokenResponseClient;
+import org.springframework.security.oauth2.client.endpoint.OAuth2AuthorizationCodeGrantRequest;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
-import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.core.OAuth2AccessToken;
@@ -79,6 +82,8 @@ import java.util.Map;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -107,7 +112,23 @@ public class AppLaunchSecurityTest {
     static class TestConfig {
         @Bean
         public CanvasOAuth2Registration canvasOAuth2Registration() {
-            return new CanvasOAuth2Registration("viewem");
+            return new CanvasOAuth2Registration("viewem", "/app/jsrivet");
+        }
+
+        /**
+         * A plain {@code @Bean} rather than {@code @MockitoBean}: {@code CanvasOAuth2AuthorizedClientRepository}
+         * also implements {@code OAuth2AuthorizedClientRepository}, which
+         * {@code OAuth2ClientWebSecurityAutoConfiguration} auto-configures its own default bean for via
+         * {@code @ConditionalOnMissingBean}. That condition check doesn't recognize a same-named
+         * {@code @MockitoBean} of the narrower concrete type as already satisfying it, so both beans get
+         * created and autowiring the interface type elsewhere becomes ambiguous. A regular {@code @Bean}
+         * factory method participates in that condition check correctly and satisfies both the concrete
+         * type ({@code OAuth2ConsentControllerAdvice}'s dependency) and the interface type
+         * ({@code SecurityConfig}'s filter chain) from a single instance.
+         */
+        @Bean
+        public CanvasOAuth2AuthorizedClientRepository canvasOAuth2AuthorizedClientRepository() {
+            return mock(CanvasOAuth2AuthorizedClientRepository.class);
         }
     }
 
@@ -139,8 +160,26 @@ public class AppLaunchSecurityTest {
     private CourseService courseService;
     @MockitoBean(name = "CanvasRestTemplateAsUser")
     private RestTemplate canvasRestTemplateAsUser;
+    // SecurityConfig now @Autowired-injects this from CanvasOAuth2ClientConfig, which this narrow
+    // @WebMvcTest slice deliberately doesn't pull in (see TestConfig above) - it's never invoked by
+    // any of these tests, only needed to satisfy the filter chain's dependency at context-build time.
     @MockitoBean
-    private OAuth2AuthorizedClientRepository canvasOAuth2AuthorizedClientRepository;
+    private OAuth2AccessTokenResponseClient<OAuth2AuthorizationCodeGrantRequest> canvasOAuth2AccessTokenResponseClient;
+    // Provided by TestConfig's @Bean (not @MockitoBean - see its javadoc). Satisfies both
+    // OAuth2ConsentControllerAdvice's concrete-type dependency and SecurityConfig's interface-type one.
+    @Autowired
+    private CanvasOAuth2AuthorizedClientRepository canvasOAuth2AuthorizedClientRepository;
+
+    @BeforeEach
+    void resetCanvasOAuth2AuthorizedClientRepositoryMock() {
+        // TestConfig's @Bean isn't a @MockitoBean, so it doesn't get Mockito's automatic reset-between-
+        // tests behavior - do it manually, since the ApplicationContext (and this same mock instance) is
+        // cached and reused across every test method in this class.
+        reset(canvasOAuth2AuthorizedClientRepository);
+        // Defaults to "resolvable" so every test below - all built from fully-populated
+        // OidcAuthenticationTokens - is unaffected by OAuth2ConsentControllerAdvice's fail-fast check.
+        when(canvasOAuth2AuthorizedClientRepository.hasResolvableCanvasUserId(any())).thenReturn(true);
+    }
 
     @Test
     public void appAuthnLaunchRequiresCanvasOAuth2ConsentWhenNoAuthorizedClient() throws Exception {

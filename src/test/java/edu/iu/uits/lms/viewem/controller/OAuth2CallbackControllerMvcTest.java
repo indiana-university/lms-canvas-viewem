@@ -38,6 +38,7 @@ import edu.iu.uits.lms.canvasoauth2.CanvasOAuth2Registration;
 import edu.iu.uits.lms.canvasoauth2.controller.CanvasOAuth2ConsentText;
 import edu.iu.uits.lms.canvasoauth2.controller.OAuth2CallbackController;
 import edu.iu.uits.lms.canvasoauth2.controller.OAuth2ConsentControllerAdvice;
+import edu.iu.uits.lms.canvasoauth2.security.CanvasOAuth2AuthorizedClientRepository;
 import edu.iu.uits.lms.common.server.ServerInfo;
 import edu.iu.uits.lms.lti.LTIConstants;
 import edu.iu.uits.lms.lti.config.TestUtils;
@@ -45,12 +46,15 @@ import edu.iu.uits.lms.lti.service.LmsDefaultGrantedAuthoritiesMapper;
 import edu.iu.uits.lms.viewem.config.SecurityConfig;
 import edu.iu.uits.lms.viewem.config.ToolConfig;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.security.oauth2.client.endpoint.OAuth2AccessTokenResponseClient;
+import org.springframework.security.oauth2.client.endpoint.OAuth2AuthorizationCodeGrantRequest;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -86,7 +90,19 @@ public class OAuth2CallbackControllerMvcTest {
     static class TestConfig {
         @Bean
         public CanvasOAuth2Registration canvasOAuth2Registration() {
-            return new CanvasOAuth2Registration("viewem");
+            return new CanvasOAuth2Registration("viewem", "/app/jsrivet");
+        }
+
+        /**
+         * A plain {@code @Bean} rather than {@code @MockitoBean} - see
+         * {@code AppLaunchSecurityTest.TestConfig}'s javadoc for why: {@code CanvasOAuth2AuthorizedClientRepository}
+         * also implements {@code OAuth2AuthorizedClientRepository}, which
+         * {@code OAuth2ClientWebSecurityAutoConfiguration} auto-configures its own default bean for, and
+         * a same-named {@code @MockitoBean} of the narrower concrete type doesn't suppress that.
+         */
+        @Bean
+        public CanvasOAuth2AuthorizedClientRepository canvasOAuth2AuthorizedClientRepository() {
+            return Mockito.mock(CanvasOAuth2AuthorizedClientRepository.class);
         }
     }
 
@@ -99,6 +115,11 @@ public class OAuth2CallbackControllerMvcTest {
     private ClientRegistrationRepository clientRegistrationRepository;
     @MockitoBean(name = ServerInfo.BEAN_NAME)
     private ServerInfo serverInfo;
+    // SecurityConfig now @Autowired-injects this from CanvasOAuth2ClientConfig, which this narrow
+    // @WebMvcTest slice deliberately doesn't pull in (see TestConfig above) - it's never invoked by
+    // any of these tests, only needed to satisfy the filter chain's dependency at context-build time.
+    @MockitoBean
+    private OAuth2AccessTokenResponseClient<OAuth2AuthorizationCodeGrantRequest> canvasOAuth2AccessTokenResponseClient;
 
     @Test
     public void callbackWithoutErrorRendersCanvasConnectedWithBaseUrl() throws Exception {

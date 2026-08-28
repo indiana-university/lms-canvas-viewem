@@ -53,8 +53,8 @@ spring:
 canvas:
   oauth2:
     enabled: true
-    clientId: ${canvas.oauth2.clientId.viewem.${app.env}}
-    clientSecret: ${canvas.oauth2.clientSecret.viewem.${app.env}}
+    clientId: ${canvas.oauth2.clientId.viewem}
+    clientSecret: ${canvas.oauth2.clientSecret.viewem}
 
 viewem:
   version: @app.version@

@@ -24,7 +24,6 @@
     "instructure_membership_roles": "$com.Instructure.membership.roles",
     "canvas_course_id": "$Canvas.course.id",
     "canvas_user_id": "$Canvas.user.id",
-    "canvas_user_login_id": "$Canvas.user.loginId",
-    "canvas_external_tool_id": "$Canvas.externalTool.id"
+    "canvas_user_login_id": "$Canvas.user.loginId"
   }
 }

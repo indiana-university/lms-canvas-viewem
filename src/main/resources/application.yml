@@ -21,7 +21,41 @@ spring:
       resourceserver:
         jwt:
           jwk-set-uri: ${oauth.tokenprovider.url}/.well-known/jwks.json
+      client:
+        registration:
+          lms_canvas_oauth2_viewem:
+            client-id: ${canvas.oauth2.clientId}
+            client-secret: ${canvas.oauth2.clientSecret}
+            authorization-grant-type: authorization_code
+            client-authentication-method: client_secret_post
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            scope: [url:GET|/api/v1/courses/:course_id/users]
+        provider:
+          lms_canvas_oauth2_viewem:
+            authorization-uri: ${canvas.baseUrl}/login/oauth2/auth
+            token-uri: ${canvas.baseUrl}/login/oauth2/token
   web.error.whitelabel.enabled: false
+# NOTE on canvas.oauth2.*: despite the name, `enabled` below does NOT gate everything that
+# @EnableCanvasOAuth2Client (on WebApplication) turns on. It only gates the CanvasRestTemplateAsUser
+# bean in canvas-services (@ConditionalOnProperty(prefix = "canvas.oauth2", name = "enabled")).
+# The rest of CanvasOAuth2ClientConfig's component scan - including CanvasOAuth2AuthorizedClientRepository,
+# which needs canvas.oauth2.encryptionPassword/encryptionSalt to construct its at-rest TextEncryptor
+# (Encryptors.delux) - is @Import'ed unconditionally the moment @EnableCanvasOAuth2Client is present,
+# regardless of this flag.
+#
+# canvas.oauth2.encryptionPassword / canvas.oauth2.encryptionSalt are therefore REQUIRED as soon as
+# @EnableCanvasOAuth2Client is active. They are deliberately NOT given a value (or a placeholder) here -
+# same convention as canvas.token and lms.db.password elsewhere in this file: real secret values are
+# never committed to a tracked file. They must be supplied externally, per-environment, via
+# security.properties (see the spring.config.import line above) - locally, via the protected.properties
+# file documented in this repo's CLAUDE.md. Encryptors.delux(password, salt) requires encryptionSalt to
+# be a valid hex string (e.g. "deadbeef"); if either property is missing, the app fails to start.
+canvas:
+  oauth2:
+    enabled: true
+    clientId: ${canvas.oauth2.clientId.viewem}
+    clientSecret: ${canvas.oauth2.clientSecret.viewem}
+
 viewem:
   version: @app.version@
   env: ${app.env}

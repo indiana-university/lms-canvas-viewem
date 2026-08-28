@@ -36,6 +36,7 @@ package edu.iu.uits.lms.viewem.controller;
 import com.opencsv.CSVWriter;
 import edu.iu.uits.lms.canvas.model.User;
 import edu.iu.uits.lms.canvas.services.CourseService;
+import edu.iu.uits.lms.canvasoauth2.CanvasOAuth2Registration;
 import edu.iu.uits.lms.common.session.CourseSessionService;
 import edu.iu.uits.lms.lti.LTIConstants;
 import edu.iu.uits.lms.lti.controller.InvalidTokenContextException;
@@ -58,8 +59,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.client.ClientAuthorizationRequiredException;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
 import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestWrapper;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -70,6 +77,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import uk.ac.ox.ctl.lti13.security.oauth2.client.lti.authentication.OidcAuthenticationToken;
@@ -116,6 +124,13 @@ public class MainController extends OidcTokenAwareController {
     private CourseService courseService = null;
     @Autowired
     private SystemUserService systemUserService = null;
+    @Autowired
+    @Qualifier("CanvasRestTemplateAsUser")
+    private RestTemplate canvasRestTemplateAsUser = null;
+    @Autowired
+    private OAuth2AuthorizedClientRepository canvasOAuth2AuthorizedClientRepository = null;
+    @Autowired
+    private CanvasOAuth2Registration canvasOAuth2Registration = null;
 
     @GetMapping("/launch")
     public String launch(Model model, SecurityContextHolderAwareRequestWrapper request) {
@@ -126,7 +141,11 @@ public class MainController extends OidcTokenAwareController {
 
         //Get the canvas roster for this course and make sure that all the users have up-to-date names
         if (request.isUserInRole(LTIConstants.INSTRUCTOR_AUTHORITY)) {
-            List<User> users = courseService.getRosterForCourseAsUser(courseId, null, null);
+            // Only the instructor-gated roster fetch below actually needs the per-user Canvas OAuth2
+            // token, so only require it here (not for every /app/launch hit).
+            ensureCanvasOAuth2Consent(SecurityContextHolder.getContext().getAuthentication(), request);
+
+            List<User> users = courseService.getRosterForCourseAsUser(courseId, null, null, canvasRestTemplateAsUser);
             if (users != null) {
                 systemUserService.createOrUpdateUsers(users, systemId);
                 List<String> userIds = new ArrayList<>();
@@ -138,6 +157,23 @@ public class MainController extends OidcTokenAwareController {
         }
 
         return listSheets(courseId, model, request);
+    }
+
+    /**
+     * Makes sure the current user has an authorized Canvas OAuth2 client on file before letting a
+     * per-user Canvas API call (e.g. the roster fetch in {@link #launch}) proceed. If no authorized
+     * client exists yet, throws the same exception the vendored {@code @RegisteredOAuth2AuthorizedClient}
+     * resolver would have thrown; {@code OAuth2ConsentControllerAdvice} catches it and renders the
+     * "connect your Canvas account" consent breakout page instead of an error.
+     * @param principal the current authentication
+     * @param request the current request
+     */
+    private void ensureCanvasOAuth2Consent(Authentication principal, HttpServletRequest request) {
+        OAuth2AuthorizedClient authorizedClient = canvasOAuth2AuthorizedClientRepository
+                .loadAuthorizedClient(canvasOAuth2Registration.getRegistrationId(), principal, request);
+        if (authorizedClient == null) {
+            throw new ClientAuthorizationRequiredException(canvasOAuth2Registration.getRegistrationId());
+        }
     }
 
     @RequestMapping("/{context}/list")

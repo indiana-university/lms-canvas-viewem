@@ -33,11 +33,13 @@ package edu.iu.uits.lms.viewem.swagger;
  * #L%
  */
 
+import edu.iu.uits.lms.canvasoauth2.security.CanvasOAuth2AuthorizedClientRepository;
 import edu.iu.uits.lms.lti.config.LtiClientTestConfig;
 import edu.iu.uits.lms.lti.config.LtiRestConfiguration;
 import edu.iu.uits.lms.lti.swagger.SwaggerTestingBean;
 import edu.iu.uits.lms.viewem.config.SecurityConfig;
 import edu.iu.uits.lms.viewem.config.SwaggerConfig;
+import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
@@ -60,6 +62,18 @@ public class ViewemSwaggerConfig {
       List<String> expandedList = new ArrayList<>();
       stb.setEmbeddedSwaggerToolPaths(expandedList);
       return stb;
+   }
+
+   /**
+    * A plain {@code @Bean} rather than {@code @MockitoBean} on the test class - see
+    * {@code AppLaunchSecurityTest.TestConfig}'s javadoc for why: {@code CanvasOAuth2AuthorizedClientRepository}
+    * also implements {@code OAuth2AuthorizedClientRepository}, which
+    * {@code OAuth2ClientWebSecurityAutoConfiguration} auto-configures its own default bean for, and a
+    * same-named {@code @MockitoBean} of the narrower concrete type doesn't suppress that.
+    */
+   @Bean
+   public CanvasOAuth2AuthorizedClientRepository canvasOAuth2AuthorizedClientRepository() {
+      return Mockito.mock(CanvasOAuth2AuthorizedClientRepository.class);
    }
 
 }

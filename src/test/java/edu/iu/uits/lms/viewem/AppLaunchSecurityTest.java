@@ -59,14 +59,10 @@ import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
+import org.springframework.security.oauth2.client.ClientAuthorizationRequiredException;
 import org.springframework.security.oauth2.client.endpoint.OAuth2AccessTokenResponseClient;
 import org.springframework.security.oauth2.client.endpoint.OAuth2AuthorizationCodeGrantRequest;
-import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
-import org.springframework.security.oauth2.core.AuthorizationGrantType;
-import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
-import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -75,13 +71,13 @@ import org.springframework.web.client.RestTemplate;
 import uk.ac.ox.ctl.lti13.lti.Claims;
 import uk.ac.ox.ctl.lti13.security.oauth2.client.lti.authentication.OidcAuthenticationToken;
 
-import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
@@ -183,7 +179,8 @@ public class AppLaunchSecurityTest {
 
     @Test
     public void appAuthnLaunchRequiresCanvasOAuth2ConsentWhenNoAuthorizedClient() throws Exception {
-        when(canvasOAuth2AuthorizedClientRepository.loadAuthorizedClient(eq(REGISTRATION_ID), any(), any())).thenReturn(null);
+        doThrow(new ClientAuthorizationRequiredException(REGISTRATION_ID))
+                .when(canvasOAuth2AuthorizedClientRepository).ensureAuthorized(eq(REGISTRATION_ID), any(), any());
 
         Map<String, Object> extraAttributes = new HashMap<>();
         Map<String, Object> platformObject = new HashMap<>();
@@ -210,22 +207,6 @@ public class AppLaunchSecurityTest {
 
     @Test
     public void appAuthnLaunchFetchesRosterWithPerUserRestTemplateWhenAuthorizedClientExists() throws Exception {
-        ClientRegistration clientRegistration = ClientRegistration.withRegistrationId(REGISTRATION_ID)
-                .clientId("test-client")
-                .clientSecret("test-secret")
-                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_POST)
-                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-                .redirectUri("{baseUrl}/login/oauth2/code/{registrationId}")
-                .authorizationUri("https://canvas.test/login/oauth2/auth")
-                .tokenUri("https://canvas.test/login/oauth2/token")
-                .build();
-
-        OAuth2AccessToken accessToken = new OAuth2AccessToken(OAuth2AccessToken.TokenType.BEARER,
-                "test-access-token", Instant.now(), Instant.now().plusSeconds(3600));
-        OAuth2AuthorizedClient authorizedClient = new OAuth2AuthorizedClient(clientRegistration, "userId", accessToken);
-        when(canvasOAuth2AuthorizedClientRepository.loadAuthorizedClient(eq(REGISTRATION_ID), any(), any()))
-                .thenReturn(authorizedClient);
-
         Map<String, Object> extraAttributes = new HashMap<>();
         Map<String, Object> platformObject = new HashMap<>();
         platformObject.put(LTIConstants.CLAIMS_PLATFORM_GUID_KEY, "systemId");

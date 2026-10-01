@@ -122,16 +122,15 @@ public class OAuth2CallbackControllerMvcTest {
     private OAuth2AccessTokenResponseClient<OAuth2AuthorizationCodeGrantRequest> canvasOAuth2AccessTokenResponseClient;
 
     @Test
-    public void callbackWithoutErrorRendersCanvasConnectedWithBaseUrl() throws Exception {
+    public void callbackWithoutErrorRedirectsStraightToBaseUrl() throws Exception {
         OidcAuthenticationToken token = TestUtils.buildToken("userId", "1234", LTIConstants.INSTRUCTOR_AUTHORITY);
 
         mvc.perform(get("/login/oauth2/code/" + REGISTRATION_ID)
                         .with(authentication(token))
                         .header(HttpHeaders.USER_AGENT, TestUtils.defaultUseragent())
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.view().name("canvasConnected"))
-                .andExpect(MockMvcResultMatchers.model().attribute("returnUrl", "https://canvas.test"));
+                .andExpect(status().is3xxRedirection())
+                .andExpect(MockMvcResultMatchers.redirectedUrl("https://canvas.test"));
     }
 
     @Test

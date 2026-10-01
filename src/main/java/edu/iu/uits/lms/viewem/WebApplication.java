@@ -34,6 +34,7 @@ package edu.iu.uits.lms.viewem;
  */
 
 import edu.iu.uits.lms.canvas.config.EnableCanvasClient;
+import edu.iu.uits.lms.canvasoauth2.config.EnableCanvasOAuth2Client;
 import edu.iu.uits.lms.common.samesite.EnableCookieFilter;
 import edu.iu.uits.lms.common.server.GitRepositoryState;
 import edu.iu.uits.lms.common.server.ServerInfo;
@@ -58,6 +59,7 @@ import java.util.Date;
 @EnableCookieFilter
 @EnableLtiClient(toolKeys = {"lms_lti_viewem"})
 @EnableCanvasClient
+@EnableCanvasOAuth2Client(registrationIdSuffix = "viewem", rivetCssPathPrefix = "/app/jsrivet")
 @EnableCourseSessionService(sessionKey = "viewem_course_session")
 @EnableConfigurationProperties(GitRepositoryState.class)
 public class WebApplication {

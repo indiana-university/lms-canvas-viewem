@@ -13,7 +13,7 @@
         <relativePath /> <!-- lookup parent from repository -->
     </parent>
 
-    <version>7.1.1-SNAPSHOT</version>
+    <version>7.1.0-SNAPSHOT</version>
     <description>View'em is a tool for posting scores, feedback, or other types of data for students to view.</description>
     <url>https://github.com/indiana-university/lms-canvas-viewem</url>
     <inceptionYear>2015</inceptionYear>

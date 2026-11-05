@@ -43,6 +43,8 @@ import org.junit.jupiter.api.Nested;
 import org.springframework.boot.context.metrics.buffering.BufferingApplicationStartup;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
+import org.springframework.security.oauth2.client.endpoint.OAuth2AccessTokenResponseClient;
+import org.springframework.security.oauth2.client.endpoint.OAuth2AuthorizationCodeGrantRequest;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.test.context.NestedTestConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -67,6 +69,12 @@ public class SwaggerSuiteTest {
 
     @MockitoBean
     private OAuth2AuthorizedClientService oAuth2AuthorizedClientService;
+
+    // SecurityConfig now @Autowired-injects this from CanvasOAuth2ClientConfig, which ViewemSwaggerConfig
+    // doesn't import - it's never invoked by any of these tests, only needed to satisfy the filter
+    // chain's dependency at context-build time.
+    @MockitoBean
+    private OAuth2AccessTokenResponseClient<OAuth2AuthorizationCodeGrantRequest> canvasOAuth2AccessTokenResponseClient;
 
     @Nested
     @SpringBootTest(classes = {ViewemSwaggerConfig.class})

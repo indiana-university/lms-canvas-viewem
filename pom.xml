@@ -63,7 +63,7 @@
         <jdk.target>25</jdk.target>
         <jquery.version>4.0.0</jquery.version>
         <lms-canvas-rivet.version>7.2.9.1_1</lms-canvas-rivet.version>
-        <lms-embedded-services.version>7.1.4</lms-embedded-services.version>
+        <lms-embedded-services.version>7.1.6-SNAPSHOT</lms-embedded-services.version>
 
         <lms-team-spring-boot-it12>7.6.0_1</lms-team-spring-boot-it12>
 
@@ -72,8 +72,11 @@
         <spring-cloud.version>2025.1.4</spring-cloud.version>
 
         <plugins.compiler.version>3.16.0</plugins.compiler.version>
-        <plugins.license.version>2.7.1</plugins.license.version>
+        <plugins.license.version>2.9.0</plugins.license.version>
         <plugins.release.version>3.3.1</plugins.release.version>
+
+        <surefire.groups></surefire.groups>
+        <surefire.excludedGroups>memory</surefire.excludedGroups>
     </properties>
 
     <dependencyManagement>
@@ -108,6 +111,11 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-junit-jupiter</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -360,6 +368,15 @@
                     <goals>install</goals>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <!-- Tests tagged "memory" need Docker and are slow; run them with -Pmemory-tests -->
+                    <groups>${surefire.groups}</groups>
+                    <excludedGroups>${surefire.excludedGroups}</excludedGroups>
+                </configuration>
+            </plugin>
         </plugins>
         <resources>
             <resource>
@@ -379,6 +396,31 @@
     </build>
 
     <profiles>
+        <profile>
+            <!--
+                Runs only the Redis session memory tests (tagged "memory"; needs Docker for Testcontainers):
+                    mvn test -Pmemory-tests
+                Each test class gets a fresh JVM so one scenario's Netty direct memory doesn't affect the other's.
+                Reports are printed and written to target/memory-report-*.txt.
+            -->
+            <id>memory-tests</id>
+            <properties>
+                <surefire.groups>memory</surefire.groups>
+                <surefire.excludedGroups></surefire.excludedGroups>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <forkCount>1</forkCount>
+                            <reuseForks>false</reuseForks>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
         <profile>
             <!--
                 The following configurations need to be set in your Maven settings.xml file before invoking this profile:

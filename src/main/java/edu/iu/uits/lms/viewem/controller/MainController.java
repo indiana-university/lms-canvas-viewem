@@ -43,6 +43,7 @@ import edu.iu.uits.lms.lti.LTIConstants;
 import edu.iu.uits.lms.lti.controller.InvalidTokenContextException;
 import edu.iu.uits.lms.lti.controller.OidcTokenAwareController;
 import edu.iu.uits.lms.lti.service.OidcTokenUtils;
+import edu.iu.uits.lms.viewem.model.PendingUpload;
 import edu.iu.uits.lms.viewem.model.Sheet;
 import edu.iu.uits.lms.viewem.model.SheetColumn;
 import edu.iu.uits.lms.viewem.model.SheetUser;
@@ -94,8 +95,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import static edu.iu.uits.lms.viewem.service.ViewemConstants.DATA_KEY_PENDING_UPLOAD;
 import static edu.iu.uits.lms.viewem.service.ViewemConstants.DATA_KEY_ROSTER_USER_IDS;
-import static edu.iu.uits.lms.viewem.service.ViewemConstants.DATA_KEY_SHEET;
 
 /**
  * Created by chmaurer on 6/4/15.
@@ -358,7 +359,15 @@ public class MainController extends OidcTokenAwareController {
     @RequestMapping(value = {"/{context}/preview", "/{context}/upload"}, method = RequestMethod.POST, params="action=cancel")
     @Secured(LTIConstants.INSTRUCTOR_AUTHORITY)
     public String cancelUploadSheet(@PathVariable("context") String context, Model model, SecurityContextHolderAwareRequestWrapper request) {
+        clearPendingUpload(request, context);
         return listSheets(context, model, request);
+    }
+
+    /**
+     * Drop the pending upload stored by the Preview step.
+     */
+    private void clearPendingUpload(HttpServletRequest request, String context) {
+        courseSessionService.removeAttributeFromSession(request.getSession(), context, DATA_KEY_PENDING_UPLOAD);
     }
 
     private void addPreviewDataToModel(Sheet sheet, SheetUser sheetUser, Model model, String systemId) {
@@ -448,7 +457,9 @@ public class MainController extends OidcTokenAwareController {
                     List<SheetUser> sheetUsers = sheet.getSheetUsers();
                     if (sheetUsers != null && sheetUsers.size() > 0) {
                         addPreviewDataToModel(sheet, sheet.getSheetUsers().get(0), model, systemId);
-                        courseSessionService.addAttributeToSession(request.getSession(), context, DATA_KEY_SHEET, sheet);
+                        // Keep only the gzipped CSV in the session, not the parsed Sheet graph. Save parses it again.
+                        courseSessionService.addAttributeToSession(request.getSession(), context, DATA_KEY_PENDING_UPLOAD,
+                                PendingUpload.of(fileByteArray, sheetId));
 
                         if (skippedUserIds.size() > 0) {
                             String delimitedUsers = StringUtils.arrayToDelimitedString(skippedUserIds.toArray(new String[skippedUserIds.size()]), ", ");
@@ -506,7 +517,9 @@ public class MainController extends OidcTokenAwareController {
 
     @RequestMapping(value = "/{context}/upload", method = RequestMethod.POST, params="action=back")
     @Secured(LTIConstants.INSTRUCTOR_AUTHORITY)
-    public String backToUpload(@PathVariable("context") String context, Model model, @RequestParam("sheetTitle") String sheetTitle) {
+    public String backToUpload(@PathVariable("context") String context, Model model, @RequestParam("sheetTitle") String sheetTitle,
+                               SecurityContextHolderAwareRequestWrapper request) {
+        clearPendingUpload(request, context);
         model.addAttribute("sheetTitle", sheetTitle);
         return uploadSheet(context, model);
     }
@@ -559,17 +572,28 @@ public class MainController extends OidcTokenAwareController {
 
     private String upload(String context, Model model, @RequestParam("sheetTitle") String sheetTitle,
                           SecurityContextHolderAwareRequestWrapper request, Boolean published) {
-        getValidatedToken(context);
+        OidcAuthenticationToken token = getValidatedToken(context);
+        OidcTokenUtils oidcTokenUtils = new OidcTokenUtils(token);
 
-        Sheet sheet = courseSessionService.getAttributeFromSession(request.getSession(), context, DATA_KEY_SHEET, Sheet.class);
+        PendingUpload pending = courseSessionService.getAttributeFromSession(request.getSession(), context,
+                DATA_KEY_PENDING_UPLOAD, PendingUpload.class);
 
-        if (sheet != null) {
-            sheet.setTitle(sheetTitle);
-            if (published != null) {
-                sheet.setPublished(published);
+        if (pending != null) {
+            List<String> validUserIds = courseSessionService.getAttributeFromSession(request.getSession(), context,
+                    DATA_KEY_ROSTER_USER_IDS, List.class);
+            try {
+                viewemService.savePendingUpload(pending, sheetTitle, context, oidcTokenUtils.getPlatformGuid(),
+                        oidcTokenUtils.getUserLoginId(), published, validUserIds);
+            } catch (FileUploadException | DataTooBigException e) {
+                // The same bytes passed validation at Preview, so this shouldn't happen
+                log.error("Unable to save pending upload for context {}", context, e);
+                model.addAttribute("fileError", messageSource.getMessage("upload.sheetFile.invalid.contents.error",
+                        null, Locale.getDefault()));
+                model.addAttribute("sheetTitle", sheetTitle);
+                return uploadSheet(context, model);
+            } finally {
+                clearPendingUpload(request, context);
             }
-
-            sheetRepository.save(sheet);
         }
         return listSheets(context, model, request);
     }

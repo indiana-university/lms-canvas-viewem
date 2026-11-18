@@ -43,5 +43,5 @@ public interface ViewemConstants {
     String ACTION_SAVE_UNPUBLISH = "saveAndUnpublish";
 
     String DATA_KEY_ROSTER_USER_IDS = "roster_user_ids";
-    String DATA_KEY_SHEET = "sheet_data";
+    String DATA_KEY_PENDING_UPLOAD = "pending_upload";
 }

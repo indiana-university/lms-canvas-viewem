@@ -36,6 +36,7 @@ package edu.iu.uits.lms.viewem.service;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvException;
 import edu.iu.uits.lms.viewem.controller.DataTooBigException;
+import edu.iu.uits.lms.viewem.model.PendingUpload;
 import edu.iu.uits.lms.viewem.model.Sheet;
 import edu.iu.uits.lms.viewem.model.SheetColumn;
 import edu.iu.uits.lms.viewem.model.SheetUser;
@@ -71,6 +72,48 @@ public class ViewemService {
 
     @Autowired
     private ResourceBundleMessageSource messageSource = null;
+
+    /**
+     * Parse a pending upload (stored by the Preview step) again and save it. For an edit-via-upload, the result
+     * keeps the existing sheet's id, so saving replaces that sheet's columns and users.
+     * @param pending The upload stored at Preview
+     * @param title Title for the sheet
+     * @param context Context where the sheet lives
+     * @param systemId System identifier where the sheet lives
+     * @param owner User id of the person saving
+     * @param published New published flag, or null to keep the existing sheet's flag (unpublished for a new sheet)
+     * @param validUserIds Roster user ids; rows for anyone else are skipped, as at Preview
+     * @return the saved Sheet
+     * @throws FileUploadException if the pending upload can't be read or parsed
+     * @throws DataTooBigException if some of the data is too big for the database
+     */
+    public Sheet savePendingUpload(PendingUpload pending, String title, String context, String systemId, String owner,
+                                   Boolean published, List<String> validUserIds) throws FileUploadException, DataTooBigException {
+        boolean basePublished = false;
+        if (pending.sheetId() != null) {
+            basePublished = sheetRepository.findById(pending.sheetId()).map(Sheet::isPublished).orElse(false);
+        }
+
+        Sheet sheet;
+        try (InputStream csv = pending.csvStream()) {
+            // preview=true: build the Sheet without saving it, so the edit id and publish flag can be applied first
+            sheet = processCsvFile(csv, title, context, systemId, basePublished, owner, true, validUserIds, new ArrayList<>());
+        } catch (IOException e) {
+            throw new FileUploadException("Unable to read pending upload", e);
+        }
+        if (sheet == null) {
+            // processCsvFile logs and returns null when the CSV can't be read
+            throw new FileUploadException("Unable to parse pending upload");
+        }
+
+        if (pending.sheetId() != null) {
+            sheet.setSheetId(pending.sheetId());
+        }
+        if (published != null) {
+            sheet.setPublished(published);
+        }
+        return sheetRepository.save(sheet);
+    }
 
    /**
     * Process an uploaded csv file into a Sheet (and related objects)
